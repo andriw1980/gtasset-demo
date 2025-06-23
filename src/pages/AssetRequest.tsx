@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import Layout from '../components/Layout';
 import { Button } from '@/components/ui/button';
@@ -63,21 +62,21 @@ const AssetRequest = () => {
   };
 
   const getStatusBadge = (status: string) => {
-    const variants = {
+    const variants: Record<string, "default" | "secondary" | "destructive"> = {
       'Approved': 'default',
       'Pending': 'secondary',
       'Rejected': 'destructive'
     };
-    return <Badge variant={variants[status as keyof typeof variants] || 'default'}>{status}</Badge>;
+    return <Badge variant={variants[status] || 'default'}>{status}</Badge>;
   };
 
   const getUrgencyBadge = (urgency: string) => {
-    const variants = {
+    const variants: Record<string, "default" | "secondary" | "destructive"> = {
       'High': 'destructive',
       'Medium': 'secondary',
       'Low': 'default'
     };
-    return <Badge variant={variants[urgency as keyof typeof variants] || 'default'}>{urgency}</Badge>;
+    return <Badge variant={variants[urgency] || 'default'}>{urgency}</Badge>;
   };
 
   return (

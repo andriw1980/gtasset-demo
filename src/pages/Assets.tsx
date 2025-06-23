@@ -47,12 +47,12 @@ const Assets = () => {
   ];
 
   const getStatusBadge = (status: string) => {
-    const variants = {
+    const variants: Record<string, "default" | "secondary" | "destructive"> = {
       'Active': 'default',
       'Maintenance': 'secondary',
       'Retired': 'destructive'
     };
-    return <Badge variant={variants[status as keyof typeof variants] || 'default'}>{status}</Badge>;
+    return <Badge variant={variants[status] || 'default'}>{status}</Badge>;
   };
 
   const filteredAssets = assets.filter(asset =>

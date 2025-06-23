@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import Layout from '../components/Layout';
 import { Button } from '@/components/ui/button';
@@ -67,21 +66,21 @@ const LossReport = () => {
   };
 
   const getStatusBadge = (status: string) => {
-    const variants = {
+    const variants: Record<string, "default" | "secondary" | "destructive"> = {
       'Under Investigation': 'secondary',
       'Resolved': 'default',
       'Pending Review': 'destructive'
     };
-    return <Badge variant={variants[status as keyof typeof variants] || 'default'}>{status}</Badge>;
+    return <Badge variant={variants[status] || 'default'}>{status}</Badge>;
   };
 
   const getIncidentBadge = (type: string) => {
-    const variants = {
+    const variants: Record<string, "default" | "secondary" | "destructive"> = {
       'Theft': 'destructive',
       'Damage': 'secondary',
       'Lost': 'default'
     };
-    return <Badge variant={variants[type as keyof typeof variants] || 'default'}>{type}</Badge>;
+    return <Badge variant={variants[type] || 'default'}>{type}</Badge>;
   };
 
   return (

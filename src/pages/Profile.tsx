@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import Layout from '../components/Layout';
 import { useAuth } from '../contexts/AuthContext';
@@ -32,12 +31,12 @@ const Profile = () => {
   };
 
   const getRoleBadge = (role: string) => {
-    const variants = {
+    const variants: Record<string, "default" | "secondary" | "destructive"> = {
       'admin': 'destructive',
       'staff': 'default',
       'auditor': 'secondary'
     };
-    return <Badge variant={variants[role as keyof typeof variants] || 'default'}>{role.toUpperCase()}</Badge>;
+    return <Badge variant={variants[role] || 'default'}>{role.toUpperCase()}</Badge>;
   };
 
   if (!user) return null;

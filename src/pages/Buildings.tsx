@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import Layout from '../components/Layout';
 import { Button } from '@/components/ui/button';
@@ -60,12 +59,12 @@ const Buildings = () => {
   ];
 
   const getStatusBadge = (status: string) => {
-    const variants = {
+    const variants: Record<string, "default" | "secondary" | "destructive"> = {
       'Active': 'default',
       'Maintenance': 'secondary',
       'Closed': 'destructive'
     };
-    return <Badge variant={variants[status as keyof typeof variants] || 'default'}>{status}</Badge>;
+    return <Badge variant={variants[status] || 'default'}>{status}</Badge>;
   };
 
   const getOccupancyRate = (occupied: number, total: number) => {

@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import Layout from '../components/Layout';
 import { Button } from '@/components/ui/button';
@@ -73,12 +72,12 @@ const Insurance = () => {
   };
 
   const getStatusBadge = (status: string) => {
-    const variants = {
+    const variants: Record<string, "default" | "secondary" | "destructive"> = {
       'Active': 'default',
       'Expiring Soon': 'destructive',
       'Expired': 'secondary'
     };
-    return <Badge variant={variants[status as keyof typeof variants] || 'default'}>{status}</Badge>;
+    return <Badge variant={variants[status] || 'default'}>{status}</Badge>;
   };
 
   const getExpiryAlert = (daysUntilExpiry: number) => {
