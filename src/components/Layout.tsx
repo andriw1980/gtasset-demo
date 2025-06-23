@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
@@ -33,7 +32,7 @@ import {
   PlusCircle,
   AlertTriangle,
   ClipboardList,
-  FileShield
+  FileCheck
 } from 'lucide-react';
 
 interface LayoutProps {
@@ -145,7 +144,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                       </Link>
                       <Link to="/insurance">
                         <NavigationMenuLink className="block px-3 py-2 rounded-md text-sm hover:bg-gray-100">
-                          <FileShield className="h-4 w-4 mr-2 inline" />
+                          <FileCheck className="h-4 w-4 mr-2 inline" />
                           Insurance
                         </NavigationMenuLink>
                       </Link>
