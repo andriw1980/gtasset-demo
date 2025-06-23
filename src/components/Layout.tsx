@@ -32,7 +32,8 @@ import {
   PlusCircle,
   AlertTriangle,
   ClipboardList,
-  FileCheck
+  FileCheck,
+  TrendingDown
 } from 'lucide-react';
 
 interface LayoutProps {
@@ -109,6 +110,12 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                         <NavigationMenuLink className="block px-3 py-2 rounded-md text-sm hover:bg-gray-100">
                           <AlertTriangle className="h-4 w-4 mr-2 inline" />
                           Report Loss
+                        </NavigationMenuLink>
+                      </Link>
+                      <Link to="/asset-depreciation">
+                        <NavigationMenuLink className="block px-3 py-2 rounded-md text-sm hover:bg-gray-100">
+                          <TrendingDown className="h-4 w-4 mr-2 inline" />
+                          Asset Depreciation
                         </NavigationMenuLink>
                       </Link>
                     </div>

@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -19,6 +18,8 @@ import Profile from "./pages/Profile";
 import AssetRequest from "./pages/AssetRequest";
 import LossReport from "./pages/LossReport";
 import Insurance from "./pages/Insurance";
+import AssetDepreciation from "./pages/AssetDepreciation";
+import DepreciationDetail from "./pages/DepreciationDetail";
 import ProtectedRoute from "./components/ProtectedRoute";
 import NotFound from "./pages/NotFound";
 
@@ -52,6 +53,16 @@ const App = () => (
             <Route path="/assets/new" element={
               <ProtectedRoute requiredRole="admin">
                 <AddAsset />
+              </ProtectedRoute>
+            } />
+            <Route path="/asset-depreciation" element={
+              <ProtectedRoute>
+                <AssetDepreciation />
+              </ProtectedRoute>
+            } />
+            <Route path="/asset-depreciation/:id" element={
+              <ProtectedRoute>
+                <DepreciationDetail />
               </ProtectedRoute>
             } />
             <Route path="/users" element={
