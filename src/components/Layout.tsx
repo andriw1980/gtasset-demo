@@ -2,58 +2,27 @@ import React from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { Button } from '@/components/ui/button';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import {
-  NavigationMenu,
-  NavigationMenuContent,
-  NavigationMenuItem,
-  NavigationMenuLink,
-  NavigationMenuList,
-  NavigationMenuTrigger,
-} from '@/components/ui/navigation-menu';
-import {
-  Shield,
-  LayoutDashboard,
-  Package,
-  Users,
-  Building2,
-  Truck,
-  FileText,
-  Settings,
-  LogOut,
-  User,
-  PlusCircle,
-  AlertTriangle,
-  ClipboardList,
-  FileCheck,
-  TrendingDown
-} from 'lucide-react';
-
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { NavigationMenu, NavigationMenuContent, NavigationMenuItem, NavigationMenuLink, NavigationMenuList, NavigationMenuTrigger } from '@/components/ui/navigation-menu';
+import { Shield, LayoutDashboard, Package, Users, Building2, Truck, FileText, Settings, LogOut, User, PlusCircle, AlertTriangle, ClipboardList, FileCheck, TrendingDown } from 'lucide-react';
 interface LayoutProps {
   children: React.ReactNode;
 }
-
-const Layout: React.FC<LayoutProps> = ({ children }) => {
-  const { user, logout } = useAuth();
+const Layout: React.FC<LayoutProps> = ({
+  children
+}) => {
+  const {
+    user,
+    logout
+  } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
-
   const handleLogout = () => {
     logout();
     navigate('/login');
   };
-
   const isActive = (path: string) => location.pathname === path;
-
-  return (
-    <div className="min-h-screen bg-gray-50">
+  return <div className="min-h-screen bg-gray-50">
       {/* Header */}
       <header className="bg-white shadow-sm border-b">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -61,7 +30,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
             <div className="flex items-center">
               <Link to="/" className="flex items-center space-x-2">
                 <Shield className="h-8 w-8 text-primary" />
-                <span className="text-xl font-bold">Asset Manager</span>
+                <span className="text-xl font-bold">gtAsset Management System</span>
               </Link>
             </div>
 
@@ -70,9 +39,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
               <NavigationMenuList>
                 <NavigationMenuItem>
                   <Link to="/">
-                    <NavigationMenuLink className={`px-3 py-2 rounded-md text-sm font-medium ${
-                      isActive('/') ? 'bg-primary text-primary-foreground' : 'text-gray-700 hover:text-gray-900'
-                    }`}>
+                    <NavigationMenuLink className={`px-3 py-2 rounded-md text-sm font-medium ${isActive('/') ? 'bg-primary text-primary-foreground' : 'text-gray-700 hover:text-gray-900'}`}>
                       <LayoutDashboard className="h-4 w-4 mr-2 inline" />
                       Dashboard
                     </NavigationMenuLink>
@@ -92,14 +59,12 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                           View All Assets
                         </NavigationMenuLink>
                       </Link>
-                      {(user?.role === 'admin' || user?.role === 'staff') && (
-                        <Link to="/assets/new">
+                      {(user?.role === 'admin' || user?.role === 'staff') && <Link to="/assets/new">
                           <NavigationMenuLink className="block px-3 py-2 rounded-md text-sm hover:bg-gray-100">
                             <PlusCircle className="h-4 w-4 mr-2 inline" />
                             Add New Asset
                           </NavigationMenuLink>
-                        </Link>
-                      )}
+                        </Link>}
                       <Link to="/asset-request">
                         <NavigationMenuLink className="block px-3 py-2 rounded-md text-sm hover:bg-gray-100">
                           <ClipboardList className="h-4 w-4 mr-2 inline" />
@@ -129,14 +94,12 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                   </NavigationMenuTrigger>
                   <NavigationMenuContent>
                     <div className="w-64 p-2">
-                      {user?.role === 'admin' && (
-                        <Link to="/users">
+                      {user?.role === 'admin' && <Link to="/users">
                           <NavigationMenuLink className="block px-3 py-2 rounded-md text-sm hover:bg-gray-100">
                             <Users className="h-4 w-4 mr-2 inline" />
                             User Management
                           </NavigationMenuLink>
-                        </Link>
-                      )}
+                        </Link>}
                       <Link to="/vendors">
                         <NavigationMenuLink className="block px-3 py-2 rounded-md text-sm hover:bg-gray-100">
                           <Truck className="h-4 w-4 mr-2 inline" />
@@ -161,9 +124,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
 
                 <NavigationMenuItem>
                   <Link to="/reports">
-                    <NavigationMenuLink className={`px-3 py-2 rounded-md text-sm font-medium ${
-                      isActive('/reports') ? 'bg-primary text-primary-foreground' : 'text-gray-700 hover:text-gray-900'
-                    }`}>
+                    <NavigationMenuLink className={`px-3 py-2 rounded-md text-sm font-medium ${isActive('/reports') ? 'bg-primary text-primary-foreground' : 'text-gray-700 hover:text-gray-900'}`}>
                       <FileText className="h-4 w-4 mr-2 inline" />
                       Reports
                     </NavigationMenuLink>
@@ -209,8 +170,6 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
         {children}
       </main>
-    </div>
-  );
+    </div>;
 };
-
 export default Layout;
