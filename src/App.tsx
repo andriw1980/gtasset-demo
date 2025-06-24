@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -20,6 +21,8 @@ import LossReport from "./pages/LossReport";
 import Insurance from "./pages/Insurance";
 import AssetDepreciation from "./pages/AssetDepreciation";
 import DepreciationDetail from "./pages/DepreciationDetail";
+import PreventiveMaintenance from "./pages/PreventiveMaintenance";
+import AssetMaintenance from "./pages/AssetMaintenance";
 import ProtectedRoute from "./components/ProtectedRoute";
 import NotFound from "./pages/NotFound";
 
@@ -63,6 +66,16 @@ const App = () => (
             <Route path="/asset-depreciation/:id" element={
               <ProtectedRoute>
                 <DepreciationDetail />
+              </ProtectedRoute>
+            } />
+            <Route path="/preventive-maintenance" element={
+              <ProtectedRoute>
+                <PreventiveMaintenance />
+              </ProtectedRoute>
+            } />
+            <Route path="/asset-maintenance/:assetCode" element={
+              <ProtectedRoute>
+                <AssetMaintenance />
               </ProtectedRoute>
             } />
             <Route path="/users" element={

@@ -1,28 +1,30 @@
+
 import React from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { NavigationMenu, NavigationMenuContent, NavigationMenuItem, NavigationMenuLink, NavigationMenuList, NavigationMenuTrigger } from '@/components/ui/navigation-menu';
-import { Shield, LayoutDashboard, Package, Users, Building2, Truck, FileText, Settings, LogOut, User, PlusCircle, AlertTriangle, ClipboardList, FileCheck, TrendingDown } from 'lucide-react';
+import { Shield, LayoutDashboard, Package, Users, Building2, Truck, FileText, Settings, LogOut, User, PlusCircle, AlertTriangle, ClipboardList, FileCheck, TrendingDown, Wrench } from 'lucide-react';
+
 interface LayoutProps {
   children: React.ReactNode;
 }
-const Layout: React.FC<LayoutProps> = ({
-  children
-}) => {
-  const {
-    user,
-    logout
-  } = useAuth();
+
+const Layout: React.FC<LayoutProps> = ({ children }) => {
+  const { user, logout } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
+
   const handleLogout = () => {
     logout();
     navigate('/login');
   };
+
   const isActive = (path: string) => location.pathname === path;
-  return <div className="min-h-screen bg-gray-50">
+
+  return (
+    <div className="min-h-screen bg-gray-50">
       {/* Header */}
       <header className="bg-white shadow-sm border-b">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -59,12 +61,14 @@ const Layout: React.FC<LayoutProps> = ({
                           View All Assets
                         </NavigationMenuLink>
                       </Link>
-                      {(user?.role === 'admin' || user?.role === 'staff') && <Link to="/assets/new">
+                      {(user?.role === 'admin' || user?.role === 'staff') && (
+                        <Link to="/assets/new">
                           <NavigationMenuLink className="block px-3 py-2 rounded-md text-sm hover:bg-gray-100">
                             <PlusCircle className="h-4 w-4 mr-2 inline" />
                             Add New Asset
                           </NavigationMenuLink>
-                        </Link>}
+                        </Link>
+                      )}
                       <Link to="/asset-request">
                         <NavigationMenuLink className="block px-3 py-2 rounded-md text-sm hover:bg-gray-100">
                           <ClipboardList className="h-4 w-4 mr-2 inline" />
@@ -88,18 +92,29 @@ const Layout: React.FC<LayoutProps> = ({
                 </NavigationMenuItem>
 
                 <NavigationMenuItem>
+                  <Link to="/preventive-maintenance">
+                    <NavigationMenuLink className={`px-3 py-2 rounded-md text-sm font-medium ${isActive('/preventive-maintenance') ? 'bg-primary text-primary-foreground' : 'text-gray-700 hover:text-gray-900'}`}>
+                      <Wrench className="h-4 w-4 mr-2 inline" />
+                      Preventive Maintenance
+                    </NavigationMenuLink>
+                  </Link>
+                </NavigationMenuItem>
+
+                <NavigationMenuItem>
                   <NavigationMenuTrigger className="text-gray-700 hover:text-gray-900">
                     <Settings className="h-4 w-4 mr-2" />
                     Management
                   </NavigationMenuTrigger>
                   <NavigationMenuContent>
                     <div className="w-64 p-2">
-                      {user?.role === 'admin' && <Link to="/users">
+                      {user?.role === 'admin' && (
+                        <Link to="/users">
                           <NavigationMenuLink className="block px-3 py-2 rounded-md text-sm hover:bg-gray-100">
                             <Users className="h-4 w-4 mr-2 inline" />
                             User Management
                           </NavigationMenuLink>
-                        </Link>}
+                        </Link>
+                      )}
                       <Link to="/vendors">
                         <NavigationMenuLink className="block px-3 py-2 rounded-md text-sm hover:bg-gray-100">
                           <Truck className="h-4 w-4 mr-2 inline" />
@@ -170,6 +185,8 @@ const Layout: React.FC<LayoutProps> = ({
       <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
         {children}
       </main>
-    </div>;
+    </div>
+  );
 };
+
 export default Layout;
