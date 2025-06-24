@@ -5,7 +5,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { NavigationMenu, NavigationMenuContent, NavigationMenuItem, NavigationMenuLink, NavigationMenuList, NavigationMenuTrigger } from '@/components/ui/navigation-menu';
-import { Shield, LayoutDashboard, Package, Users, Building2, Truck, FileText, Settings, LogOut, User, PlusCircle, AlertTriangle, ClipboardList, FileCheck, TrendingDown, Wrench } from 'lucide-react';
+import { Shield, LayoutDashboard, Package, Users, Building2, Truck, FileText, Settings, LogOut, User, PlusCircle, AlertTriangle, ClipboardList, FileCheck, TrendingDown, Wrench, Database } from 'lucide-react';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -55,20 +55,6 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                   </NavigationMenuTrigger>
                   <NavigationMenuContent>
                     <div className="w-64 p-2">
-                      <Link to="/assets">
-                        <NavigationMenuLink className="block px-3 py-2 rounded-md text-sm hover:bg-gray-100">
-                          <Package className="h-4 w-4 mr-2 inline" />
-                          View All Assets
-                        </NavigationMenuLink>
-                      </Link>
-                      {(user?.role === 'admin' || user?.role === 'staff') && (
-                        <Link to="/assets/new">
-                          <NavigationMenuLink className="block px-3 py-2 rounded-md text-sm hover:bg-gray-100">
-                            <PlusCircle className="h-4 w-4 mr-2 inline" />
-                            Add New Asset
-                          </NavigationMenuLink>
-                        </Link>
-                      )}
                       <Link to="/asset-request">
                         <NavigationMenuLink className="block px-3 py-2 rounded-md text-sm hover:bg-gray-100">
                           <ClipboardList className="h-4 w-4 mr-2 inline" />
@@ -102,6 +88,35 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
 
                 <NavigationMenuItem>
                   <NavigationMenuTrigger className="text-gray-700 hover:text-gray-900">
+                    <Database className="h-4 w-4 mr-2" />
+                    Master Data
+                  </NavigationMenuTrigger>
+                  <NavigationMenuContent>
+                    <div className="w-64 p-2">
+                      <Link to="/assets">
+                        <NavigationMenuLink className="block px-3 py-2 rounded-md text-sm hover:bg-gray-100">
+                          <Package className="h-4 w-4 mr-2 inline" />
+                          View All Assets
+                        </NavigationMenuLink>
+                      </Link>
+                      <Link to="/vendors">
+                        <NavigationMenuLink className="block px-3 py-2 rounded-md text-sm hover:bg-gray-100">
+                          <Truck className="h-4 w-4 mr-2 inline" />
+                          Vendors
+                        </NavigationMenuLink>
+                      </Link>
+                      <Link to="/buildings">
+                        <NavigationMenuLink className="block px-3 py-2 rounded-md text-sm hover:bg-gray-100">
+                          <Building2 className="h-4 w-4 mr-2 inline" />
+                          Buildings
+                        </NavigationMenuLink>
+                      </Link>
+                    </div>
+                  </NavigationMenuContent>
+                </NavigationMenuItem>
+
+                <NavigationMenuItem>
+                  <NavigationMenuTrigger className="text-gray-700 hover:text-gray-900">
                     <Settings className="h-4 w-4 mr-2" />
                     Management
                   </NavigationMenuTrigger>
@@ -115,18 +130,6 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                           </NavigationMenuLink>
                         </Link>
                       )}
-                      <Link to="/vendors">
-                        <NavigationMenuLink className="block px-3 py-2 rounded-md text-sm hover:bg-gray-100">
-                          <Truck className="h-4 w-4 mr-2 inline" />
-                          Vendors
-                        </NavigationMenuLink>
-                      </Link>
-                      <Link to="/buildings">
-                        <NavigationMenuLink className="block px-3 py-2 rounded-md text-sm hover:bg-gray-100">
-                          <Building2 className="h-4 w-4 mr-2 inline" />
-                          Buildings
-                        </NavigationMenuLink>
-                      </Link>
                       <Link to="/insurance">
                         <NavigationMenuLink className="block px-3 py-2 rounded-md text-sm hover:bg-gray-100">
                           <FileCheck className="h-4 w-4 mr-2 inline" />

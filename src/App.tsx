@@ -10,7 +10,6 @@ import ForgotPassword from "./pages/ForgotPassword";
 import Dashboard from "./pages/Dashboard";
 import Assets from "./pages/Assets";
 import AssetDetail from "./pages/AssetDetail";
-import AddAsset from "./pages/AddAsset";
 import Users from "./pages/Users";
 import Vendors from "./pages/Vendors";
 import Buildings from "./pages/Buildings";
@@ -51,11 +50,6 @@ const App = () => (
             <Route path="/assets/:id" element={
               <ProtectedRoute>
                 <AssetDetail />
-              </ProtectedRoute>
-            } />
-            <Route path="/assets/new" element={
-              <ProtectedRoute requiredRole="admin">
-                <AddAsset />
               </ProtectedRoute>
             } />
             <Route path="/asset-depreciation" element={

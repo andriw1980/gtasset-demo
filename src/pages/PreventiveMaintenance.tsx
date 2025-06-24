@@ -1,12 +1,17 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import Layout from '../components/Layout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Textarea } from '@/components/ui/textarea';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Calendar, MapPin, Wrench, AlertCircle, Clock, CheckCircle } from 'lucide-react';
+import { Calendar, MapPin, Wrench, AlertCircle, Clock, CheckCircle, Plus } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
 
 interface MaintenanceSchedule {
   id: string;
@@ -20,6 +25,24 @@ interface MaintenanceSchedule {
 }
 
 const PreventiveMaintenance = () => {
+  const { toast } = useToast();
+  const [showAddForm, setShowAddForm] = useState(false);
+  const [formData, setFormData] = useState({
+    assetCode: '',
+    scheduledDate: '',
+    maintenanceType: '',
+    description: ''
+  });
+
+  // Mock data for assets
+  const assets = [
+    { code: 'GEN-001', name: 'Generator Unit A', location: 'Building A - Basement' },
+    { code: 'HVAC-001', name: 'HVAC System', location: 'Building B - Rooftop' },
+    { code: 'ELV-001', name: 'Elevator Unit 1', location: 'Building A - Main' },
+    { code: 'FP-001', name: 'Fire Pump System', location: 'Building C - Pump Room' },
+    { code: 'GEN-002', name: 'Backup Generator', location: 'Building B - Ground Floor' }
+  ];
+
   // Mock data for scheduled maintenance
   const scheduledMaintenance: MaintenanceSchedule[] = [
     {
@@ -74,6 +97,35 @@ const PreventiveMaintenance = () => {
     }
   ];
 
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const selectedAsset = assets.find(asset => asset.code === formData.assetCode);
+    
+    if (!selectedAsset) {
+      toast({
+        title: "Error",
+        description: "Please select an asset",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    // Here you would typically save to backend
+    toast({
+      title: "Success",
+      description: "Maintenance task scheduled successfully"
+    });
+
+    // Reset form
+    setFormData({
+      assetCode: '',
+      scheduledDate: '',
+      maintenanceType: '',
+      description: ''
+    });
+    setShowAddForm(false);
+  };
+
   const getStatusIcon = (status: string) => {
     switch (status) {
       case 'Overdue':
@@ -118,7 +170,88 @@ const PreventiveMaintenance = () => {
             <h1 className="text-3xl font-bold">Preventive Maintenance</h1>
             <p className="text-gray-600 mt-2">Manage scheduled maintenance for all assets</p>
           </div>
+          <Button onClick={() => setShowAddForm(!showAddForm)}>
+            <Plus className="h-4 w-4 mr-2" />
+            {showAddForm ? 'Cancel' : 'Schedule New Maintenance'}
+          </Button>
         </div>
+
+        {/* Add New Maintenance Form */}
+        {showAddForm && (
+          <Card>
+            <CardHeader>
+              <CardTitle>Schedule New Maintenance Task</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <form onSubmit={handleSubmit} className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="asset">Select Asset</Label>
+                    <Select value={formData.assetCode} onValueChange={(value) => setFormData({...formData, assetCode: value})}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Choose an asset" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {assets.map((asset) => (
+                          <SelectItem key={asset.code} value={asset.code}>
+                            {asset.name} ({asset.code})
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="scheduledDate">Scheduled Date</Label>
+                    <Input
+                      id="scheduledDate"
+                      type="date"
+                      value={formData.scheduledDate}
+                      onChange={(e) => setFormData({...formData, scheduledDate: e.target.value})}
+                      required
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="maintenanceType">Maintenance Type</Label>
+                    <Select value={formData.maintenanceType} onValueChange={(value) => setFormData({...formData, maintenanceType: value})}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select maintenance type" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Monthly Inspection">Monthly Inspection</SelectItem>
+                        <SelectItem value="Filter Replacement">Filter Replacement</SelectItem>
+                        <SelectItem value="Safety Inspection">Safety Inspection</SelectItem>
+                        <SelectItem value="Performance Test">Performance Test</SelectItem>
+                        <SelectItem value="Preventive Service">Preventive Service</SelectItem>
+                        <SelectItem value="Oil Change">Oil Change</SelectItem>
+                        <SelectItem value="Cleaning">Cleaning</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="description">Description</Label>
+                  <Textarea
+                    id="description"
+                    placeholder="Describe the maintenance task..."
+                    value={formData.description}
+                    onChange={(e) => setFormData({...formData, description: e.target.value})}
+                    required
+                  />
+                </div>
+
+                <div className="flex gap-2">
+                  <Button type="submit">Schedule Maintenance</Button>
+                  <Button type="button" variant="outline" onClick={() => setShowAddForm(false)}>
+                    Cancel
+                  </Button>
+                </div>
+              </form>
+            </CardContent>
+          </Card>
+        )}
 
         {/* Status Summary Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
