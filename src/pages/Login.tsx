@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Eye, EyeOff, Shield } from 'lucide-react';
+import { Eye, EyeOff } from 'lucide-react';
 
 const Login = () => {
   const [username, setUsername] = useState('');
@@ -42,11 +42,15 @@ const Login = () => {
       <Card className="w-full max-w-md">
         <CardHeader className="space-y-1 text-center">
           <div className="flex justify-center mb-4">
-            <Shield className="h-12 w-12 text-primary" />
+            <img 
+              src="/lovable-uploads/ef965f01-bf50-42a9-b0f3-fbb537bd67f4.png" 
+              alt="GAMATECHNO Logo" 
+              className="h-16 w-auto"
+            />
           </div>
-          <CardTitle className="text-2xl font-bold">Asset Management System</CardTitle>
+          <CardTitle className="text-2xl font-bold">GAMATECHNO</CardTitle>
           <CardDescription>
-            Enter your credentials to access the system
+            Enhancing Your Business - Asset Management System
           </CardDescription>
         </CardHeader>
         <CardContent>

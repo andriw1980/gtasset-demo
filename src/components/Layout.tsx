@@ -5,7 +5,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarGroupLabel, SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarProvider, SidebarTrigger, SidebarHeader, SidebarFooter } from '@/components/ui/sidebar';
-import { Shield, LayoutDashboard, Package, Users, Building2, Truck, FileText, Settings, LogOut, User, AlertTriangle, ClipboardList, FileCheck, TrendingDown, Wrench, Database, ArrowLeftRight, FileX, Gavel } from 'lucide-react';
+import { LayoutDashboard, Package, Users, Building2, Truck, FileText, Settings, LogOut, User, AlertTriangle, ClipboardList, FileCheck, TrendingDown, Wrench, Database, ArrowLeftRight, FileX, Gavel } from 'lucide-react';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -27,8 +27,12 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     <Sidebar>
       <SidebarHeader className="p-4">
         <Link to="/" className="flex items-center space-x-2">
-          <Shield className="h-8 w-8 text-primary" />
-          <span className="text-lg font-bold">gtAsset Management</span>
+          <img 
+            src="/lovable-uploads/ef965f01-bf50-42a9-b0f3-fbb537bd67f4.png" 
+            alt="GAMATECHNO Logo" 
+            className="h-8 w-auto"
+          />
+          <span className="text-lg font-bold">GAMATECHNO</span>
         </Link>
       </SidebarHeader>
 
@@ -190,11 +194,11 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         </SidebarGroup>
 
         {/* Management */}
-        {user?.role === 'admin' && (
-          <SidebarGroup>
-            <SidebarGroupLabel>Management</SidebarGroupLabel>
-            <SidebarGroupContent>
-              <SidebarMenu>
+        <SidebarGroup>
+          <SidebarGroupLabel>Management</SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {user?.role === 'admin' && (
                 <SidebarMenuItem>
                   <SidebarMenuButton asChild isActive={isActive('/users')}>
                     <Link to="/users">
@@ -203,10 +207,10 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
-              </SidebarMenu>
-            </SidebarGroupContent>
-          </SidebarGroup>
-        )}
+              )}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
       </SidebarContent>
 
       <SidebarFooter className="p-4">
