@@ -4,8 +4,8 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { NavigationMenu, NavigationMenuContent, NavigationMenuItem, NavigationMenuLink, NavigationMenuList, NavigationMenuTrigger } from '@/components/ui/navigation-menu';
-import { Shield, LayoutDashboard, Package, Users, Building2, Truck, FileText, Settings, LogOut, User, PlusCircle, AlertTriangle, ClipboardList, FileCheck, TrendingDown, Wrench, Database } from 'lucide-react';
+import { Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarGroupLabel, SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarProvider, SidebarTrigger, SidebarHeader, SidebarFooter } from '@/components/ui/sidebar';
+import { Shield, LayoutDashboard, Package, Users, Building2, Truck, FileText, Settings, LogOut, User, AlertTriangle, ClipboardList, FileCheck, TrendingDown, Wrench, Database, ArrowLeftRight, FileX, Gavel } from 'lucide-react';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -23,172 +23,243 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
 
   const isActive = (path: string) => location.pathname === path;
 
-  return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <header className="bg-white shadow-sm border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between h-16">
-            <div className="flex items-center">
-              <Link to="/" className="flex items-center space-x-2">
-                <Shield className="h-8 w-8 text-primary" />
-                <span className="text-xl font-bold">gtAsset Management System</span>
-              </Link>
-            </div>
+  const AppSidebar = () => (
+    <Sidebar>
+      <SidebarHeader className="p-4">
+        <Link to="/" className="flex items-center space-x-2">
+          <Shield className="h-8 w-8 text-primary" />
+          <span className="text-lg font-bold">gtAsset Management</span>
+        </Link>
+      </SidebarHeader>
 
-            {/* Navigation */}
-            <NavigationMenu className="hidden md:flex">
-              <NavigationMenuList>
-                <NavigationMenuItem>
+      <SidebarContent>
+        {/* Dashboard */}
+        <SidebarGroup>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild isActive={isActive('/')}>
                   <Link to="/">
-                    <NavigationMenuLink className={`px-3 py-2 rounded-md text-sm font-medium ${isActive('/') ? 'bg-primary text-primary-foreground' : 'text-gray-700 hover:text-gray-900'}`}>
-                      <LayoutDashboard className="h-4 w-4 mr-2 inline" />
-                      Dashboard
-                    </NavigationMenuLink>
+                    <LayoutDashboard className="h-4 w-4" />
+                    <span>Dashboard</span>
                   </Link>
-                </NavigationMenuItem>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
 
-                <NavigationMenuItem>
-                  <NavigationMenuTrigger className="text-gray-700 hover:text-gray-900">
-                    <Package className="h-4 w-4 mr-2" />
-                    Assets
-                  </NavigationMenuTrigger>
-                  <NavigationMenuContent>
-                    <div className="w-64 p-2">
-                      <Link to="/asset-request">
-                        <NavigationMenuLink className="block px-3 py-2 rounded-md text-sm hover:bg-gray-100">
-                          <ClipboardList className="h-4 w-4 mr-2 inline" />
-                          Request Asset
-                        </NavigationMenuLink>
-                      </Link>
-                      <Link to="/loss-report">
-                        <NavigationMenuLink className="block px-3 py-2 rounded-md text-sm hover:bg-gray-100">
-                          <AlertTriangle className="h-4 w-4 mr-2 inline" />
-                          Report Loss
-                        </NavigationMenuLink>
-                      </Link>
-                      <Link to="/asset-depreciation">
-                        <NavigationMenuLink className="block px-3 py-2 rounded-md text-sm hover:bg-gray-100">
-                          <TrendingDown className="h-4 w-4 mr-2 inline" />
-                          Asset Depreciation
-                        </NavigationMenuLink>
-                      </Link>
-                    </div>
-                  </NavigationMenuContent>
-                </NavigationMenuItem>
+        {/* Asset Transaction */}
+        <SidebarGroup>
+          <SidebarGroupLabel>Asset Transaction</SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild isActive={isActive('/asset-request')}>
+                  <Link to="/asset-request">
+                    <ClipboardList className="h-4 w-4" />
+                    <span>Request Asset</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild isActive={isActive('/asset-transfer')}>
+                  <Link to="/asset-transfer">
+                    <ArrowLeftRight className="h-4 w-4" />
+                    <span>Transfer/Mutation</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild isActive={isActive('/asset-writeoff')}>
+                  <Link to="/asset-writeoff">
+                    <FileX className="h-4 w-4" />
+                    <span>Write Off</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild isActive={isActive('/asset-auction')}>
+                  <Link to="/asset-auction">
+                    <Gavel className="h-4 w-4" />
+                    <span>Auction</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild isActive={isActive('/loss-report')}>
+                  <Link to="/loss-report">
+                    <AlertTriangle className="h-4 w-4" />
+                    <span>Report Loss</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
 
-                <NavigationMenuItem>
+        {/* Maintenance */}
+        <SidebarGroup>
+          <SidebarGroupLabel>Maintenance</SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild isActive={isActive('/preventive-maintenance')}>
                   <Link to="/preventive-maintenance">
-                    <NavigationMenuLink className={`px-3 py-2 rounded-md text-sm font-medium ${isActive('/preventive-maintenance') ? 'bg-primary text-primary-foreground' : 'text-gray-700 hover:text-gray-900'}`}>
-                      <Wrench className="h-4 w-4 mr-2 inline" />
-                      Preventive Maintenance
-                    </NavigationMenuLink>
+                    <Wrench className="h-4 w-4" />
+                    <span>Preventive Maintenance</span>
                   </Link>
-                </NavigationMenuItem>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild isActive={isActive('/corrective-maintenance')}>
+                  <Link to="/corrective-maintenance">
+                    <AlertTriangle className="h-4 w-4" />
+                    <span>Corrective Maintenance</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
 
-                <NavigationMenuItem>
-                  <NavigationMenuTrigger className="text-gray-700 hover:text-gray-900">
-                    <Database className="h-4 w-4 mr-2" />
-                    Master Data
-                  </NavigationMenuTrigger>
-                  <NavigationMenuContent>
-                    <div className="w-64 p-2">
-                      <Link to="/assets">
-                        <NavigationMenuLink className="block px-3 py-2 rounded-md text-sm hover:bg-gray-100">
-                          <Package className="h-4 w-4 mr-2 inline" />
-                          View All Assets
-                        </NavigationMenuLink>
-                      </Link>
-                      <Link to="/vendors">
-                        <NavigationMenuLink className="block px-3 py-2 rounded-md text-sm hover:bg-gray-100">
-                          <Truck className="h-4 w-4 mr-2 inline" />
-                          Vendors
-                        </NavigationMenuLink>
-                      </Link>
-                      <Link to="/buildings">
-                        <NavigationMenuLink className="block px-3 py-2 rounded-md text-sm hover:bg-gray-100">
-                          <Building2 className="h-4 w-4 mr-2 inline" />
-                          Buildings
-                        </NavigationMenuLink>
-                      </Link>
-                    </div>
-                  </NavigationMenuContent>
-                </NavigationMenuItem>
+        {/* Master Data */}
+        <SidebarGroup>
+          <SidebarGroupLabel>Master Data</SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild isActive={isActive('/assets')}>
+                  <Link to="/assets">
+                    <Package className="h-4 w-4" />
+                    <span>View All Assets</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild isActive={isActive('/vendors')}>
+                  <Link to="/vendors">
+                    <Truck className="h-4 w-4" />
+                    <span>Vendors</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild isActive={isActive('/buildings')}>
+                  <Link to="/buildings">
+                    <Building2 className="h-4 w-4" />
+                    <span>Buildings</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild isActive={isActive('/insurance')}>
+                  <Link to="/insurance">
+                    <FileCheck className="h-4 w-4" />
+                    <span>Insurance</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
 
-                <NavigationMenuItem>
-                  <NavigationMenuTrigger className="text-gray-700 hover:text-gray-900">
-                    <Settings className="h-4 w-4 mr-2" />
-                    Management
-                  </NavigationMenuTrigger>
-                  <NavigationMenuContent>
-                    <div className="w-64 p-2">
-                      {user?.role === 'admin' && (
-                        <Link to="/users">
-                          <NavigationMenuLink className="block px-3 py-2 rounded-md text-sm hover:bg-gray-100">
-                            <Users className="h-4 w-4 mr-2 inline" />
-                            User Management
-                          </NavigationMenuLink>
-                        </Link>
-                      )}
-                      <Link to="/insurance">
-                        <NavigationMenuLink className="block px-3 py-2 rounded-md text-sm hover:bg-gray-100">
-                          <FileCheck className="h-4 w-4 mr-2 inline" />
-                          Insurance
-                        </NavigationMenuLink>
-                      </Link>
-                    </div>
-                  </NavigationMenuContent>
-                </NavigationMenuItem>
-
-                <NavigationMenuItem>
+        {/* Analysis */}
+        <SidebarGroup>
+          <SidebarGroupLabel>Analysis</SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild isActive={isActive('/asset-depreciation')}>
+                  <Link to="/asset-depreciation">
+                    <TrendingDown className="h-4 w-4" />
+                    <span>Asset Depreciation</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild isActive={isActive('/reports')}>
                   <Link to="/reports">
-                    <NavigationMenuLink className={`px-3 py-2 rounded-md text-sm font-medium ${isActive('/reports') ? 'bg-primary text-primary-foreground' : 'text-gray-700 hover:text-gray-900'}`}>
-                      <FileText className="h-4 w-4 mr-2 inline" />
-                      Reports
-                    </NavigationMenuLink>
+                    <FileText className="h-4 w-4" />
+                    <span>Reports</span>
                   </Link>
-                </NavigationMenuItem>
-              </NavigationMenuList>
-            </NavigationMenu>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
 
-            {/* User Menu */}
-            <div className="flex items-center space-x-4">
-              <span className="text-sm text-gray-600">
-                Welcome, {user?.fullName}
-              </span>
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="outline" size="sm">
-                    <User className="h-4 w-4 mr-2" />
-                    {user?.role}
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-56">
-                  <DropdownMenuLabel>My Account</DropdownMenuLabel>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem asChild>
-                    <Link to="/profile">
-                      <User className="h-4 w-4 mr-2" />
-                      Profile
+        {/* Management */}
+        {user?.role === 'admin' && (
+          <SidebarGroup>
+            <SidebarGroupLabel>Management</SidebarGroupLabel>
+            <SidebarGroupContent>
+              <SidebarMenu>
+                <SidebarMenuItem>
+                  <SidebarMenuButton asChild isActive={isActive('/users')}>
+                    <Link to="/users">
+                      <Users className="h-4 w-4" />
+                      <span>User Management</span>
                     </Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={handleLogout}>
-                    <LogOut className="h-4 w-4 mr-2" />
-                    Logout
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </div>
-          </div>
-        </div>
-      </header>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+        )}
+      </SidebarContent>
 
-      {/* Main Content */}
-      <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-        {children}
-      </main>
-    </div>
+      <SidebarFooter className="p-4">
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="outline" className="w-full justify-start">
+              <User className="h-4 w-4 mr-2" />
+              {user?.fullName}
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-56">
+            <DropdownMenuLabel>My Account</DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem asChild>
+              <Link to="/profile">
+                <User className="h-4 w-4 mr-2" />
+                Profile
+              </Link>
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem onClick={handleLogout}>
+              <LogOut className="h-4 w-4 mr-2" />
+              Logout
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </SidebarFooter>
+    </Sidebar>
+  );
+
+  return (
+    <SidebarProvider>
+      <div className="flex min-h-screen w-full">
+        <AppSidebar />
+        
+        {/* Header */}
+        <div className="flex-1">
+          <header className="bg-white shadow-sm border-b h-16 flex items-center px-4">
+            <SidebarTrigger />
+            <div className="ml-4">
+              <span className="text-sm text-gray-600">
+                Welcome, {user?.fullName} ({user?.role})
+              </span>
+            </div>
+          </header>
+
+          {/* Main Content */}
+          <main className="p-6">
+            {children}
+          </main>
+        </div>
+      </div>
+    </SidebarProvider>
   );
 };
 

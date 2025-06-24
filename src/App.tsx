@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -22,6 +21,10 @@ import AssetDepreciation from "./pages/AssetDepreciation";
 import DepreciationDetail from "./pages/DepreciationDetail";
 import PreventiveMaintenance from "./pages/PreventiveMaintenance";
 import AssetMaintenance from "./pages/AssetMaintenance";
+import CorrectiveMaintenance from "./pages/CorrectiveMaintenance";
+import AssetTransfer from "./pages/AssetTransfer";
+import AssetWriteOff from "./pages/AssetWriteOff";
+import AssetAuction from "./pages/AssetAuction";
 import ProtectedRoute from "./components/ProtectedRoute";
 import NotFound from "./pages/NotFound";
 
@@ -67,9 +70,29 @@ const App = () => (
                 <PreventiveMaintenance />
               </ProtectedRoute>
             } />
+            <Route path="/corrective-maintenance" element={
+              <ProtectedRoute>
+                <CorrectiveMaintenance />
+              </ProtectedRoute>
+            } />
             <Route path="/asset-maintenance/:assetCode" element={
               <ProtectedRoute>
                 <AssetMaintenance />
+              </ProtectedRoute>
+            } />
+            <Route path="/asset-transfer" element={
+              <ProtectedRoute>
+                <AssetTransfer />
+              </ProtectedRoute>
+            } />
+            <Route path="/asset-writeoff" element={
+              <ProtectedRoute>
+                <AssetWriteOff />
+              </ProtectedRoute>
+            } />
+            <Route path="/asset-auction" element={
+              <ProtectedRoute>
+                <AssetAuction />
               </ProtectedRoute>
             } />
             <Route path="/users" element={
