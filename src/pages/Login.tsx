@@ -41,9 +41,7 @@ const Login = () => {
             <img src="/lovable-uploads/ef965f01-bf50-42a9-b0f3-fbb537bd67f4.png" alt="GAMATECHNO Logo" className="h-16 w-auto" />
           </div>
           <CardTitle className="text-2xl font-bold text-primary">Eoviz Asset</CardTitle>
-          <CardDescription className="text-primary/80">
-            Enhancing Your Business - Asset Management System
-          </CardDescription>
+          <CardDescription className="text-primary/80">Asset Management System</CardDescription>
         </CardHeader>
         <CardContent className="pt-6">
           <form onSubmit={handleSubmit} className="space-y-4">
