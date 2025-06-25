@@ -1,408 +1,382 @@
 
 import React, { useState } from 'react';
 import Layout from '../components/Layout';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Gavel, Package, Calendar, DollarSign, AlertTriangle, Clock } from 'lucide-react';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Search, Plus, Gavel, Calendar, User, CheckCircle, Clock, XCircle } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 const AssetAuction = () => {
   const { toast } = useToast();
+  const [searchTerm, setSearchTerm] = useState('');
+  const [showAuctionForm, setShowAuctionForm] = useState(false);
   const [formData, setFormData] = useState({
-    assetCode: '',
-    auctionDate: '',
-    auctionEndDate: '',
-    startingBid: '',
+    assetId: '',
+    startingPrice: '',
     reservePrice: '',
-    auctionType: '',
-    auctionReason: '',
+    auctionStartDate: '',
+    auctionEndDate: '',
+    approver1: '',
+    approver2: '',
+    approver3: '',
     description: '',
-    termsAndConditions: '',
-    approvalLevel: ''
+    terms: ''
   });
 
-  // Mock data
-  const assets = [
-    { 
-      code: 'VEH-001', 
-      name: 'Company Vehicle', 
-      currentValue: 25000, 
-      acquisitionDate: '2017-06-10',
-      condition: 'Good',
-      category: 'Vehicle'
+  // Mock auction data
+  const auctionHistory = [
+    {
+      id: 'AUC001',
+      assetId: 'AST020',
+      assetName: 'Kendaraan Operasional Innova 2018',
+      startingPrice: 'Rp 180.000.000',
+      reservePrice: 'Rp 200.000.000',
+      currentBid: 'Rp 215.000.000',
+      bidderCount: 8,
+      auctionStart: '2024-07-01',
+      auctionEnd: '2024-07-15',
+      requestedBy: 'Andi Pratama',
+      approver1: 'Agus Prasetyo',
+      approver1Status: 'Disetujui',
+      approver2: 'Sri Wahyuni',
+      approver2Status: 'Disetujui',
+      approver3: 'Direktur Keuangan',
+      approver3Status: 'Disetujui',
+      status: 'Sedang Berlangsung',
+      finalStatus: 'Aktif'
     },
-    { 
-      code: 'MACH-001', 
-      name: 'Industrial Machine', 
-      currentValue: 45000, 
-      acquisitionDate: '2015-03-15',
-      condition: 'Fair',
-      category: 'Machinery'
+    {
+      id: 'AUC002',
+      assetId: 'AST025',
+      assetName: 'Mesin Produksi Lama Model A',
+      startingPrice: 'Rp 50.000.000',
+      reservePrice: 'Rp 75.000.000',
+      currentBid: 'Rp 95.000.000',
+      bidderCount: 12,
+      auctionStart: '2024-06-15',
+      auctionEnd: '2024-06-30',
+      requestedBy: 'Siti Nurhaliza',
+      approver1: 'Dewi Sartika',
+      approver1Status: 'Disetujui',
+      approver2: 'Joko Santoso',
+      approver2Status: 'Disetujui',
+      approver3: 'Direktur Operasional',
+      approver3Status: 'Disetujui',
+      status: 'Terjual',
+      finalStatus: 'Selesai'
     },
-    { 
-      code: 'FUR-001', 
-      name: 'Office Furniture Set', 
-      currentValue: 1200, 
-      acquisitionDate: '2016-09-05',
-      condition: 'Good',
-      category: 'Furniture'
-    },
-    { 
-      code: 'COMP-001', 
-      name: 'Computer Equipment', 
-      currentValue: 800, 
-      acquisitionDate: '2019-01-20',
-      condition: 'Fair',
-      category: 'IT Equipment'
+    {
+      id: 'AUC003',
+      assetId: 'AST030',
+      assetName: 'Furniture Set Kantor Lama',
+      startingPrice: 'Rp 15.000.000',
+      reservePrice: 'Rp 25.000.000',
+      currentBid: 'Rp 18.000.000',
+      bidderCount: 3,
+      auctionStart: '2024-06-20',
+      auctionEnd: '2024-07-05',
+      requestedBy: 'Budi Santoso',
+      approver1: 'Agus Prasetyo',
+      approver1Status: 'Disetujui',
+      approver2: 'Sri Wahyuni',
+      approver2Status: 'Menunggu',
+      approver3: 'Direktur Keuangan',
+      approver3Status: 'Belum Review',
+      status: 'Menunggu Persetujuan',
+      finalStatus: 'Pending'
     }
   ];
-
-  const auctionTypes = [
-    'Public Auction',
-    'Sealed Bid',
-    'Online Auction',
-    'Private Sale',
-    'Tender Process'
-  ];
-
-  const auctionReasons = [
-    'Asset Replacement',
-    'End of Useful Life',
-    'Surplus Equipment',
-    'Space Optimization',
-    'Technology Upgrade',
-    'Cost Reduction',
-    'Regulatory Compliance',
-    'Other'
-  ];
-
-  const approvalLevels = [
-    { value: 'manager', label: 'Manager Approval', maxValue: 10000 },
-    { value: 'director', label: 'Director Approval', maxValue: 50000 },
-    { value: 'board', label: 'Board Approval', maxValue: Infinity }
-  ];
-
-  const selectedAsset = assets.find(asset => asset.code === formData.assetCode);
-
-  const getRequiredApprovalLevel = (value: number) => {
-    return approvalLevels.find(level => value <= level.maxValue) || approvalLevels[approvalLevels.length - 1];
-  };
-
-  const handleAssetSelect = (assetCode: string) => {
-    const asset = assets.find(a => a.code === assetCode);
-    if (asset) {
-      const suggestedStartingBid = Math.floor(asset.currentValue * 0.6); // 60% of current value
-      const suggestedReservePrice = Math.floor(asset.currentValue * 0.4); // 40% of current value
-      const requiredApproval = getRequiredApprovalLevel(asset.currentValue);
-      
-      setFormData({
-        ...formData,
-        assetCode,
-        startingBid: suggestedStartingBid.toString(),
-        reservePrice: suggestedReservePrice.toString(),
-        approvalLevel: requiredApproval.value
-      });
-    }
-  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!formData.assetCode || !formData.auctionDate || !formData.auctionType || !formData.auctionReason) {
-      toast({
-        title: "Error",
-        description: "Please fill in all required fields",
-        variant: "destructive"
-      });
-      return;
-    }
-
-    if (new Date(formData.auctionDate) <= new Date()) {
-      toast({
-        title: "Error",
-        description: "Auction start date must be in the future",
-        variant: "destructive"
-      });
-      return;
-    }
-
-    if (formData.auctionEndDate && new Date(formData.auctionEndDate) <= new Date(formData.auctionDate)) {
-      toast({
-        title: "Error",
-        description: "Auction end date must be after start date",
-        variant: "destructive"
-      });
-      return;
-    }
-
     toast({
-      title: "Success",
-      description: "Asset auction request submitted successfully. Awaiting approval."
+      title: "Berhasil",
+      description: "Permintaan lelang aset berhasil diajukan"
     });
 
     // Reset form
     setFormData({
-      assetCode: '',
-      auctionDate: '',
-      auctionEndDate: '',
-      startingBid: '',
+      assetId: '',
+      startingPrice: '',
       reservePrice: '',
-      auctionType: '',
-      auctionReason: '',
+      auctionStartDate: '',
+      auctionEndDate: '',
+      approver1: '',
+      approver2: '',
+      approver3: '',
       description: '',
-      termsAndConditions: '',
-      approvalLevel: ''
+      terms: ''
     });
+    setShowAuctionForm(false);
   };
 
-  const getConditionColor = (condition: string) => {
-    switch (condition) {
-      case 'Excellent':
-        return 'default';
-      case 'Good':
-        return 'secondary';
-      case 'Fair':
-        return 'outline';
-      case 'Poor':
-        return 'destructive';
+  const getStatusBadge = (status: string) => {
+    const variants: Record<string, "default" | "secondary" | "destructive" | "outline"> = {
+      'Aktif': 'default',
+      'Selesai': 'secondary',
+      'Pending': 'outline',
+      'Dibatalkan': 'destructive'
+    };
+    return <Badge variant={variants[status] || 'default'}>{status}</Badge>;
+  };
+
+  const getApprovalIcon = (status: string) => {
+    switch (status) {
+      case 'Disetujui':
+        return <CheckCircle className="h-4 w-4 text-green-600" />;
+      case 'Ditolak':
+        return <XCircle className="h-4 w-4 text-red-600" />;
+      case 'Menunggu':
+        return <Clock className="h-4 w-4 text-yellow-600" />;
       default:
-        return 'default';
+        return <Clock className="h-4 w-4 text-gray-400" />;
     }
   };
+
+  const filteredAuctions = auctionHistory.filter(auction =>
+    auction.assetName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    auction.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    auction.requestedBy.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   return (
     <Layout>
       <div className="space-y-6">
-        <div>
-          <h1 className="text-3xl font-bold">Asset Auction</h1>
-          <p className="text-gray-600 mt-2">Schedule assets for auction or sale</p>
+        <div className="flex justify-between items-center">
+          <h1 className="text-3xl font-bold">Lelang Aset</h1>
+          <Button onClick={() => setShowAuctionForm(!showAuctionForm)}>
+            <Plus className="h-4 w-4 mr-2" />
+            {showAuctionForm ? 'Batal' : 'Ajukan Lelang'}
+          </Button>
         </div>
 
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Gavel className="h-5 w-5" />
-              Schedule Asset Auction
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-6">
-              {/* Asset Selection */}
-              <div className="space-y-4">
-                <Label className="text-lg font-semibold">Asset Information</Label>
+        {/* Auction Form */}
+        {showAuctionForm && (
+          <Card>
+            <CardHeader>
+              <CardTitle>Form Lelang Aset</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label htmlFor="asset">Select Asset *</Label>
-                    <Select value={formData.assetCode} onValueChange={handleAssetSelect}>
+                    <Label htmlFor="assetId">ID Aset *</Label>
+                    <Select value={formData.assetId} onValueChange={(value) => setFormData({...formData, assetId: value})}>
                       <SelectTrigger>
-                        <SelectValue placeholder="Choose an asset for auction" />
+                        <SelectValue placeholder="Pilih aset" />
                       </SelectTrigger>
                       <SelectContent>
-                        {assets.map((asset) => (
-                          <SelectItem key={asset.code} value={asset.code}>
-                            {asset.name} ({asset.code}) - ${asset.currentValue.toLocaleString()}
-                          </SelectItem>
-                        ))}
+                        <SelectItem value="AST001">AST001 - Laptop Dell OptiPlex 3090</SelectItem>
+                        <SelectItem value="AST002">AST002 - Kursi Kantor Ergonomis</SelectItem>
+                        <SelectItem value="AST003">AST003 - Printer HP LaserJet Pro</SelectItem>
+                        <SelectItem value="AST004">AST004 - Meja Rapat</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="auctionReason">Auction Reason *</Label>
-                    <Select value={formData.auctionReason} onValueChange={(value) => setFormData({...formData, auctionReason: value})}>
+                    <Label htmlFor="startingPrice">Harga Awal *</Label>
+                    <Input
+                      id="startingPrice"
+                      type="number"
+                      value={formData.startingPrice}
+                      onChange={(e) => setFormData({...formData, startingPrice: e.target.value})}
+                      required
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="reservePrice">Harga Minimum *</Label>
+                    <Input
+                      id="reservePrice"
+                      type="number"
+                      value={formData.reservePrice}
+                      onChange={(e) => setFormData({...formData, reservePrice: e.target.value})}
+                      required
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="auctionStartDate">Tanggal Mulai Lelang *</Label>
+                    <Input
+                      id="auctionStartDate"
+                      type="date"
+                      value={formData.auctionStartDate}
+                      onChange={(e) => setFormData({...formData, auctionStartDate: e.target.value})}
+                      required
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="auctionEndDate">Tanggal Berakhir Lelang *</Label>
+                    <Input
+                      id="auctionEndDate"
+                      type="date"
+                      value={formData.auctionEndDate}
+                      onChange={(e) => setFormData({...formData, auctionEndDate: e.target.value})}
+                      required
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="approver1">Penyetuju Tingkat 1 *</Label>
+                    <Select value={formData.approver1} onValueChange={(value) => setFormData({...formData, approver1: value})}>
                       <SelectTrigger>
-                        <SelectValue placeholder="Select reason for auction" />
+                        <SelectValue placeholder="Pilih penyetuju tingkat 1" />
                       </SelectTrigger>
                       <SelectContent>
-                        {auctionReasons.map((reason) => (
-                          <SelectItem key={reason} value={reason}>
-                            {reason}
-                          </SelectItem>
-                        ))}
+                        <SelectItem value="Agus Prasetyo">Agus Prasetyo - Supervisor</SelectItem>
+                        <SelectItem value="Andi Pratama">Andi Pratama - Supervisor</SelectItem>
+                        <SelectItem value="Dewi Sartika">Dewi Sartika - Koordinator</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="approver2">Penyetuju Tingkat 2 *</Label>
+                    <Select value={formData.approver2} onValueChange={(value) => setFormData({...formData, approver2: value})}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Pilih penyetuju tingkat 2" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Sri Wahyuni">Sri Wahyuni - Manajer</SelectItem>
+                        <SelectItem value="Siti Nurhaliza">Siti Nurhaliza - Manajer</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="approver3">Penyetuju Tingkat 3 *</Label>
+                    <Select value={formData.approver3} onValueChange={(value) => setFormData({...formData, approver3: value})}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Pilih penyetuju tingkat 3" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Direktur Operasional">Direktur Operasional</SelectItem>
+                        <SelectItem value="Direktur Keuangan">Direktur Keuangan</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
                 </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="description">Deskripsi Aset *</Label>
+                  <Textarea
+                    id="description"
+                    placeholder="Masukkan deskripsi lengkap aset yang akan dilelang..."
+                    value={formData.description}
+                    onChange={(e) => setFormData({...formData, description: e.target.value})}
+                    required
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="terms">Syarat dan Ketentuan</Label>
+                  <Textarea
+                    id="terms"
+                    placeholder="Masukkan syarat dan ketentuan lelang..."
+                    value={formData.terms}
+                    onChange={(e) => setFormData({...formData, terms: e.target.value})}
+                  />
+                </div>
+
+                <div className="flex gap-2">
+                  <Button type="submit">Ajukan Lelang</Button>
+                  <Button type="button" variant="outline" onClick={() => setShowAuctionForm(false)}>
+                    Batal
+                  </Button>
+                </div>
+              </form>
+            </CardContent>
+          </Card>
+        )}
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Riwayat Lelang Aset</CardTitle>
+            <div className="flex space-x-2">
+              <div className="relative flex-1">
+                <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+                <Input
+                  placeholder="Cari lelang aset..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="pl-8"
+                />
               </div>
-
-              {selectedAsset && (
-                <>
-                  {/* Asset Details */}
-                  <div className="space-y-4 p-4 bg-gray-50 rounded-lg">
-                    <Label className="text-lg font-semibold">Asset Details</Label>
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                      <div className="space-y-2">
-                        <Label>Current Book Value</Label>
-                        <div className="flex items-center gap-2 p-2 bg-white rounded border">
-                          <DollarSign className="h-4 w-4 text-gray-400" />
-                          <span className="font-semibold">${selectedAsset.currentValue.toLocaleString()}</span>
+            </div>
+          </CardHeader>
+          <CardContent>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>ID Lelang</TableHead>
+                  <TableHead>Aset</TableHead>
+                  <TableHead>Harga Awal</TableHead>
+                  <TableHead>Harga Minimum</TableHead>
+                  <TableHead>Bid Tertinggi</TableHead>
+                  <TableHead>Jumlah Penawar</TableHead>
+                  <TableHead>Periode Lelang</TableHead>
+                  <TableHead>Persetujuan</TableHead>
+                  <TableHead>Status</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {filteredAuctions.map((auction) => (
+                  <TableRow key={auction.id}>
+                    <TableCell className="font-medium">{auction.id}</TableCell>
+                    <TableCell>
+                      <div>
+                        <p className="font-medium">{auction.assetName}</p>
+                        <p className="text-sm text-gray-500">{auction.assetId}</p>
+                      </div>
+                    </TableCell>
+                    <TableCell>{auction.startingPrice}</TableCell>
+                    <TableCell>{auction.reservePrice}</TableCell>
+                    <TableCell className="font-medium text-green-600">{auction.currentBid}</TableCell>
+                    <TableCell>
+                      <div className="flex items-center space-x-1">
+                        <Gavel className="h-4 w-4" />
+                        <span>{auction.bidderCount} penawar</span>
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <div className="space-y-1">
+                        <div className="flex items-center space-x-1">
+                          <Calendar className="h-4 w-4" />
+                          <span className="text-sm">{auction.auctionStart}</span>
+                        </div>
+                        <div className="text-sm text-gray-500">s/d {auction.auctionEnd}</div>
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <div className="space-y-1">
+                        <div className="flex items-center space-x-2">
+                          {getApprovalIcon(auction.approver1Status)}
+                          <span className="text-sm">{auction.approver1}</span>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          {getApprovalIcon(auction.approver2Status)}
+                          <span className="text-sm">{auction.approver2}</span>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          {getApprovalIcon(auction.approver3Status)}
+                          <span className="text-sm">{auction.approver3}</span>
                         </div>
                       </div>
-
-                      <div className="space-y-2">
-                        <Label>Category</Label>
-                        <div className="flex items-center gap-2 p-2 bg-white rounded border">
-                          <Package className="h-4 w-4 text-gray-400" />
-                          <span>{selectedAsset.category}</span>
-                        </div>
-                      </div>
-
-                      <div className="space-y-2">
-                        <Label>Condition</Label>
-                        <div className="p-2 bg-white rounded border">
-                          <Badge variant={getConditionColor(selectedAsset.condition)}>
-                            {selectedAsset.condition}
-                          </Badge>
-                        </div>
-                      </div>
-
-                      <div className="space-y-2">
-                        <Label>Acquisition Date</Label>
-                        <div className="flex items-center gap-2 p-2 bg-white rounded border">
-                          <Calendar className="h-4 w-4 text-gray-400" />
-                          <span className="text-sm">{new Date(selectedAsset.acquisitionDate).toLocaleDateString()}</span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Auction Setup */}
-                  <div className="space-y-4">
-                    <Label className="text-lg font-semibold">Auction Setup</Label>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div className="space-y-2">
-                        <Label htmlFor="auctionType">Auction Type *</Label>
-                        <Select value={formData.auctionType} onValueChange={(value) => setFormData({...formData, auctionType: value})}>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select auction type" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {auctionTypes.map((type) => (
-                              <SelectItem key={type} value={type}>
-                                {type}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </div>
-
-                      <div className="space-y-2">
-                        <Label htmlFor="auctionDate">Auction Start Date *</Label>
-                        <Input
-                          id="auctionDate"
-                          type="datetime-local"
-                          value={formData.auctionDate}
-                          onChange={(e) => setFormData({...formData, auctionDate: e.target.value})}
-                          required
-                        />
-                      </div>
-
-                      <div className="space-y-2">
-                        <Label htmlFor="auctionEndDate">Auction End Date</Label>
-                        <Input
-                          id="auctionEndDate"
-                          type="datetime-local"
-                          value={formData.auctionEndDate}
-                          onChange={(e) => setFormData({...formData, auctionEndDate: e.target.value})}
-                        />
-                      </div>
-
-                      <div className="space-y-2">
-                        <Label htmlFor="startingBid">Starting Bid Amount *</Label>
-                        <Input
-                          id="startingBid"
-                          type="number"
-                          value={formData.startingBid}
-                          onChange={(e) => setFormData({...formData, startingBid: e.target.value})}
-                          required
-                          min="0"
-                        />
-                      </div>
-
-                      <div className="space-y-2">
-                        <Label htmlFor="reservePrice">Reserve Price</Label>
-                        <Input
-                          id="reservePrice"
-                          type="number"
-                          value={formData.reservePrice}
-                          onChange={(e) => setFormData({...formData, reservePrice: e.target.value})}
-                          min="0"
-                        />
-                        <p className="text-xs text-gray-500">
-                          Minimum acceptable bid amount
-                        </p>
-                      </div>
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label htmlFor="description">Asset Description for Auction</Label>
-                      <Textarea
-                        id="description"
-                        placeholder="Provide detailed description for potential bidders..."
-                        value={formData.description}
-                        onChange={(e) => setFormData({...formData, description: e.target.value})}
-                        rows={3}
-                      />
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label htmlFor="termsAndConditions">Terms and Conditions</Label>
-                      <Textarea
-                        id="termsAndConditions"
-                        placeholder="Specify auction terms, payment conditions, pickup requirements, etc..."
-                        value={formData.termsAndConditions}
-                        onChange={(e) => setFormData({...formData, termsAndConditions: e.target.value})}
-                        rows={4}
-                      />
-                    </div>
-                  </div>
-
-                  {/* Approval Information */}
-                  {formData.startingBid && (
-                    <div className="space-y-4 p-4 border-l-4 border-blue-500 bg-blue-50 rounded">
-                      <div className="flex items-center gap-2">
-                        <AlertTriangle className="h-5 w-5 text-blue-500" />
-                        <Label className="text-lg font-semibold text-blue-700">Approval Required</Label>
-                      </div>
-                      <div className="space-y-2">
-                        <Label>Required Approval Level</Label>
-                        <div className="p-2 bg-white rounded border">
-                          <Badge variant="outline" className="text-blue-700 border-blue-500">
-                            {getRequiredApprovalLevel(selectedAsset.currentValue).label}
-                          </Badge>
-                        </div>
-                        <p className="text-sm text-blue-600">
-                          This auction request will be routed to the appropriate approver based on the asset value.
-                        </p>
-                      </div>
-                    </div>
-                  )}
-
-                  <div className="flex gap-2 pt-4">
-                    <Button type="submit">Submit Auction Request</Button>
-                    <Button type="button" variant="outline" onClick={() => setFormData({
-                      assetCode: '',
-                      auctionDate: '',
-                      auctionEndDate: '',
-                      startingBid: '',
-                      reservePrice: '',
-                      auctionType: '',
-                      auctionReason: '',
-                      description: '',
-                      termsAndConditions: '',
-                      approvalLevel: ''
-                    })}>
-                      Reset Form
-                    </Button>
-                  </div>
-                </>
-              )}
-            </form>
+                    </TableCell>
+                    <TableCell>{getStatusBadge(auction.finalStatus)}</TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
           </CardContent>
         </Card>
       </div>

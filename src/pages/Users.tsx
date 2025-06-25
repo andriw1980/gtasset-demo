@@ -16,46 +16,57 @@ const Users = () => {
     {
       id: '1',
       username: 'admin',
-      fullName: 'John Administrator',
-      email: 'admin@company.com',
+      fullName: 'Budi Santoso',
+      email: 'admin@gamatechno.co.id',
       role: 'admin',
-      position: 'IT Manager',
-      unit: 'IT Department',
-      workArea: 'Head Office',
-      status: 'Active'
+      position: 'Manajer IT',
+      unit: 'Departemen IT',
+      workArea: 'Kantor Pusat',
+      status: 'Aktif'
     },
     {
       id: '2',
       username: 'staff',
-      fullName: 'Jane Staff',
-      email: 'staff@company.com',
+      fullName: 'Sri Wahyuni',
+      email: 'staff@gamatechno.co.id',
       role: 'staff',
-      position: 'Asset Coordinator',
-      unit: 'Operations',
-      workArea: 'Building A',
-      status: 'Active'
+      position: 'Koordinator Aset',
+      unit: 'Operasional',
+      workArea: 'Gedung A',
+      status: 'Aktif'
     },
     {
       id: '3',
       username: 'auditor',
-      fullName: 'Mike Auditor',
-      email: 'auditor@company.com',
+      fullName: 'Agus Prasetyo',
+      email: 'auditor@gamatechno.co.id',
       role: 'auditor',
-      position: 'Internal Auditor',
-      unit: 'Audit Department',
-      workArea: 'Head Office',
-      status: 'Active'
+      position: 'Auditor Internal',
+      unit: 'Departemen Audit',
+      workArea: 'Kantor Pusat',
+      status: 'Aktif'
     },
     {
       id: '4',
       username: 'staff2',
-      fullName: 'Sarah Wilson',
-      email: 'sarah@company.com',
+      fullName: 'Dewi Sartika',
+      email: 'dewi@gamatechno.co.id',
       role: 'staff',
-      position: 'Operations Manager',
-      unit: 'Operations',
-      workArea: 'Building B',
-      status: 'Inactive'
+      position: 'Manajer Operasional',
+      unit: 'Operasional',
+      workArea: 'Gedung B',
+      status: 'Tidak Aktif'
+    },
+    {
+      id: '5',
+      username: 'supervisor',
+      fullName: 'Andi Pratama',
+      email: 'andi@gamatechno.co.id',
+      role: 'supervisor',
+      position: 'Supervisor Lapangan',
+      unit: 'Produksi',
+      workArea: 'Pabrik Jakarta',
+      status: 'Aktif'
     }
   ];
 
@@ -63,13 +74,14 @@ const Users = () => {
     const variants: Record<string, "default" | "secondary" | "destructive"> = {
       'admin': 'destructive',
       'staff': 'default',
-      'auditor': 'secondary'
+      'auditor': 'secondary',
+      'supervisor': 'outline'
     };
     return <Badge variant={variants[role] || 'default'}>{role.toUpperCase()}</Badge>;
   };
 
   const getStatusBadge = (status: string) => {
-    return <Badge variant={status === 'Active' ? 'default' : 'secondary'}>{status}</Badge>;
+    return <Badge variant={status === 'Aktif' ? 'default' : 'secondary'}>{status}</Badge>;
   };
 
   const filteredUsers = users.filter(user =>
@@ -82,21 +94,21 @@ const Users = () => {
     <Layout>
       <div className="space-y-6">
         <div className="flex justify-between items-center">
-          <h1 className="text-3xl font-bold">User Management</h1>
+          <h1 className="text-3xl font-bold">Manajemen Pengguna</h1>
           <Button>
             <UserPlus className="h-4 w-4 mr-2" />
-            Add New User
+            Tambah Pengguna Baru
           </Button>
         </div>
 
         <Card>
           <CardHeader>
-            <CardTitle>System Users</CardTitle>
+            <CardTitle>Pengguna Sistem</CardTitle>
             <div className="flex space-x-2">
               <div className="relative flex-1">
                 <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
                 <Input
-                  placeholder="Search users..."
+                  placeholder="Cari pengguna..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className="pl-8"
@@ -108,15 +120,15 @@ const Users = () => {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Full Name</TableHead>
+                  <TableHead>Nama Lengkap</TableHead>
                   <TableHead>Username</TableHead>
                   <TableHead>Email</TableHead>
                   <TableHead>Role</TableHead>
-                  <TableHead>Position</TableHead>
+                  <TableHead>Jabatan</TableHead>
                   <TableHead>Unit</TableHead>
-                  <TableHead>Work Area</TableHead>
+                  <TableHead>Area Kerja</TableHead>
                   <TableHead>Status</TableHead>
-                  <TableHead>Actions</TableHead>
+                  <TableHead>Aksi</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>

@@ -33,33 +33,43 @@ const Assets = () => {
   const assets = [
     {
       id: 'AST001',
-      name: 'Dell Laptop OptiPlex 3090',
-      category: 'IT Equipment',
-      location: 'Building A - Floor 2',
-      status: 'Active',
-      assignedTo: 'John Doe',
+      name: 'Laptop Dell OptiPlex 3090',
+      category: 'Peralatan IT',
+      location: 'Gedung A - Lantai 2',
+      status: 'Aktif',
+      assignedTo: 'Budi Santoso',
       purchaseDate: '2023-01-15',
-      value: '$1,200'
+      value: 'Rp 18.000.000'
     },
     {
       id: 'AST002',
-      name: 'Office Chair Ergonomic',
+      name: 'Kursi Kantor Ergonomis',
       category: 'Furniture',
-      location: 'Building B - Floor 1',
-      status: 'Active',
-      assignedTo: 'Jane Smith',
+      location: 'Gedung B - Lantai 1',
+      status: 'Aktif',
+      assignedTo: 'Sri Wahyuni',
       purchaseDate: '2023-02-20',
-      value: '$350'
+      value: 'Rp 5.250.000'
     },
     {
       id: 'AST003',
-      name: 'HP Printer LaserJet Pro',
-      category: 'IT Equipment',
-      location: 'Building A - Floor 1',
+      name: 'Printer HP LaserJet Pro',
+      category: 'Peralatan IT',
+      location: 'Gedung A - Lantai 1',
       status: 'Maintenance',
-      assignedTo: 'IT Department',
+      assignedTo: 'Departemen IT',
       purchaseDate: '2022-11-10',
-      value: '$800'
+      value: 'Rp 12.000.000'
+    },
+    {
+      id: 'AST004',
+      name: 'Meja Rapat',
+      category: 'Furniture',
+      location: 'Ruang Rapat Lt. 3',
+      status: 'Aktif',
+      assignedTo: 'Fasilitas Umum',
+      purchaseDate: '2022-08-15',
+      value: 'Rp 22.500.000'
     }
   ];
 
@@ -68,8 +78,8 @@ const Assets = () => {
     
     // Here you would typically save to backend
     toast({
-      title: "Success",
-      description: "Asset added successfully"
+      title: "Berhasil",
+      description: "Aset berhasil ditambahkan"
     });
 
     // Reset form
@@ -89,9 +99,9 @@ const Assets = () => {
 
   const getStatusBadge = (status: string) => {
     const variants: Record<string, "default" | "secondary" | "destructive"> = {
-      'Active': 'default',
+      'Aktif': 'default',
       'Maintenance': 'secondary',
-      'Retired': 'destructive'
+      'Pensiun': 'destructive'
     };
     return <Badge variant={variants[status] || 'default'}>{status}</Badge>;
   };
@@ -105,10 +115,10 @@ const Assets = () => {
     <Layout>
       <div className="space-y-6">
         <div className="flex justify-between items-center">
-          <h1 className="text-3xl font-bold">Asset Management</h1>
+          <h1 className="text-3xl font-bold">Manajemen Aset</h1>
           <Button onClick={() => setShowAddForm(!showAddForm)}>
             <Plus className="h-4 w-4 mr-2" />
-            {showAddForm ? 'Cancel' : 'Add New Asset'}
+            {showAddForm ? 'Batal' : 'Tambah Aset Baru'}
           </Button>
         </div>
 
@@ -116,13 +126,13 @@ const Assets = () => {
         {showAddForm && (
           <Card>
             <CardHeader>
-              <CardTitle>Add New Asset</CardTitle>
+              <CardTitle>Tambah Aset Baru</CardTitle>
             </CardHeader>
             <CardContent>
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label htmlFor="name">Asset Name *</Label>
+                    <Label htmlFor="name">Nama Aset *</Label>
                     <Input
                       id="name"
                       value={formData.name}
@@ -132,24 +142,24 @@ const Assets = () => {
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="category">Category *</Label>
+                    <Label htmlFor="category">Kategori *</Label>
                     <Select value={formData.category} onValueChange={(value) => setFormData({...formData, category: value})}>
                       <SelectTrigger>
-                        <SelectValue placeholder="Select category" />
+                        <SelectValue placeholder="Pilih kategori" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="IT Equipment">IT Equipment</SelectItem>
+                        <SelectItem value="Peralatan IT">Peralatan IT</SelectItem>
                         <SelectItem value="Furniture">Furniture</SelectItem>
-                        <SelectItem value="Machinery">Machinery</SelectItem>
-                        <SelectItem value="Vehicle">Vehicle</SelectItem>
-                        <SelectItem value="Building">Building</SelectItem>
-                        <SelectItem value="Other">Other</SelectItem>
+                        <SelectItem value="Mesin">Mesin</SelectItem>
+                        <SelectItem value="Kendaraan">Kendaraan</SelectItem>
+                        <SelectItem value="Bangunan">Bangunan</SelectItem>
+                        <SelectItem value="Lainnya">Lainnya</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="serialNumber">Serial Number</Label>
+                    <Label htmlFor="serialNumber">Nomor Seri</Label>
                     <Input
                       id="serialNumber"
                       value={formData.serialNumber}
@@ -158,7 +168,7 @@ const Assets = () => {
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="purchaseDate">Purchase Date *</Label>
+                    <Label htmlFor="purchaseDate">Tanggal Pembelian *</Label>
                     <Input
                       id="purchaseDate"
                       type="date"
@@ -169,7 +179,7 @@ const Assets = () => {
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="purchasePrice">Purchase Price *</Label>
+                    <Label htmlFor="purchasePrice">Harga Pembelian *</Label>
                     <Input
                       id="purchasePrice"
                       type="number"
@@ -189,7 +199,7 @@ const Assets = () => {
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="location">Location *</Label>
+                    <Label htmlFor="location">Lokasi *</Label>
                     <Input
                       id="location"
                       value={formData.location}
@@ -199,7 +209,7 @@ const Assets = () => {
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="assignedTo">Assigned To</Label>
+                    <Label htmlFor="assignedTo">Penanggung Jawab</Label>
                     <Input
                       id="assignedTo"
                       value={formData.assignedTo}
@@ -209,19 +219,19 @@ const Assets = () => {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="description">Description</Label>
+                  <Label htmlFor="description">Deskripsi</Label>
                   <Textarea
                     id="description"
-                    placeholder="Enter asset description..."
+                    placeholder="Masukkan deskripsi aset..."
                     value={formData.description}
                     onChange={(e) => setFormData({...formData, description: e.target.value})}
                   />
                 </div>
 
                 <div className="flex gap-2">
-                  <Button type="submit">Add Asset</Button>
+                  <Button type="submit">Tambah Aset</Button>
                   <Button type="button" variant="outline" onClick={() => setShowAddForm(false)}>
-                    Cancel
+                    Batal
                   </Button>
                 </div>
               </form>
@@ -231,12 +241,12 @@ const Assets = () => {
 
         <Card>
           <CardHeader>
-            <CardTitle>Asset Inventory</CardTitle>
+            <CardTitle>Inventarisasi Aset</CardTitle>
             <div className="flex space-x-2">
               <div className="relative flex-1">
                 <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
                 <Input
-                  placeholder="Search assets..."
+                  placeholder="Cari aset..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className="pl-8"
@@ -252,14 +262,14 @@ const Assets = () => {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Asset ID</TableHead>
-                  <TableHead>Name</TableHead>
-                  <TableHead>Category</TableHead>
-                  <TableHead>Location</TableHead>
+                  <TableHead>ID Aset</TableHead>
+                  <TableHead>Nama</TableHead>
+                  <TableHead>Kategori</TableHead>
+                  <TableHead>Lokasi</TableHead>
                   <TableHead>Status</TableHead>
-                  <TableHead>Assigned To</TableHead>
-                  <TableHead>Value</TableHead>
-                  <TableHead>Actions</TableHead>
+                  <TableHead>Penanggung Jawab</TableHead>
+                  <TableHead>Nilai</TableHead>
+                  <TableHead>Aksi</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>

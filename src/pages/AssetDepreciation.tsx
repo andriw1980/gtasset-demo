@@ -16,55 +16,66 @@ const AssetDepreciation = () => {
   const assets = [
     {
       id: 'AST001',
-      name: 'Dell Laptop OptiPlex 3090',
-      category: 'IT Equipment',
+      name: 'Laptop Dell OptiPlex 3090',
+      category: 'Peralatan IT',
       purchaseDate: '2023-01-15',
-      originalValue: 1200,
-      currentValue: 950,
-      depreciationMethod: 'Straight Line',
+      originalValue: 18000000,
+      currentValue: 14250000,
+      depreciationMethod: 'Garis Lurus',
       usefulLife: 5,
-      status: 'Active'
+      status: 'Aktif'
     },
     {
       id: 'AST002',
-      name: 'Office Chair Ergonomic',
+      name: 'Kursi Kantor Ergonomis',
       category: 'Furniture',
       purchaseDate: '2023-02-20',
-      originalValue: 350,
-      currentValue: 315,
-      depreciationMethod: 'Straight Line',
+      originalValue: 5250000,
+      currentValue: 4725000,
+      depreciationMethod: 'Garis Lurus',
       usefulLife: 7,
-      status: 'Active'
+      status: 'Aktif'
     },
     {
       id: 'AST003',
-      name: 'HP Printer LaserJet Pro',
-      category: 'IT Equipment',
+      name: 'Printer HP LaserJet Pro',
+      category: 'Peralatan IT',
       purchaseDate: '2022-11-10',
-      originalValue: 800,
-      currentValue: 640,
-      depreciationMethod: 'Declining Balance',
+      originalValue: 12000000,
+      currentValue: 9600000,
+      depreciationMethod: 'Saldo Menurun',
       usefulLife: 4,
-      status: 'Active'
+      status: 'Aktif'
     },
     {
       id: 'AST004',
-      name: 'Conference Table',
+      name: 'Meja Rapat',
       category: 'Furniture',
       purchaseDate: '2022-08-15',
-      originalValue: 1500,
-      currentValue: 1200,
-      depreciationMethod: 'Straight Line',
+      originalValue: 22500000,
+      currentValue: 18000000,
+      depreciationMethod: 'Garis Lurus',
       usefulLife: 10,
-      status: 'Active'
+      status: 'Aktif'
+    },
+    {
+      id: 'AST005',
+      name: 'Server IBM x3650',
+      category: 'Peralatan IT',
+      purchaseDate: '2021-03-10',
+      originalValue: 75000000,
+      currentValue: 45000000,
+      depreciationMethod: 'Garis Lurus',
+      usefulLife: 5,
+      status: 'Aktif'
     }
   ];
 
   const getStatusBadge = (status: string) => {
     const variants: Record<string, "default" | "secondary" | "destructive"> = {
-      'Active': 'default',
-      'Retired': 'destructive',
-      'Disposed': 'secondary'
+      'Aktif': 'default',
+      'Pensiun': 'destructive',
+      'Dibuang': 'secondary'
     };
     return <Badge variant={variants[status] || 'default'}>{status}</Badge>;
   };
@@ -79,20 +90,20 @@ const AssetDepreciation = () => {
     <Layout>
       <div className="space-y-6">
         <div className="flex justify-between items-center">
-          <h1 className="text-3xl font-bold">Asset Depreciation</h1>
+          <h1 className="text-3xl font-bold">Depresiasi Aset</h1>
         </div>
 
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center">
               <TrendingDown className="h-5 w-5 mr-2" />
-              Asset Depreciation Overview
+              Ringkasan Depresiasi Aset
             </CardTitle>
             <div className="flex space-x-2">
               <div className="relative flex-1">
                 <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
                 <Input
-                  placeholder="Search assets..."
+                  placeholder="Cari aset..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className="pl-8"
@@ -108,15 +119,15 @@ const AssetDepreciation = () => {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Asset ID</TableHead>
-                  <TableHead>Asset Name</TableHead>
-                  <TableHead>Category</TableHead>
-                  <TableHead>Purchase Date</TableHead>
-                  <TableHead>Original Value</TableHead>
-                  <TableHead>Current Value</TableHead>
-                  <TableHead>Depreciation Method</TableHead>
+                  <TableHead>ID Aset</TableHead>
+                  <TableHead>Nama Aset</TableHead>
+                  <TableHead>Kategori</TableHead>
+                  <TableHead>Tanggal Beli</TableHead>
+                  <TableHead>Nilai Awal</TableHead>
+                  <TableHead>Nilai Saat Ini</TableHead>
+                  <TableHead>Metode Depresiasi</TableHead>
                   <TableHead>Status</TableHead>
-                  <TableHead>Actions</TableHead>
+                  <TableHead>Aksi</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -126,15 +137,15 @@ const AssetDepreciation = () => {
                     <TableCell>{asset.name}</TableCell>
                     <TableCell>{asset.category}</TableCell>
                     <TableCell>{asset.purchaseDate}</TableCell>
-                    <TableCell>${asset.originalValue.toLocaleString()}</TableCell>
-                    <TableCell>${asset.currentValue.toLocaleString()}</TableCell>
+                    <TableCell>Rp {asset.originalValue.toLocaleString()}</TableCell>
+                    <TableCell>Rp {asset.currentValue.toLocaleString()}</TableCell>
                     <TableCell>{asset.depreciationMethod}</TableCell>
                     <TableCell>{getStatusBadge(asset.status)}</TableCell>
                     <TableCell>
                       <Link to={`/asset-depreciation/${asset.id}`}>
                         <Button size="sm" variant="outline">
                           <TrendingDown className="h-4 w-4 mr-2" />
-                          View Details
+                          Lihat Detail
                         </Button>
                       </Link>
                     </TableCell>

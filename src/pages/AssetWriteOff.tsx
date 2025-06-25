@@ -1,184 +1,177 @@
 
 import React, { useState } from 'react';
 import Layout from '../components/Layout';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { FileX, Package, Calendar, DollarSign, AlertTriangle } from 'lucide-react';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Search, Plus, FileX, Calendar, User, CheckCircle, Clock, XCircle } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 const AssetWriteOff = () => {
   const { toast } = useToast();
+  const [searchTerm, setSearchTerm] = useState('');
+  const [showWriteOffForm, setShowWriteOffForm] = useState(false);
   const [formData, setFormData] = useState({
-    assetCode: '',
+    assetId: '',
+    reason: '',
     writeOffDate: '',
-    writeOffReason: '',
-    writeOffValue: '',
-    justification: '',
-    supportingDocuments: '',
-    approvalLevel: ''
+    bookValue: '',
+    approver1: '',
+    approver2: '',
+    approver3: '',
+    notes: '',
+    documents: ''
   });
 
-  // Mock data
-  const assets = [
-    { 
-      code: 'GEN-001', 
-      name: 'Generator Unit A', 
-      currentValue: 50000, 
-      acquisitionDate: '2018-01-15',
-      condition: 'Poor',
-      lastMaintenance: '2024-01-15'
+  // Mock write-off data
+  const writeOffHistory = [
+    {
+      id: 'WO001',
+      assetId: 'AST015',
+      assetName: 'Laptop Toshiba Satellite L840',
+      reason: 'Kerusakan Tidak Ekonomis',
+      requestDate: '2024-06-10',
+      requestedBy: 'Budi Santoso',
+      bookValue: 'Rp 3.500.000',
+      approver1: 'Agus Prasetyo',
+      approver1Status: 'Disetujui',
+      approver2: 'Sri Wahyuni',
+      approver2Status: 'Disetujui',
+      approver3: 'Direktur Operasional',
+      approver3Status: 'Menunggu',
+      status: 'Menunggu Persetujuan Akhir',
+      finalStatus: 'Dalam Proses'
     },
-    { 
-      code: 'COMP-001', 
-      name: 'Desktop Computer', 
-      currentValue: 1200, 
-      acquisitionDate: '2019-03-20',
-      condition: 'Obsolete',
-      lastMaintenance: '2023-12-10'
+    {
+      id: 'WO002',
+      assetId: 'AST022',
+      assetName: 'Mesin Fotocopy Canon iR2520',
+      reason: 'Usia Pakai Habis',
+      requestDate: '2024-06-05',
+      requestedBy: 'Dewi Sartika',
+      bookValue: 'Rp 8.000.000',
+      approver1: 'Andi Pratama',
+      approver1Status: 'Disetujui',
+      approver2: 'Siti Nurhaliza',
+      approver2Status: 'Disetujui',
+      approver3: 'Direktur Keuangan',
+      approver3Status: 'Disetujui',
+      status: 'Disetujui Semua',
+      finalStatus: 'Selesai'
     },
-    { 
-      code: 'VEH-001', 
-      name: 'Company Vehicle', 
-      currentValue: 25000, 
-      acquisitionDate: '2017-06-10',
-      condition: 'Damaged',
-      lastMaintenance: '2024-02-20'
-    },
-    { 
-      code: 'FUR-001', 
-      name: 'Office Furniture Set', 
-      currentValue: 800, 
-      acquisitionDate: '2016-09-05',
-      condition: 'Worn Out',
-      lastMaintenance: 'N/A'
+    {
+      id: 'WO003',
+      assetId: 'AST018',
+      assetName: 'Kendaraan Operasional Avanza',
+      reason: 'Kecelakaan Total Loss',
+      requestDate: '2024-06-12',
+      requestedBy: 'Joko Santoso',
+      bookValue: 'Rp 125.000.000',
+      approver1: 'Agus Prasetyo',
+      approver1Status: 'Disetujui',
+      approver2: 'Sri Wahyuni',
+      approver2Status: 'Ditolak',
+      approver3: 'Direktur Operasional',
+      approver3Status: 'Belum Review',
+      status: 'Ditolak Tingkat 2',
+      finalStatus: 'Ditolak'
     }
   ];
-
-  const writeOffReasons = [
-    'End of Useful Life',
-    'Irreparable Damage',
-    'Technological Obsolescence',
-    'Lost or Stolen',
-    'Not Cost-Effective to Repair',
-    'Safety Concerns',
-    'Regulatory Non-Compliance',
-    'Other'
-  ];
-
-  const approvalLevels = [
-    { value: 'supervisor', label: 'Supervisor Approval', maxValue: 5000 },
-    { value: 'manager', label: 'Manager Approval', maxValue: 25000 },
-    { value: 'director', label: 'Director Approval', maxValue: 100000 },
-    { value: 'board', label: 'Board Approval', maxValue: Infinity }
-  ];
-
-  const selectedAsset = assets.find(asset => asset.code === formData.assetCode);
-
-  const getRequiredApprovalLevel = (value: number) => {
-    return approvalLevels.find(level => value <= level.maxValue) || approvalLevels[approvalLevels.length - 1];
-  };
-
-  const handleAssetSelect = (assetCode: string) => {
-    const asset = assets.find(a => a.code === assetCode);
-    if (asset) {
-      const requiredApproval = getRequiredApprovalLevel(asset.currentValue);
-      setFormData({
-        ...formData,
-        assetCode,
-        writeOffValue: asset.currentValue.toString(),
-        approvalLevel: requiredApproval.value
-      });
-    }
-  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!formData.assetCode || !formData.writeOffDate || !formData.writeOffReason || !formData.justification) {
-      toast({
-        title: "Error",
-        description: "Please fill in all required fields",
-        variant: "destructive"
-      });
-      return;
-    }
-
     toast({
-      title: "Success",
-      description: "Asset write-off request submitted successfully. Awaiting approval."
+      title: "Berhasil",
+      description: "Permintaan penghapusan aset berhasil diajukan"
     });
 
     // Reset form
     setFormData({
-      assetCode: '',
+      assetId: '',
+      reason: '',
       writeOffDate: '',
-      writeOffReason: '',
-      writeOffValue: '',
-      justification: '',
-      supportingDocuments: '',
-      approvalLevel: ''
+      bookValue: '',
+      approver1: '',
+      approver2: '',
+      approver3: '',
+      notes: '',
+      documents: ''
     });
+    setShowWriteOffForm(false);
   };
 
-  const getConditionColor = (condition: string) => {
-    switch (condition) {
-      case 'Poor':
-        return 'destructive';
-      case 'Obsolete':
-        return 'outline';
-      case 'Damaged':
-        return 'destructive';
-      case 'Worn Out':
-        return 'secondary';
+  const getStatusBadge = (status: string) => {
+    const variants: Record<string, "default" | "secondary" | "destructive" | "outline"> = {
+      'Selesai': 'default',
+      'Dalam Proses': 'outline',
+      'Ditolak': 'destructive',
+      'Menunggu': 'secondary'
+    };
+    return <Badge variant={variants[status] || 'default'}>{status}</Badge>;
+  };
+
+  const getApprovalIcon = (status: string) => {
+    switch (status) {
+      case 'Disetujui':
+        return <CheckCircle className="h-4 w-4 text-green-600" />;
+      case 'Ditolak':
+        return <XCircle className="h-4 w-4 text-red-600" />;
+      case 'Menunggu':
+        return <Clock className="h-4 w-4 text-yellow-600" />;
       default:
-        return 'default';
+        return <Clock className="h-4 w-4 text-gray-400" />;
     }
   };
+
+  const filteredWriteOffs = writeOffHistory.filter(writeOff =>
+    writeOff.assetName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    writeOff.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    writeOff.requestedBy.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   return (
     <Layout>
       <div className="space-y-6">
-        <div>
-          <h1 className="text-3xl font-bold">Asset Write Off</h1>
-          <p className="text-gray-600 mt-2">Submit requests to write off assets that are no longer useful</p>
+        <div className="flex justify-between items-center">
+          <h1 className="text-3xl font-bold">Penghapusan Aset</h1>
+          <Button onClick={() => setShowWriteOffForm(!showWriteOffForm)}>
+            <Plus className="h-4 w-4 mr-2" />
+            {showWriteOffForm ? 'Batal' : 'Ajukan Penghapusan'}
+          </Button>
         </div>
 
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <FileX className="h-5 w-5" />
-              Write Off Asset
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-6">
-              {/* Asset Selection */}
-              <div className="space-y-4">
-                <Label className="text-lg font-semibold">Asset Information</Label>
+        {/* Write-off Form */}
+        {showWriteOffForm && (
+          <Card>
+            <CardHeader>
+              <CardTitle>Form Penghapusan Aset</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label htmlFor="asset">Select Asset *</Label>
-                    <Select value={formData.assetCode} onValueChange={handleAssetSelect}>
+                    <Label htmlFor="assetId">ID Aset *</Label>
+                    <Select value={formData.assetId} onValueChange={(value) => setFormData({...formData, assetId: value})}>
                       <SelectTrigger>
-                        <SelectValue placeholder="Choose an asset to write off" />
+                        <SelectValue placeholder="Pilih aset" />
                       </SelectTrigger>
                       <SelectContent>
-                        {assets.map((asset) => (
-                          <SelectItem key={asset.code} value={asset.code}>
-                            {asset.name} ({asset.code}) - ${asset.currentValue.toLocaleString()}
-                          </SelectItem>
-                        ))}
+                        <SelectItem value="AST001">AST001 - Laptop Dell OptiPlex 3090</SelectItem>
+                        <SelectItem value="AST002">AST002 - Kursi Kantor Ergonomis</SelectItem>
+                        <SelectItem value="AST003">AST003 - Printer HP LaserJet Pro</SelectItem>
+                        <SelectItem value="AST004">AST004 - Meja Rapat</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="writeOffDate">Write Off Date *</Label>
+                    <Label htmlFor="writeOffDate">Tanggal Penghapusan *</Label>
                     <Input
                       id="writeOffDate"
                       type="date"
@@ -187,148 +180,181 @@ const AssetWriteOff = () => {
                       required
                     />
                   </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="reason">Alasan Penghapusan *</Label>
+                    <Select value={formData.reason} onValueChange={(value) => setFormData({...formData, reason: value})}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Pilih alasan" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Kerusakan Tidak Ekonomis">Kerusakan Tidak Ekonomis</SelectItem>
+                        <SelectItem value="Usia Pakai Habis">Usia Pakai Habis</SelectItem>
+                        <SelectItem value="Kehilangan">Kehilangan</SelectItem>
+                        <SelectItem value="Kecelakaan">Kecelakaan</SelectItem>
+                        <SelectItem value="Tidak Digunakan">Tidak Digunakan</SelectItem>
+                        <SelectItem value="Lainnya">Lainnya</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="bookValue">Nilai Buku Saat Ini *</Label>
+                    <Input
+                      id="bookValue"
+                      type="number"
+                      value={formData.bookValue}
+                      onChange={(e) => setFormData({...formData, bookValue: e.target.value})}
+                      required
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="approver1">Penyetuju Tingkat 1 *</Label>
+                    <Select value={formData.approver1} onValueChange={(value) => setFormData({...formData, approver1: value})}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Pilih penyetuju tingkat 1" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Agus Prasetyo">Agus Prasetyo - Supervisor</SelectItem>
+                        <SelectItem value="Andi Pratama">Andi Pratama - Supervisor</SelectItem>
+                        <SelectItem value="Dewi Sartika">Dewi Sartika - Koordinator</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="approver2">Penyetuju Tingkat 2 *</Label>
+                    <Select value={formData.approver2} onValueChange={(value) => setFormData({...formData, approver2: value})}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Pilih penyetuju tingkat 2" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Sri Wahyuni">Sri Wahyuni - Manajer</SelectItem>
+                        <SelectItem value="Siti Nurhaliza">Siti Nurhaliza - Manajer</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="approver3">Penyetuju Tingkat 3 *</Label>
+                    <Select value={formData.approver3} onValueChange={(value) => setFormData({...formData, approver3: value})}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Pilih penyetuju tingkat 3" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Direktur Operasional">Direktur Operasional</SelectItem>
+                        <SelectItem value="Direktur Keuangan">Direktur Keuangan</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="documents">Dokumen Pendukung</Label>
+                    <Input
+                      id="documents"
+                      type="file"
+                      multiple
+                      onChange={(e) => setFormData({...formData, documents: e.target.value})}
+                    />
+                  </div>
                 </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="notes">Catatan Tambahan</Label>
+                  <Textarea
+                    id="notes"
+                    placeholder="Masukkan catatan tambahan..."
+                    value={formData.notes}
+                    onChange={(e) => setFormData({...formData, notes: e.target.value})}
+                  />
+                </div>
+
+                <div className="flex gap-2">
+                  <Button type="submit">Ajukan Penghapusan</Button>
+                  <Button type="button" variant="outline" onClick={() => setShowWriteOffForm(false)}>
+                    Batal
+                  </Button>
+                </div>
+              </form>
+            </CardContent>
+          </Card>
+        )}
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Riwayat Penghapusan Aset</CardTitle>
+            <div className="flex space-x-2">
+              <div className="relative flex-1">
+                <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+                <Input
+                  placeholder="Cari penghapusan aset..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="pl-8"
+                />
               </div>
-
-              {selectedAsset && (
-                <>
-                  {/* Asset Details */}
-                  <div className="space-y-4 p-4 bg-gray-50 rounded-lg">
-                    <Label className="text-lg font-semibold">Asset Details</Label>
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                      <div className="space-y-2">
-                        <Label>Current Book Value</Label>
-                        <div className="flex items-center gap-2 p-2 bg-white rounded border">
-                          <DollarSign className="h-4 w-4 text-gray-400" />
-                          <span className="font-semibold">${selectedAsset.currentValue.toLocaleString()}</span>
+            </div>
+          </CardHeader>
+          <CardContent>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>ID</TableHead>
+                  <TableHead>Aset</TableHead>
+                  <TableHead>Alasan</TableHead>
+                  <TableHead>Tanggal Pengajuan</TableHead>
+                  <TableHead>Diajukan Oleh</TableHead>
+                  <TableHead>Nilai Buku</TableHead>
+                  <TableHead>Persetujuan</TableHead>
+                  <TableHead>Status</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {filteredWriteOffs.map((writeOff) => (
+                  <TableRow key={writeOff.id}>
+                    <TableCell className="font-medium">{writeOff.id}</TableCell>
+                    <TableCell>
+                      <div>
+                        <p className="font-medium">{writeOff.assetName}</p>
+                        <p className="text-sm text-gray-500">{writeOff.assetId}</p>
+                      </div>
+                    </TableCell>
+                    <TableCell>{writeOff.reason}</TableCell>
+                    <TableCell>
+                      <div className="flex items-center space-x-1">
+                        <Calendar className="h-4 w-4" />
+                        <span>{writeOff.requestDate}</span>
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex items-center space-x-1">
+                        <User className="h-4 w-4" />
+                        <span>{writeOff.requestedBy}</span>
+                      </div>
+                    </TableCell>
+                    <TableCell>{writeOff.bookValue}</TableCell>
+                    <TableCell>
+                      <div className="space-y-1">
+                        <div className="flex items-center space-x-2">
+                          {getApprovalIcon(writeOff.approver1Status)}
+                          <span className="text-sm">{writeOff.approver1}</span>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          {getApprovalIcon(writeOff.approver2Status)}
+                          <span className="text-sm">{writeOff.approver2}</span>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          {getApprovalIcon(writeOff.approver3Status)}
+                          <span className="text-sm">{writeOff.approver3}</span>
                         </div>
                       </div>
-
-                      <div className="space-y-2">
-                        <Label>Acquisition Date</Label>
-                        <div className="flex items-center gap-2 p-2 bg-white rounded border">
-                          <Calendar className="h-4 w-4 text-gray-400" />
-                          <span>{new Date(selectedAsset.acquisitionDate).toLocaleDateString()}</span>
-                        </div>
-                      </div>
-
-                      <div className="space-y-2">
-                        <Label>Condition</Label>
-                        <div className="p-2 bg-white rounded border">
-                          <Badge variant={getConditionColor(selectedAsset.condition)}>
-                            {selectedAsset.condition}
-                          </Badge>
-                        </div>
-                      </div>
-
-                      <div className="space-y-2">
-                        <Label>Last Maintenance</Label>
-                        <div className="flex items-center gap-2 p-2 bg-white rounded border">
-                          <Package className="h-4 w-4 text-gray-400" />
-                          <span className="text-sm">{selectedAsset.lastMaintenance}</span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Write Off Details */}
-                  <div className="space-y-4">
-                    <Label className="text-lg font-semibold">Write Off Details</Label>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div className="space-y-2">
-                        <Label htmlFor="writeOffReason">Write Off Reason *</Label>
-                        <Select value={formData.writeOffReason} onValueChange={(value) => setFormData({...formData, writeOffReason: value})}>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select reason for write off" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {writeOffReasons.map((reason) => (
-                              <SelectItem key={reason} value={reason}>
-                                {reason}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </div>
-
-                      <div className="space-y-2">
-                        <Label htmlFor="writeOffValue">Write Off Value *</Label>
-                        <Input
-                          id="writeOffValue"
-                          type="number"
-                          value={formData.writeOffValue}
-                          onChange={(e) => setFormData({...formData, writeOffValue: e.target.value})}
-                          required
-                          min="0"
-                        />
-                      </div>
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label htmlFor="justification">Justification *</Label>
-                      <Textarea
-                        id="justification"
-                        placeholder="Provide detailed justification for the write off..."
-                        value={formData.justification}
-                        onChange={(e) => setFormData({...formData, justification: e.target.value})}
-                        required
-                        rows={4}
-                      />
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label htmlFor="supportingDocuments">Supporting Documents</Label>
-                      <Input
-                        id="supportingDocuments"
-                        type="file"
-                        multiple
-                        accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
-                        onChange={(e) => setFormData({...formData, supportingDocuments: e.target.value})}
-                      />
-                      <p className="text-xs text-gray-500">
-                        Upload photos, reports, or other supporting documentation
-                      </p>
-                    </div>
-                  </div>
-
-                  {/* Approval Information */}
-                  {formData.writeOffValue && (
-                    <div className="space-y-4 p-4 border-l-4 border-orange-500 bg-orange-50 rounded">
-                      <div className="flex items-center gap-2">
-                        <AlertTriangle className="h-5 w-5 text-orange-500" />
-                        <Label className="text-lg font-semibold text-orange-700">Approval Required</Label>
-                      </div>
-                      <div className="space-y-2">
-                        <Label>Required Approval Level</Label>
-                        <div className="p-2 bg-white rounded border">
-                          <Badge variant="outline" className="text-orange-700 border-orange-500">
-                            {getRequiredApprovalLevel(Number(formData.writeOffValue)).label}
-                          </Badge>
-                        </div>
-                        <p className="text-sm text-orange-600">
-                          This write off request will be routed to the appropriate approver based on the asset value.
-                        </p>
-                      </div>
-                    </div>
-                  )}
-
-                  <div className="flex gap-2 pt-4">
-                    <Button type="submit">Submit Write Off Request</Button>
-                    <Button type="button" variant="outline" onClick={() => setFormData({
-                      assetCode: '',
-                      writeOffDate: '',
-                      writeOffReason: '',
-                      writeOffValue: '',
-                      justification: '',
-                      supportingDocuments: '',
-                      approvalLevel: ''
-                    })}>
-                      Reset Form
-                    </Button>
-                  </div>
-                </>
-              )}
-            </form>
+                    </TableCell>
+                    <TableCell>{getStatusBadge(writeOff.finalStatus)}</TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
           </CardContent>
         </Card>
       </div>

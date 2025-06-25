@@ -1,3 +1,4 @@
+
 import React from 'react';
 import Layout from '../components/Layout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -8,11 +9,11 @@ import { Package, AlertTriangle, Wrench, TrendingUp, TrendingDown, DollarSign, M
 
 // Mock data for charts
 const assetsByCategory = [{
-  name: 'Equipment',
+  name: 'Peralatan',
   value: 145,
   color: '#8884d8'
 }, {
-  name: 'Vehicles',
+  name: 'Kendaraan',
   value: 32,
   color: '#82ca9d'
 }, {
@@ -20,14 +21,15 @@ const assetsByCategory = [{
   value: 89,
   color: '#ffc658'
 }, {
-  name: 'IT Assets',
+  name: 'Aset IT',
   value: 67,
   color: '#ff7300'
 }, {
-  name: 'Buildings',
+  name: 'Bangunan',
   value: 12,
   color: '#00ff88'
 }];
+
 const maintenanceTrend = [{
   month: 'Jan',
   preventive: 45,
@@ -59,6 +61,7 @@ const maintenanceTrend = [{
   corrective: 22,
   total: 89
 }];
+
 const assetValue = [{
   month: 'Jan',
   value: 2450000
@@ -78,62 +81,65 @@ const assetValue = [{
   month: 'Jun',
   value: 2520000
 }];
+
 const recentActivities = [{
   id: 1,
-  type: 'Asset Request',
-  description: 'New laptop requested by IT Department',
-  time: '2 hours ago',
+  type: 'Permintaan Aset',
+  description: 'Laptop baru diminta oleh Departemen IT',
+  time: '2 jam yang lalu',
   status: 'pending'
 }, {
   id: 2,
-  type: 'Maintenance',
-  description: 'Generator Unit A - Monthly inspection completed',
-  time: '4 hours ago',
+  type: 'Pemeliharaan',
+  description: 'Generator Unit A - Inspeksi bulanan selesai',
+  time: '4 jam yang lalu',
   status: 'completed'
 }, {
   id: 3,
   type: 'Transfer',
-  description: 'Printer moved from HR to Finance',
-  time: '6 hours ago',
+  description: 'Printer dipindahkan dari HRD ke Keuangan',
+  time: '6 jam yang lalu',
   status: 'completed'
 }, {
   id: 4,
-  type: 'Damage Report',
-  description: 'HVAC system reported damaged',
-  time: '1 day ago',
+  type: 'Laporan Kerusakan',
+  description: 'Sistem AC dilaporkan rusak',
+  time: '1 hari yang lalu',
   status: 'urgent'
 }, {
   id: 5,
-  type: 'Depreciation',
-  description: 'Monthly depreciation calculated for 45 assets',
-  time: '2 days ago',
+  type: 'Depresiasi',
+  description: 'Depresiasi bulanan dihitung untuk 45 aset',
+  time: '2 hari yang lalu',
   status: 'completed'
 }];
+
 const upcomingMaintenance = [{
-  asset: 'Fire Pump System',
-  code: 'FP-001',
+  asset: 'Sistem Pompa Kebakaran',
+  code: 'PK-001',
   date: '2024-06-30',
-  type: 'Performance Test',
+  type: 'Tes Performa',
   priority: 'high'
 }, {
-  asset: 'HVAC System',
-  code: 'HVAC-001',
+  asset: 'Sistem AC',
+  code: 'AC-001',
   date: '2024-07-02',
-  type: 'Filter Replacement',
+  type: 'Penggantian Filter',
   priority: 'medium'
 }, {
-  asset: 'Elevator Unit 1',
-  code: 'ELV-001',
+  asset: 'Lift Unit 1',
+  code: 'LFT-001',
   date: '2024-07-10',
-  type: 'Safety Inspection',
+  type: 'Inspeksi Keselamatan',
   priority: 'high'
 }, {
-  asset: 'Backup Generator',
+  asset: 'Generator Cadangan',
   code: 'GEN-002',
   date: '2024-07-15',
-  type: 'Preventive Service',
+  type: 'Servis Preventif',
   priority: 'medium'
 }];
+
 const Dashboard = () => {
   const getActivityStatusColor = (status: string) => {
     switch (status) {
@@ -147,6 +153,7 @@ const Dashboard = () => {
         return 'default';
     }
   };
+
   const getPriorityColor = (priority: string) => {
     switch (priority) {
       case 'high':
@@ -159,63 +166,64 @@ const Dashboard = () => {
         return 'default';
     }
   };
+
   return <Layout>
       <div className="space-y-6">
         <div>
           <h1 className="text-3xl font-bold">Dashboard</h1>
-          <p className="text-gray-600 mt-2">Welcome to gtAsset Management System</p>
+          <p className="text-gray-600 mt-2">Selamat datang di Sistem Manajemen Aset GAMATECHNO</p>
         </div>
 
         {/* Key Metrics */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Total Assets</CardTitle>
+              <CardTitle className="text-sm font-medium">Total Aset</CardTitle>
               <Package className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">345</div>
               <p className="text-xs text-muted-foreground">
-                <span className="text-green-600">+12</span> from last month
+                <span className="text-green-600">+12</span> dari bulan lalu
               </p>
             </CardContent>
           </Card>
 
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Total Asset Value</CardTitle>
+              <CardTitle className="text-sm font-medium">Total Nilai Aset</CardTitle>
               <DollarSign className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">$2.52M</div>
+              <div className="text-2xl font-bold">Rp 2,52M</div>
               <p className="text-xs text-muted-foreground">
-                <span className="text-green-600">+2.5%</span> from last month
+                <span className="text-green-600">+2.5%</span> dari bulan lalu
               </p>
             </CardContent>
           </Card>
 
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Pending Maintenance</CardTitle>
+              <CardTitle className="text-sm font-medium">Pemeliharaan Tertunda</CardTitle>
               <Wrench className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">23</div>
               <p className="text-xs text-muted-foreground">
-                <span className="text-orange-600">3 overdue</span>
+                <span className="text-orange-600">3 terlambat</span>
               </p>
             </CardContent>
           </Card>
 
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Critical Issues</CardTitle>
+              <CardTitle className="text-sm font-medium">Masalah Kritis</CardTitle>
               <AlertTriangle className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">5</div>
               <p className="text-xs text-muted-foreground">
-                Require immediate attention
+                Memerlukan perhatian segera
               </p>
             </CardContent>
           </Card>
@@ -226,7 +234,7 @@ const Dashboard = () => {
           {/* Asset Distribution */}
           <Card>
             <CardHeader>
-              <CardTitle>Asset Distribution by Category</CardTitle>
+              <CardTitle>Distribusi Aset per Kategori</CardTitle>
             </CardHeader>
             <CardContent>
               <ResponsiveContainer width="100%" height={300}>
@@ -246,7 +254,7 @@ const Dashboard = () => {
           {/* Maintenance Trend */}
           <Card>
             <CardHeader>
-              <CardTitle>Maintenance Activities Trend</CardTitle>
+              <CardTitle>Tren Aktivitas Pemeliharaan</CardTitle>
             </CardHeader>
             <CardContent>
               <ResponsiveContainer width="100%" height={300}>
@@ -256,8 +264,8 @@ const Dashboard = () => {
                   <YAxis />
                   <Tooltip />
                   <Legend />
-                  <Bar dataKey="preventive" stackId="a" fill="#8884d8" name="Preventive" />
-                  <Bar dataKey="corrective" stackId="a" fill="#82ca9d" name="Corrective" />
+                  <Bar dataKey="preventive" stackId="a" fill="#8884d8" name="Preventif" />
+                  <Bar dataKey="corrective" stackId="a" fill="#82ca9d" name="Korektif" />
                 </BarChart>
               </ResponsiveContainer>
             </CardContent>
@@ -266,8 +274,20 @@ const Dashboard = () => {
 
         {/* Asset Value Trend */}
         <Card>
-          
-          
+          <CardHeader>
+            <CardTitle>Tren Nilai Aset</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ResponsiveContainer width="100%" height={300}>
+              <LineChart data={assetValue}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="month" />
+                <YAxis />
+                <Tooltip formatter={(value) => [`Rp ${(value as number).toLocaleString()}`, 'Nilai']} />
+                <Line type="monotone" dataKey="value" stroke="#8884d8" strokeWidth={2} />
+              </LineChart>
+            </ResponsiveContainer>
+          </CardContent>
         </Card>
 
         {/* Bottom Section */}
@@ -275,7 +295,7 @@ const Dashboard = () => {
           {/* Recent Activities */}
           <Card>
             <CardHeader>
-              <CardTitle>Recent Activities</CardTitle>
+              <CardTitle>Aktivitas Terbaru</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
@@ -296,7 +316,7 @@ const Dashboard = () => {
           {/* Upcoming Maintenance */}
           <Card>
             <CardHeader>
-              <CardTitle>Upcoming Maintenance</CardTitle>
+              <CardTitle>Pemeliharaan Mendatang</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
@@ -323,4 +343,5 @@ const Dashboard = () => {
       </div>
     </Layout>;
 };
+
 export default Dashboard;
