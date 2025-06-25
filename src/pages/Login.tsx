@@ -38,9 +38,9 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
-      <Card className="w-full max-w-md">
-        <CardHeader className="space-y-1 text-center">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary/10 to-accent/10 p-4">
+      <Card className="w-full max-w-md border-primary/20 shadow-xl">
+        <CardHeader className="space-y-1 text-center bg-primary/5 rounded-t-lg">
           <div className="flex justify-center mb-4">
             <img 
               src="/lovable-uploads/ef965f01-bf50-42a9-b0f3-fbb537bd67f4.png" 
@@ -48,15 +48,15 @@ const Login = () => {
               className="h-16 w-auto"
             />
           </div>
-          <CardTitle className="text-2xl font-bold">GAMATECHNO</CardTitle>
-          <CardDescription>
+          <CardTitle className="text-2xl font-bold text-primary">GAMATECHNO</CardTitle>
+          <CardDescription className="text-primary/80">
             Enhancing Your Business - Asset Management System
           </CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="pt-6">
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="username">Username</Label>
+              <Label htmlFor="username" className="text-primary font-medium">Username</Label>
               <Input
                 id="username"
                 type="text"
@@ -64,10 +64,11 @@ const Login = () => {
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 disabled={isLoading}
+                className="border-primary/20 focus:border-primary"
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
+              <Label htmlFor="password" className="text-primary font-medium">Password</Label>
               <div className="relative">
                 <Input
                   id="password"
@@ -76,12 +77,13 @@ const Login = () => {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   disabled={isLoading}
+                  className="border-primary/20 focus:border-primary"
                 />
                 <Button
                   type="button"
                   variant="ghost"
                   size="sm"
-                  className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                  className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent text-primary"
                   onClick={() => setShowPassword(!showPassword)}
                 >
                   {showPassword ? (
@@ -101,7 +103,7 @@ const Login = () => {
 
             <Button
               type="submit"
-              className="w-full"
+              className="w-full bg-primary hover:bg-primary/90 text-white"
               disabled={isLoading}
             >
               {isLoading ? 'Signing in...' : 'Sign In'}
@@ -117,9 +119,9 @@ const Login = () => {
             </div>
           </form>
 
-          <div className="mt-6 pt-6 border-t">
+          <div className="mt-6 pt-6 border-t border-primary/20">
             <div className="text-sm text-muted-foreground space-y-2">
-              <p className="font-medium">Demo Credentials:</p>
+              <p className="font-medium text-primary">Demo Credentials:</p>
               <p>Admin: admin / admin123</p>
               <p>Staff: staff / staff123</p>
               <p>Auditor: auditor / auditor123</p>
