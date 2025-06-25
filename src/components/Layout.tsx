@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
@@ -6,33 +5,28 @@ import { Button } from '@/components/ui/button';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarGroupLabel, SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarProvider, SidebarTrigger, SidebarHeader, SidebarFooter } from '@/components/ui/sidebar';
 import { LayoutDashboard, Package, Users, Building2, Truck, FileText, Settings, LogOut, User, AlertTriangle, ClipboardList, FileCheck, TrendingDown, Wrench, Database, ArrowLeftRight, FileX, Gavel } from 'lucide-react';
-
 interface LayoutProps {
   children: React.ReactNode;
 }
-
-const Layout: React.FC<LayoutProps> = ({ children }) => {
-  const { user, logout } = useAuth();
+const Layout: React.FC<LayoutProps> = ({
+  children
+}) => {
+  const {
+    user,
+    logout
+  } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
-
   const handleLogout = () => {
     logout();
     navigate('/login');
   };
-
   const isActive = (path: string) => location.pathname === path;
-
-  const AppSidebar = () => (
-    <Sidebar>
+  const AppSidebar = () => <Sidebar>
       <SidebarHeader className="p-4">
         <Link to="/" className="flex items-center space-x-2">
-          <img 
-            src="/lovable-uploads/ef965f01-bf50-42a9-b0f3-fbb537bd67f4.png" 
-            alt="GAMATECHNO Logo" 
-            className="h-8 w-auto"
-          />
-          <span className="text-lg font-bold">GAMATECHNO</span>
+          <img src="/lovable-uploads/ef965f01-bf50-42a9-b0f3-fbb537bd67f4.png" alt="GAMATECHNO Logo" className="h-8 w-auto" />
+          <span className="text-lg font-bold">gtAsset v1.0.4</span>
         </Link>
       </SidebarHeader>
 
@@ -198,16 +192,14 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           <SidebarGroupLabel>Management</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {user?.role === 'admin' && (
-                <SidebarMenuItem>
+              {user?.role === 'admin' && <SidebarMenuItem>
                   <SidebarMenuButton asChild isActive={isActive('/users')}>
                     <Link to="/users">
                       <Users className="h-4 w-4" />
                       <span>User Management</span>
                     </Link>
                   </SidebarMenuButton>
-                </SidebarMenuItem>
-              )}
+                </SidebarMenuItem>}
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
@@ -238,11 +230,8 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           </DropdownMenuContent>
         </DropdownMenu>
       </SidebarFooter>
-    </Sidebar>
-  );
-
-  return (
-    <SidebarProvider>
+    </Sidebar>;
+  return <SidebarProvider>
       <div className="flex min-h-screen w-full">
         <AppSidebar />
         
@@ -263,8 +252,6 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           </main>
         </div>
       </div>
-    </SidebarProvider>
-  );
+    </SidebarProvider>;
 };
-
 export default Layout;
