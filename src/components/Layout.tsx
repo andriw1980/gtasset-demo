@@ -5,33 +5,28 @@ import { Button } from '@/components/ui/button';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarGroupLabel, SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarProvider, SidebarTrigger, SidebarHeader, SidebarFooter } from '@/components/ui/sidebar';
 import { LayoutDashboard, Package, Users, Building2, Truck, FileText, Settings, LogOut, User, AlertTriangle, ClipboardList, FileCheck, TrendingDown, Wrench, Database, ArrowLeftRight, FileX, Gavel } from 'lucide-react';
-
 interface LayoutProps {
   children: React.ReactNode;
 }
-
-const Layout: React.FC<LayoutProps> = ({ children }) => {
-  const { user, logout } = useAuth();
+const Layout: React.FC<LayoutProps> = ({
+  children
+}) => {
+  const {
+    user,
+    logout
+  } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
-
   const handleLogout = () => {
     logout();
     navigate('/login');
   };
-
   const isActive = (path: string) => location.pathname === path;
-
-  const AppSidebar = () => (
-    <Sidebar className="bg-primary">
+  const AppSidebar = () => <Sidebar className="bg-primary">
       <SidebarHeader className="p-4 bg-primary border-b border-primary-foreground/10">
         <Link to="/" className="flex items-center space-x-2">
-          <img 
-            src="/lovable-uploads/ef965f01-bf50-42a9-b0f3-fbb537bd67f4.png" 
-            alt="GAMATECHNO Logo" 
-            className="h-8 w-auto" 
-          />
-          <span className="text-lg font-bold text-white">gtAsset v1.0.4</span>
+          <img src="/lovable-uploads/ef965f01-bf50-42a9-b0f3-fbb537bd67f4.png" alt="GAMATECHNO Logo" className="h-8 w-auto" />
+          <span className="text-lg font-bold text-white">Eoviz Asset</span>
         </Link>
       </SidebarHeader>
 
@@ -41,11 +36,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           <SidebarGroupContent>
             <SidebarMenu>
               <SidebarMenuItem>
-                <SidebarMenuButton 
-                  asChild 
-                  isActive={isActive('/')}
-                  className="text-white hover:bg-accent hover:text-primary data-[active=true]:bg-accent data-[active=true]:text-primary"
-                >
+                <SidebarMenuButton asChild isActive={isActive('/')} className="text-white hover:bg-accent hover:text-primary data-[active=true]:bg-accent data-[active=true]:text-primary">
                   <Link to="/">
                     <LayoutDashboard className="h-4 w-4" />
                     <span>Dashboard</span>
@@ -62,11 +53,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           <SidebarGroupContent>
             <SidebarMenu>
               <SidebarMenuItem>
-                <SidebarMenuButton 
-                  asChild 
-                  isActive={isActive('/asset-request')}
-                  className="text-white hover:bg-accent hover:text-primary data-[active=true]:bg-accent data-[active=true]:text-primary"
-                >
+                <SidebarMenuButton asChild isActive={isActive('/asset-request')} className="text-white hover:bg-accent hover:text-primary data-[active=true]:bg-accent data-[active=true]:text-primary">
                   <Link to="/asset-request">
                     <ClipboardList className="h-4 w-4" />
                     <span>Request Asset</span>
@@ -74,11 +61,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                 </SidebarMenuButton>
               </SidebarMenuItem>
               <SidebarMenuItem>
-                <SidebarMenuButton 
-                  asChild 
-                  isActive={isActive('/asset-transfer')}
-                  className="text-white hover:bg-accent hover:text-primary data-[active=true]:bg-accent data-[active=true]:text-primary"
-                >
+                <SidebarMenuButton asChild isActive={isActive('/asset-transfer')} className="text-white hover:bg-accent hover:text-primary data-[active=true]:bg-accent data-[active=true]:text-primary">
                   <Link to="/asset-transfer">
                     <ArrowLeftRight className="h-4 w-4" />
                     <span>Transfer/Mutation</span>
@@ -86,11 +69,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                 </SidebarMenuButton>
               </SidebarMenuItem>
               <SidebarMenuItem>
-                <SidebarMenuButton 
-                  asChild 
-                  isActive={isActive('/asset-writeoff')}
-                  className="text-white hover:bg-accent hover:text-primary data-[active=true]:bg-accent data-[active=true]:text-primary"
-                >
+                <SidebarMenuButton asChild isActive={isActive('/asset-writeoff')} className="text-white hover:bg-accent hover:text-primary data-[active=true]:bg-accent data-[active=true]:text-primary">
                   <Link to="/asset-writeoff">
                     <FileX className="h-4 w-4" />
                     <span>Write Off</span>
@@ -98,11 +77,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                 </SidebarMenuButton>
               </SidebarMenuItem>
               <SidebarMenuItem>
-                <SidebarMenuButton 
-                  asChild 
-                  isActive={isActive('/asset-auction')}
-                  className="text-white hover:bg-accent hover:text-primary data-[active=true]:bg-accent data-[active=true]:text-primary"
-                >
+                <SidebarMenuButton asChild isActive={isActive('/asset-auction')} className="text-white hover:bg-accent hover:text-primary data-[active=true]:bg-accent data-[active=true]:text-primary">
                   <Link to="/asset-auction">
                     <Gavel className="h-4 w-4" />
                     <span>Auction</span>
@@ -119,11 +94,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           <SidebarGroupContent>
             <SidebarMenu>
               <SidebarMenuItem>
-                <SidebarMenuButton 
-                  asChild 
-                  isActive={isActive('/preventive-maintenance')}
-                  className="text-white hover:bg-accent hover:text-primary data-[active=true]:bg-accent data-[active=true]:text-primary"
-                >
+                <SidebarMenuButton asChild isActive={isActive('/preventive-maintenance')} className="text-white hover:bg-accent hover:text-primary data-[active=true]:bg-accent data-[active=true]:text-primary">
                   <Link to="/preventive-maintenance">
                     <Wrench className="h-4 w-4" />
                     <span>Preventive Maintenance</span>
@@ -131,11 +102,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                 </SidebarMenuButton>
               </SidebarMenuItem>
               <SidebarMenuItem>
-                <SidebarMenuButton 
-                  asChild 
-                  isActive={isActive('/corrective-maintenance')}
-                  className="text-white hover:bg-accent hover:text-primary data-[active=true]:bg-accent data-[active=true]:text-primary"
-                >
+                <SidebarMenuButton asChild isActive={isActive('/corrective-maintenance')} className="text-white hover:bg-accent hover:text-primary data-[active=true]:bg-accent data-[active=true]:text-primary">
                   <Link to="/corrective-maintenance">
                     <AlertTriangle className="h-4 w-4" />
                     <span>Corrective Maintenance</span>
@@ -152,11 +119,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           <SidebarGroupContent>
             <SidebarMenu>
               <SidebarMenuItem>
-                <SidebarMenuButton 
-                  asChild 
-                  isActive={isActive('/assets')}
-                  className="text-white hover:bg-accent hover:text-primary data-[active=true]:bg-accent data-[active=true]:text-primary"
-                >
+                <SidebarMenuButton asChild isActive={isActive('/assets')} className="text-white hover:bg-accent hover:text-primary data-[active=true]:bg-accent data-[active=true]:text-primary">
                   <Link to="/assets">
                     <Package className="h-4 w-4" />
                     <span>View All Assets</span>
@@ -164,11 +127,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                 </SidebarMenuButton>
               </SidebarMenuItem>
               <SidebarMenuItem>
-                <SidebarMenuButton 
-                  asChild 
-                  isActive={isActive('/vendors')}
-                  className="text-white hover:bg-accent hover:text-primary data-[active=true]:bg-accent data-[active=true]:text-primary"
-                >
+                <SidebarMenuButton asChild isActive={isActive('/vendors')} className="text-white hover:bg-accent hover:text-primary data-[active=true]:bg-accent data-[active=true]:text-primary">
                   <Link to="/vendors">
                     <Truck className="h-4 w-4" />
                     <span>Vendors</span>
@@ -176,11 +135,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                 </SidebarMenuButton>
               </SidebarMenuItem>
               <SidebarMenuItem>
-                <SidebarMenuButton 
-                  asChild 
-                  isActive={isActive('/buildings')}
-                  className="text-white hover:bg-accent hover:text-primary data-[active=true]:bg-accent data-[active=true]:text-primary"
-                >
+                <SidebarMenuButton asChild isActive={isActive('/buildings')} className="text-white hover:bg-accent hover:text-primary data-[active=true]:bg-accent data-[active=true]:text-primary">
                   <Link to="/buildings">
                     <Building2 className="h-4 w-4" />
                     <span>Buildings</span>
@@ -188,11 +143,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                 </SidebarMenuButton>
               </SidebarMenuItem>
               <SidebarMenuItem>
-                <SidebarMenuButton 
-                  asChild 
-                  isActive={isActive('/insurance')}
-                  className="text-white hover:bg-accent hover:text-primary data-[active=true]:bg-accent data-[active=true]:text-primary"
-                >
+                <SidebarMenuButton asChild isActive={isActive('/insurance')} className="text-white hover:bg-accent hover:text-primary data-[active=true]:bg-accent data-[active=true]:text-primary">
                   <Link to="/insurance">
                     <FileCheck className="h-4 w-4" />
                     <span>Insurance</span>
@@ -209,11 +160,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           <SidebarGroupContent>
             <SidebarMenu>
               <SidebarMenuItem>
-                <SidebarMenuButton 
-                  asChild 
-                  isActive={isActive('/asset-depreciation')}
-                  className="text-white hover:bg-accent hover:text-primary data-[active=true]:bg-accent data-[active=true]:text-primary"
-                >
+                <SidebarMenuButton asChild isActive={isActive('/asset-depreciation')} className="text-white hover:bg-accent hover:text-primary data-[active=true]:bg-accent data-[active=true]:text-primary">
                   <Link to="/asset-depreciation">
                     <TrendingDown className="h-4 w-4" />
                     <span>Asset Depreciation</span>
@@ -221,11 +168,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                 </SidebarMenuButton>
               </SidebarMenuItem>
               <SidebarMenuItem>
-                <SidebarMenuButton 
-                  asChild 
-                  isActive={isActive('/reports')}
-                  className="text-white hover:bg-accent hover:text-primary data-[active=true]:bg-accent data-[active=true]:text-primary"
-                >
+                <SidebarMenuButton asChild isActive={isActive('/reports')} className="text-white hover:bg-accent hover:text-primary data-[active=true]:bg-accent data-[active=true]:text-primary">
                   <Link to="/reports">
                     <FileText className="h-4 w-4" />
                     <span>Reports</span>
@@ -241,20 +184,14 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           <SidebarGroupLabel className="text-accent font-semibold text-sm">Management</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {user?.role === 'admin' && (
-                <SidebarMenuItem>
-                  <SidebarMenuButton 
-                    asChild 
-                    isActive={isActive('/users')}
-                    className="text-white hover:bg-accent hover:text-primary data-[active=true]:bg-accent data-[active=true]:text-primary"
-                  >
+              {user?.role === 'admin' && <SidebarMenuItem>
+                  <SidebarMenuButton asChild isActive={isActive('/users')} className="text-white hover:bg-accent hover:text-primary data-[active=true]:bg-accent data-[active=true]:text-primary">
                     <Link to="/users">
                       <Users className="h-4 w-4" />
                       <span>User Management</span>
                     </Link>
                   </SidebarMenuButton>
-                </SidebarMenuItem>
-              )}
+                </SidebarMenuItem>}
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
@@ -285,11 +222,8 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           </DropdownMenuContent>
         </DropdownMenu>
       </SidebarFooter>
-    </Sidebar>
-  );
-
-  return (
-    <SidebarProvider>
+    </Sidebar>;
+  return <SidebarProvider>
       <div className="flex min-h-screen w-full">
         <AppSidebar />
         
@@ -310,8 +244,6 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           </main>
         </div>
       </div>
-    </SidebarProvider>
-  );
+    </SidebarProvider>;
 };
-
 export default Layout;
