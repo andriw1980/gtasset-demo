@@ -1,4 +1,3 @@
-
 import React from 'react';
 import Layout from '../components/Layout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -8,68 +7,159 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Responsive
 import { Package, AlertTriangle, Wrench, TrendingUp, TrendingDown, DollarSign, MapPin, Calendar } from 'lucide-react';
 
 // Mock data for charts
-const assetsByCategory = [
-  { name: 'Equipment', value: 145, color: '#8884d8' },
-  { name: 'Vehicles', value: 32, color: '#82ca9d' },
-  { name: 'Furniture', value: 89, color: '#ffc658' },
-  { name: 'IT Assets', value: 67, color: '#ff7300' },
-  { name: 'Buildings', value: 12, color: '#00ff88' }
-];
-
-const maintenanceTrend = [
-  { month: 'Jan', preventive: 45, corrective: 23, total: 68 },
-  { month: 'Feb', preventive: 52, corrective: 19, total: 71 },
-  { month: 'Mar', preventive: 48, corrective: 31, total: 79 },
-  { month: 'Apr', preventive: 61, corrective: 15, total: 76 },
-  { month: 'May', preventive: 55, corrective: 28, total: 83 },
-  { month: 'Jun', preventive: 67, corrective: 22, total: 89 }
-];
-
-const assetValue = [
-  { month: 'Jan', value: 2450000 },
-  { month: 'Feb', value: 2425000 },
-  { month: 'Mar', value: 2480000 },
-  { month: 'Apr', value: 2510000 },
-  { month: 'May', value: 2485000 },
-  { month: 'Jun', value: 2520000 }
-];
-
-const recentActivities = [
-  { id: 1, type: 'Asset Request', description: 'New laptop requested by IT Department', time: '2 hours ago', status: 'pending' },
-  { id: 2, type: 'Maintenance', description: 'Generator Unit A - Monthly inspection completed', time: '4 hours ago', status: 'completed' },
-  { id: 3, type: 'Transfer', description: 'Printer moved from HR to Finance', time: '6 hours ago', status: 'completed' },
-  { id: 4, type: 'Damage Report', description: 'HVAC system reported damaged', time: '1 day ago', status: 'urgent' },
-  { id: 5, type: 'Depreciation', description: 'Monthly depreciation calculated for 45 assets', time: '2 days ago', status: 'completed' }
-];
-
-const upcomingMaintenance = [
-  { asset: 'Fire Pump System', code: 'FP-001', date: '2024-06-30', type: 'Performance Test', priority: 'high' },
-  { asset: 'HVAC System', code: 'HVAC-001', date: '2024-07-02', type: 'Filter Replacement', priority: 'medium' },
-  { asset: 'Elevator Unit 1', code: 'ELV-001', date: '2024-07-10', type: 'Safety Inspection', priority: 'high' },
-  { asset: 'Backup Generator', code: 'GEN-002', date: '2024-07-15', type: 'Preventive Service', priority: 'medium' }
-];
-
+const assetsByCategory = [{
+  name: 'Equipment',
+  value: 145,
+  color: '#8884d8'
+}, {
+  name: 'Vehicles',
+  value: 32,
+  color: '#82ca9d'
+}, {
+  name: 'Furniture',
+  value: 89,
+  color: '#ffc658'
+}, {
+  name: 'IT Assets',
+  value: 67,
+  color: '#ff7300'
+}, {
+  name: 'Buildings',
+  value: 12,
+  color: '#00ff88'
+}];
+const maintenanceTrend = [{
+  month: 'Jan',
+  preventive: 45,
+  corrective: 23,
+  total: 68
+}, {
+  month: 'Feb',
+  preventive: 52,
+  corrective: 19,
+  total: 71
+}, {
+  month: 'Mar',
+  preventive: 48,
+  corrective: 31,
+  total: 79
+}, {
+  month: 'Apr',
+  preventive: 61,
+  corrective: 15,
+  total: 76
+}, {
+  month: 'May',
+  preventive: 55,
+  corrective: 28,
+  total: 83
+}, {
+  month: 'Jun',
+  preventive: 67,
+  corrective: 22,
+  total: 89
+}];
+const assetValue = [{
+  month: 'Jan',
+  value: 2450000
+}, {
+  month: 'Feb',
+  value: 2425000
+}, {
+  month: 'Mar',
+  value: 2480000
+}, {
+  month: 'Apr',
+  value: 2510000
+}, {
+  month: 'May',
+  value: 2485000
+}, {
+  month: 'Jun',
+  value: 2520000
+}];
+const recentActivities = [{
+  id: 1,
+  type: 'Asset Request',
+  description: 'New laptop requested by IT Department',
+  time: '2 hours ago',
+  status: 'pending'
+}, {
+  id: 2,
+  type: 'Maintenance',
+  description: 'Generator Unit A - Monthly inspection completed',
+  time: '4 hours ago',
+  status: 'completed'
+}, {
+  id: 3,
+  type: 'Transfer',
+  description: 'Printer moved from HR to Finance',
+  time: '6 hours ago',
+  status: 'completed'
+}, {
+  id: 4,
+  type: 'Damage Report',
+  description: 'HVAC system reported damaged',
+  time: '1 day ago',
+  status: 'urgent'
+}, {
+  id: 5,
+  type: 'Depreciation',
+  description: 'Monthly depreciation calculated for 45 assets',
+  time: '2 days ago',
+  status: 'completed'
+}];
+const upcomingMaintenance = [{
+  asset: 'Fire Pump System',
+  code: 'FP-001',
+  date: '2024-06-30',
+  type: 'Performance Test',
+  priority: 'high'
+}, {
+  asset: 'HVAC System',
+  code: 'HVAC-001',
+  date: '2024-07-02',
+  type: 'Filter Replacement',
+  priority: 'medium'
+}, {
+  asset: 'Elevator Unit 1',
+  code: 'ELV-001',
+  date: '2024-07-10',
+  type: 'Safety Inspection',
+  priority: 'high'
+}, {
+  asset: 'Backup Generator',
+  code: 'GEN-002',
+  date: '2024-07-15',
+  type: 'Preventive Service',
+  priority: 'medium'
+}];
 const Dashboard = () => {
   const getActivityStatusColor = (status: string) => {
     switch (status) {
-      case 'completed': return 'secondary';
-      case 'pending': return 'outline';
-      case 'urgent': return 'destructive';
-      default: return 'default';
+      case 'completed':
+        return 'secondary';
+      case 'pending':
+        return 'outline';
+      case 'urgent':
+        return 'destructive';
+      default:
+        return 'default';
     }
   };
-
   const getPriorityColor = (priority: string) => {
     switch (priority) {
-      case 'high': return 'destructive';
-      case 'medium': return 'outline';
-      case 'low': return 'secondary';
-      default: return 'default';
+      case 'high':
+        return 'destructive';
+      case 'medium':
+        return 'outline';
+      case 'low':
+        return 'secondary';
+      default:
+        return 'default';
     }
   };
-
-  return (
-    <Layout>
+  return <Layout>
       <div className="space-y-6">
         <div>
           <h1 className="text-3xl font-bold">Dashboard</h1>
@@ -141,19 +231,11 @@ const Dashboard = () => {
             <CardContent>
               <ResponsiveContainer width="100%" height={300}>
                 <PieChart>
-                  <Pie
-                    data={assetsByCategory}
-                    cx="50%"
-                    cy="50%"
-                    labelLine={false}
-                    label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
-                    outerRadius={80}
-                    fill="#8884d8"
-                    dataKey="value"
-                  >
-                    {assetsByCategory.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={entry.color} />
-                    ))}
+                  <Pie data={assetsByCategory} cx="50%" cy="50%" labelLine={false} label={({
+                  name,
+                  percent
+                }) => `${name} ${(percent * 100).toFixed(0)}%`} outerRadius={80} fill="#8884d8" dataKey="value">
+                    {assetsByCategory.map((entry, index) => <Cell key={`cell-${index}`} fill={entry.color} />)}
                   </Pie>
                   <Tooltip />
                 </PieChart>
@@ -184,20 +266,8 @@ const Dashboard = () => {
 
         {/* Asset Value Trend */}
         <Card>
-          <CardHeader>
-            <CardTitle>Total Asset Value Trend</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <ResponsiveContainer width="100%" height={300}>
-              <LineChart data={assetValue}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="month" />
-                <YAxis tickFormatter={(value) => `$${(value / 1000000).toFixed(1)}M`} />
-                <Tooltip formatter={(value) => [`$${value.toLocaleString()}`, 'Asset Value']} />
-                <Line type="monotone" dataKey="value" stroke="#8884d8" strokeWidth={2} />
-              </LineChart>
-            </ResponsiveContainer>
-          </CardContent>
+          
+          
         </Card>
 
         {/* Bottom Section */}
@@ -209,8 +279,7 @@ const Dashboard = () => {
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {recentActivities.map((activity) => (
-                  <div key={activity.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                {recentActivities.map(activity => <div key={activity.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
                     <div className="flex-1">
                       <p className="font-medium text-sm">{activity.type}</p>
                       <p className="text-sm text-gray-600">{activity.description}</p>
@@ -219,8 +288,7 @@ const Dashboard = () => {
                     <Badge variant={getActivityStatusColor(activity.status)}>
                       {activity.status}
                     </Badge>
-                  </div>
-                ))}
+                  </div>)}
               </div>
             </CardContent>
           </Card>
@@ -232,8 +300,7 @@ const Dashboard = () => {
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {upcomingMaintenance.map((maintenance, index) => (
-                  <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                {upcomingMaintenance.map((maintenance, index) => <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
                     <div className="flex-1">
                       <p className="font-medium text-sm">{maintenance.asset}</p>
                       <p className="text-xs text-gray-500">{maintenance.code}</p>
@@ -248,15 +315,12 @@ const Dashboard = () => {
                     <Badge variant={getPriorityColor(maintenance.priority)}>
                       {maintenance.priority}
                     </Badge>
-                  </div>
-                ))}
+                  </div>)}
               </div>
             </CardContent>
           </Card>
         </div>
       </div>
-    </Layout>
-  );
+    </Layout>;
 };
-
 export default Dashboard;
