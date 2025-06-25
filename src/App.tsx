@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -15,7 +16,6 @@ import Buildings from "./pages/Buildings";
 import Reports from "./pages/Reports";
 import Profile from "./pages/Profile";
 import AssetRequest from "./pages/AssetRequest";
-import LossReport from "./pages/LossReport";
 import Insurance from "./pages/Insurance";
 import AssetDepreciation from "./pages/AssetDepreciation";
 import DepreciationDetail from "./pages/DepreciationDetail";
@@ -123,11 +123,6 @@ const App = () => (
             <Route path="/asset-request" element={
               <ProtectedRoute>
                 <AssetRequest />
-              </ProtectedRoute>
-            } />
-            <Route path="/loss-report" element={
-              <ProtectedRoute>
-                <LossReport />
               </ProtectedRoute>
             } />
             <Route path="/insurance" element={

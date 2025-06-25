@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
@@ -107,18 +106,6 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                   <Link to="/asset-auction">
                     <Gavel className="h-4 w-4" />
                     <span>Auction</span>
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-              <SidebarMenuItem>
-                <SidebarMenuButton 
-                  asChild 
-                  isActive={isActive('/loss-report')}
-                  className="text-white hover:bg-accent hover:text-primary data-[active=true]:bg-accent data-[active=true]:text-primary"
-                >
-                  <Link to="/loss-report">
-                    <AlertTriangle className="h-4 w-4" />
-                    <span>Report Loss</span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
