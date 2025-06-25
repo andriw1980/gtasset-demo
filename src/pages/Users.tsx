@@ -75,7 +75,7 @@ const Users = () => {
       'admin': 'destructive',
       'staff': 'default',
       'auditor': 'secondary',
-      'supervisor': 'outline'
+      'supervisor': 'secondary'
     };
     return <Badge variant={variants[role] || 'default'}>{role.toUpperCase()}</Badge>;
   };

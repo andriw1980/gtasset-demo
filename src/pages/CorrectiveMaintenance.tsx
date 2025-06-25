@@ -76,9 +76,9 @@ const CorrectiveMaintenance = () => {
   ];
 
   const getStatusBadge = (status: string) => {
-    const variants: Record<string, "default" | "secondary" | "destructive" | "outline"> = {
+    const variants: Record<string, "default" | "secondary" | "destructive"> = {
       'Belum Diperbaiki': 'destructive',
-      'Sedang Diperbaiki': 'outline',
+      'Sedang Diperbaiki': 'secondary',
       'Klaim Asuransi': 'secondary',
       'Selesai': 'default'
     };
@@ -88,7 +88,7 @@ const CorrectiveMaintenance = () => {
   const getPriorityBadge = (priority: string) => {
     const variants: Record<string, "default" | "secondary" | "destructive"> = {
       'Tinggi': 'destructive',
-      'Sedang': 'outline',
+      'Sedang': 'secondary',
       'Rendah': 'secondary'
     };
     return <Badge variant={variants[priority] || 'default'}>{priority}</Badge>;
