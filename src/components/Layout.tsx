@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
@@ -12,7 +11,6 @@ import {
   FileText, 
   Settings, 
   LogOut, 
-  Plus,
   Wrench,
   TrendingDown,
   UserPlus,
@@ -36,7 +34,6 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
       title: 'Main',
       items: [
         { name: 'Dashboard', icon: Home, path: '/dashboard' },
-        { name: 'Add Asset', icon: Plus, path: '/add-asset' },
       ]
     },
     {
