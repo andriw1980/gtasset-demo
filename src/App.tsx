@@ -25,6 +25,7 @@ import CorrectiveMaintenance from "./pages/CorrectiveMaintenance";
 import AssetTransfer from "./pages/AssetTransfer";
 import AssetWriteOff from "./pages/AssetWriteOff";
 import AssetAuction from "./pages/AssetAuction";
+import AddAsset from "./pages/AddAsset";
 import ProtectedRoute from "./components/ProtectedRoute";
 import NotFound from "./pages/NotFound";
 
@@ -45,6 +46,11 @@ const App = () => (
                 <Dashboard />
               </ProtectedRoute>
             } />
+            <Route path="/dashboard" element={
+              <ProtectedRoute>
+                <Dashboard />
+              </ProtectedRoute>
+            } />
             <Route path="/assets" element={
               <ProtectedRoute>
                 <Assets />
@@ -53,6 +59,11 @@ const App = () => (
             <Route path="/assets/:id" element={
               <ProtectedRoute>
                 <AssetDetail />
+              </ProtectedRoute>
+            } />
+            <Route path="/add-asset" element={
+              <ProtectedRoute>
+                <AddAsset />
               </ProtectedRoute>
             } />
             <Route path="/asset-depreciation" element={
@@ -75,6 +86,11 @@ const App = () => (
                 <CorrectiveMaintenance />
               </ProtectedRoute>
             } />
+            <Route path="/asset-maintenance" element={
+              <ProtectedRoute>
+                <AssetMaintenance />
+              </ProtectedRoute>
+            } />
             <Route path="/asset-maintenance/:assetCode" element={
               <ProtectedRoute>
                 <AssetMaintenance />
@@ -86,6 +102,11 @@ const App = () => (
               </ProtectedRoute>
             } />
             <Route path="/asset-writeoff" element={
+              <ProtectedRoute>
+                <AssetWriteOff />
+              </ProtectedRoute>
+            } />
+            <Route path="/asset-write-off" element={
               <ProtectedRoute>
                 <AssetWriteOff />
               </ProtectedRoute>
