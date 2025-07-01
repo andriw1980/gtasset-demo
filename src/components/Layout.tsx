@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
@@ -30,23 +31,51 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
     navigate('/login');
   };
 
-  const menuItems = [
-    { name: 'Dashboard', icon: Home, path: '/dashboard' },
-    { name: 'Assets', icon: Package, path: '/assets' },
-    { name: 'Add Asset', icon: Plus, path: '/add-asset' },
-    { name: 'Asset Request', icon: UserPlus, path: '/asset-request' },
-    { name: 'Asset Transfer', icon: FileText, path: '/asset-transfer' },
-    { name: 'Asset Maintenance', icon: Wrench, path: '/asset-maintenance' },
-    { name: 'Preventive Maintenance', icon: Settings, path: '/preventive-maintenance' },
-    { name: 'Corrective Maintenance', icon: Wrench, path: '/corrective-maintenance' },
-    { name: 'Asset Depreciation', icon: TrendingDown, path: '/asset-depreciation' },
-    { name: 'Asset Write-Off', icon: FileText, path: '/asset-write-off' },
-    { name: 'Asset Auction', icon: FileText, path: '/asset-auction' },
-    { name: 'Users', icon: Users, path: '/users' },
-    { name: 'Vendors', icon: Building, path: '/vendors' },
-    { name: 'Buildings', icon: Building, path: '/buildings' },
-    { name: 'Insurance', icon: FileText, path: '/insurance' },
-    { name: 'Reports', icon: FileText, path: '/reports' },
+  const menuSections = [
+    {
+      title: 'Main',
+      items: [
+        { name: 'Dashboard', icon: Home, path: '/dashboard' },
+        { name: 'Add Asset', icon: Plus, path: '/add-asset' },
+      ]
+    },
+    {
+      title: 'Asset Transaction',
+      items: [
+        { name: 'Asset Request', icon: UserPlus, path: '/asset-request' },
+        { name: 'Asset Transfer', icon: FileText, path: '/asset-transfer' },
+        { name: 'Asset Write Off', icon: FileText, path: '/asset-write-off' },
+        { name: 'Asset Auction', icon: FileText, path: '/asset-auction' },
+      ]
+    },
+    {
+      title: 'Asset Maintenance',
+      items: [
+        { name: 'Preventive Maintenance', icon: Settings, path: '/preventive-maintenance' },
+        { name: 'Corrective Maintenance', icon: Wrench, path: '/corrective-maintenance' },
+      ]
+    },
+    {
+      title: 'Master Data',
+      items: [
+        { name: 'Assets', icon: Package, path: '/assets' },
+        { name: 'Vendors', icon: Building, path: '/vendors' },
+        { name: 'Buildings', icon: Building, path: '/buildings' },
+        { name: 'Insurance', icon: FileText, path: '/insurance' },
+      ]
+    },
+    {
+      title: 'Reports',
+      items: [
+        { name: 'Asset Depreciation', icon: TrendingDown, path: '/asset-depreciation' },
+      ]
+    },
+    {
+      title: 'System',
+      items: [
+        { name: 'Users', icon: Users, path: '/users' },
+      ]
+    }
   ];
 
   const SidebarContent = () => (
@@ -63,25 +92,34 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
         </div>
       </div>
 
-      <nav className="flex-1 overflow-y-auto px-2 lg:px-4 py-4 space-y-1">
-        {menuItems.map((item) => {
-          const isActive = location.pathname === item.path;
-          return (
-            <Link
-              key={item.name}
-              to={item.path}
-              onClick={() => setIsMobileMenuOpen(false)}
-              className={`flex items-center space-x-3 px-3 py-2.5 rounded-lg text-sm lg:text-base transition-all duration-200 ${
-                isActive
-                  ? 'bg-[#fccc19] text-[#096284] font-medium shadow-lg'
-                  : 'text-white hover:bg-white/10 hover:text-[#fccc19]'
-              }`}
-            >
-              <item.icon className="h-4 w-4 lg:h-5 lg:w-5 flex-shrink-0" />
-              <span className="truncate">{item.name}</span>
-            </Link>
-          );
-        })}
+      <nav className="flex-1 overflow-y-auto px-2 lg:px-4 py-4 space-y-4">
+        {menuSections.map((section) => (
+          <div key={section.title} className="space-y-1">
+            <h3 className="px-3 text-xs font-semibold text-white/70 uppercase tracking-wider">
+              {section.title}
+            </h3>
+            <div className="space-y-1">
+              {section.items.map((item) => {
+                const isActive = location.pathname === item.path;
+                return (
+                  <Link
+                    key={item.name}
+                    to={item.path}
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className={`flex items-center space-x-3 px-3 py-2.5 rounded-lg text-sm lg:text-base transition-all duration-200 ${
+                      isActive
+                        ? 'bg-[#fccc19] text-[#096284] font-medium shadow-lg'
+                        : 'text-white hover:bg-white/10 hover:text-[#fccc19]'
+                    }`}
+                  >
+                    <item.icon className="h-4 w-4 lg:h-5 lg:w-5 flex-shrink-0" />
+                    <span className="truncate">{item.name}</span>
+                  </Link>
+                );
+              })}
+            </div>
+          </div>
+        ))}
       </nav>
 
       <div className="p-4 lg:p-6 border-t border-white/20">
