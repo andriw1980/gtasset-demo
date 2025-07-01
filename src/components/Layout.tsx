@@ -1,249 +1,155 @@
-import React from 'react';
+
+import React, { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { Button } from '@/components/ui/button';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarGroupLabel, SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarProvider, SidebarTrigger, SidebarHeader, SidebarFooter } from '@/components/ui/sidebar';
-import { LayoutDashboard, Package, Users, Building2, Truck, FileText, Settings, LogOut, User, AlertTriangle, ClipboardList, FileCheck, TrendingDown, Wrench, Database, ArrowLeftRight, FileX, Gavel } from 'lucide-react';
-interface LayoutProps {
-  children: React.ReactNode;
-}
-const Layout: React.FC<LayoutProps> = ({
-  children
-}) => {
-  const {
-    user,
-    logout
-  } = useAuth();
+import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
+import { 
+  Home, 
+  Package, 
+  Users, 
+  Building, 
+  FileText, 
+  Settings, 
+  LogOut, 
+  Plus,
+  Wrench,
+  TrendingDown,
+  UserPlus,
+  Menu,
+  X
+} from 'lucide-react';
+
+const Layout = ({ children }: { children: React.ReactNode }) => {
   const location = useLocation();
   const navigate = useNavigate();
+  const { logout } = useAuth();
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
   const handleLogout = () => {
     logout();
     navigate('/login');
   };
-  const isActive = (path: string) => location.pathname === path;
-  const AppSidebar = () => <Sidebar className="bg-primary">
-      <SidebarHeader className="p-4 bg-primary border-b border-primary-foreground/10">
-        <Link to="/" className="flex items-center space-x-2">
-          <img src="/lovable-uploads/ef965f01-bf50-42a9-b0f3-fbb537bd67f4.png" alt="GAMATECHNO Logo" className="h-8 w-auto" />
-          <span className="text-lg font-bold text-white">Eoviz Asset</span>
-        </Link>
-      </SidebarHeader>
 
-      <SidebarContent className="bg-primary">
-        {/* Dashboard */}
-        <SidebarGroup>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              <SidebarMenuItem>
-                <SidebarMenuButton asChild isActive={isActive('/')} className="text-white hover:bg-accent hover:text-primary data-[active=true]:bg-accent data-[active=true]:text-primary">
-                  <Link to="/">
-                    <LayoutDashboard className="h-4 w-4" />
-                    <span>Dashboard</span>
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
+  const menuItems = [
+    { name: 'Dashboard', icon: Home, path: '/dashboard' },
+    { name: 'Assets', icon: Package, path: '/assets' },
+    { name: 'Add Asset', icon: Plus, path: '/add-asset' },
+    { name: 'Asset Request', icon: UserPlus, path: '/asset-request' },
+    { name: 'Asset Transfer', icon: FileText, path: '/asset-transfer' },
+    { name: 'Asset Maintenance', icon: Wrench, path: '/asset-maintenance' },
+    { name: 'Preventive Maintenance', icon: Settings, path: '/preventive-maintenance' },
+    { name: 'Corrective Maintenance', icon: Wrench, path: '/corrective-maintenance' },
+    { name: 'Asset Depreciation', icon: TrendingDown, path: '/asset-depreciation' },
+    { name: 'Asset Write-Off', icon: FileText, path: '/asset-write-off' },
+    { name: 'Asset Auction', icon: FileText, path: '/asset-auction' },
+    { name: 'Users', icon: Users, path: '/users' },
+    { name: 'Vendors', icon: Building, path: '/vendors' },
+    { name: 'Buildings', icon: Building, path: '/buildings' },
+    { name: 'Insurance', icon: FileText, path: '/insurance' },
+    { name: 'Reports', icon: FileText, path: '/reports' },
+  ];
 
-        {/* Asset Transaction */}
-        <SidebarGroup>
-          <SidebarGroupLabel className="text-accent font-semibold text-sm">Asset Transaction</SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              <SidebarMenuItem>
-                <SidebarMenuButton asChild isActive={isActive('/asset-request')} className="text-white hover:bg-accent hover:text-primary data-[active=true]:bg-accent data-[active=true]:text-primary">
-                  <Link to="/asset-request">
-                    <ClipboardList className="h-4 w-4" />
-                    <span>Request Asset</span>
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-              <SidebarMenuItem>
-                <SidebarMenuButton asChild isActive={isActive('/asset-transfer')} className="text-white hover:bg-accent hover:text-primary data-[active=true]:bg-accent data-[active=true]:text-primary">
-                  <Link to="/asset-transfer">
-                    <ArrowLeftRight className="h-4 w-4" />
-                    <span>Transfer/Mutation</span>
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-              <SidebarMenuItem>
-                <SidebarMenuButton asChild isActive={isActive('/asset-writeoff')} className="text-white hover:bg-accent hover:text-primary data-[active=true]:bg-accent data-[active=true]:text-primary">
-                  <Link to="/asset-writeoff">
-                    <FileX className="h-4 w-4" />
-                    <span>Write Off</span>
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-              <SidebarMenuItem>
-                <SidebarMenuButton asChild isActive={isActive('/asset-auction')} className="text-white hover:bg-accent hover:text-primary data-[active=true]:bg-accent data-[active=true]:text-primary">
-                  <Link to="/asset-auction">
-                    <Gavel className="h-4 w-4" />
-                    <span>Auction</span>
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
-
-        {/* Maintenance */}
-        <SidebarGroup>
-          <SidebarGroupLabel className="text-accent font-semibold text-sm">Maintenance</SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              <SidebarMenuItem>
-                <SidebarMenuButton asChild isActive={isActive('/preventive-maintenance')} className="text-white hover:bg-accent hover:text-primary data-[active=true]:bg-accent data-[active=true]:text-primary">
-                  <Link to="/preventive-maintenance">
-                    <Wrench className="h-4 w-4" />
-                    <span>Preventive Maintenance</span>
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-              <SidebarMenuItem>
-                <SidebarMenuButton asChild isActive={isActive('/corrective-maintenance')} className="text-white hover:bg-accent hover:text-primary data-[active=true]:bg-accent data-[active=true]:text-primary">
-                  <Link to="/corrective-maintenance">
-                    <AlertTriangle className="h-4 w-4" />
-                    <span>Corrective Maintenance</span>
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
-
-        {/* Master Data */}
-        <SidebarGroup>
-          <SidebarGroupLabel className="text-accent font-semibold text-sm">Master Data</SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              <SidebarMenuItem>
-                <SidebarMenuButton asChild isActive={isActive('/assets')} className="text-white hover:bg-accent hover:text-primary data-[active=true]:bg-accent data-[active=true]:text-primary">
-                  <Link to="/assets">
-                    <Package className="h-4 w-4" />
-                    <span>View All Assets</span>
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-              <SidebarMenuItem>
-                <SidebarMenuButton asChild isActive={isActive('/vendors')} className="text-white hover:bg-accent hover:text-primary data-[active=true]:bg-accent data-[active=true]:text-primary">
-                  <Link to="/vendors">
-                    <Truck className="h-4 w-4" />
-                    <span>Vendors</span>
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-              <SidebarMenuItem>
-                <SidebarMenuButton asChild isActive={isActive('/buildings')} className="text-white hover:bg-accent hover:text-primary data-[active=true]:bg-accent data-[active=true]:text-primary">
-                  <Link to="/buildings">
-                    <Building2 className="h-4 w-4" />
-                    <span>Buildings</span>
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-              <SidebarMenuItem>
-                <SidebarMenuButton asChild isActive={isActive('/insurance')} className="text-white hover:bg-accent hover:text-primary data-[active=true]:bg-accent data-[active=true]:text-primary">
-                  <Link to="/insurance">
-                    <FileCheck className="h-4 w-4" />
-                    <span>Insurance</span>
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
-
-        {/* Analysis */}
-        <SidebarGroup>
-          <SidebarGroupLabel className="text-accent font-semibold text-sm">Analysis</SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              <SidebarMenuItem>
-                <SidebarMenuButton asChild isActive={isActive('/asset-depreciation')} className="text-white hover:bg-accent hover:text-primary data-[active=true]:bg-accent data-[active=true]:text-primary">
-                  <Link to="/asset-depreciation">
-                    <TrendingDown className="h-4 w-4" />
-                    <span>Asset Depreciation</span>
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-              <SidebarMenuItem>
-                <SidebarMenuButton asChild isActive={isActive('/reports')} className="text-white hover:bg-accent hover:text-primary data-[active=true]:bg-accent data-[active=true]:text-primary">
-                  <Link to="/reports">
-                    <FileText className="h-4 w-4" />
-                    <span>Reports</span>
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
-
-        {/* Management */}
-        <SidebarGroup>
-          <SidebarGroupLabel className="text-accent font-semibold text-sm">Management</SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              {user?.role === 'admin' && <SidebarMenuItem>
-                  <SidebarMenuButton asChild isActive={isActive('/users')} className="text-white hover:bg-accent hover:text-primary data-[active=true]:bg-accent data-[active=true]:text-primary">
-                    <Link to="/users">
-                      <Users className="h-4 w-4" />
-                      <span>User Management</span>
-                    </Link>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
-      </SidebarContent>
-
-      <SidebarFooter className="p-4 bg-primary border-t border-primary-foreground/10">
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="outline" className="w-full justify-start bg-white/10 border-white/20 text-white hover:bg-white/20">
-              <User className="h-4 w-4 mr-2" />
-              {user?.fullName}
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-56 bg-white">
-            <DropdownMenuLabel>My Account</DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem asChild>
-              <Link to="/profile">
-                <User className="h-4 w-4 mr-2" />
-                Profile
-              </Link>
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={handleLogout}>
-              <LogOut className="h-4 w-4 mr-2" />
-              Logout
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </SidebarFooter>
-    </Sidebar>;
-  return <SidebarProvider>
-      <div className="flex min-h-screen w-full">
-        <AppSidebar />
-        
-        {/* Header */}
-        <div className="flex-1">
-          <header className="bg-white shadow-sm border-b border-primary/20 h-16 flex items-center px-4">
-            <SidebarTrigger className="text-primary" />
-            <div className="ml-4">
-              <span className="text-sm text-primary/80 font-medium">
-                Welcome, {user?.fullName} ({user?.role})
-              </span>
-            </div>
-          </header>
-
-          {/* Main Content */}
-          <main className="p-6 bg-gradient-to-br from-primary/5 to-accent/5 min-h-screen">
-            {children}
-          </main>
+  const SidebarContent = () => (
+    <div className="flex flex-col h-full bg-[#096284] text-white">
+      <div className="p-4 lg:p-6 border-b border-white/20">
+        <div className="flex items-center space-x-3">
+          <div className="w-8 h-8 lg:w-10 lg:h-10 bg-[#fccc19] rounded-lg flex items-center justify-center">
+            <Package className="h-4 w-4 lg:h-5 lg:w-5 text-[#096284]" />
+          </div>
+          <div>
+            <h1 className="text-lg lg:text-xl font-bold">GTAsset</h1>
+            <p className="text-xs lg:text-sm text-white/70">Asset Management</p>
+          </div>
         </div>
       </div>
-    </SidebarProvider>;
+
+      <nav className="flex-1 overflow-y-auto px-2 lg:px-4 py-4 space-y-1">
+        {menuItems.map((item) => {
+          const isActive = location.pathname === item.path;
+          return (
+            <Link
+              key={item.name}
+              to={item.path}
+              onClick={() => setIsMobileMenuOpen(false)}
+              className={`flex items-center space-x-3 px-3 py-2.5 rounded-lg text-sm lg:text-base transition-all duration-200 ${
+                isActive
+                  ? 'bg-[#fccc19] text-[#096284] font-medium shadow-lg'
+                  : 'text-white hover:bg-white/10 hover:text-[#fccc19]'
+              }`}
+            >
+              <item.icon className="h-4 w-4 lg:h-5 lg:w-5 flex-shrink-0" />
+              <span className="truncate">{item.name}</span>
+            </Link>
+          );
+        })}
+      </nav>
+
+      <div className="p-4 lg:p-6 border-t border-white/20">
+        <Button
+          onClick={handleLogout}
+          variant="ghost"
+          className="w-full justify-start text-white hover:bg-white/10 hover:text-[#fccc19] text-sm lg:text-base"
+        >
+          <LogOut className="h-4 w-4 lg:h-5 lg:w-5 mr-3" />
+          Logout
+        </Button>
+      </div>
+    </div>
+  );
+
+  return (
+    <div className="min-h-screen bg-gray-50 flex">
+      {/* Desktop Sidebar */}
+      <div className="hidden lg:flex lg:w-64 xl:w-72 flex-col">
+        <SidebarContent />
+      </div>
+
+      {/* Mobile Sidebar */}
+      <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
+        <SheetContent side="left" className="p-0 w-64 bg-[#096284]">
+          <SidebarContent />
+        </SheetContent>
+      </Sheet>
+
+      {/* Main Content */}
+      <div className="flex-1 flex flex-col min-w-0">
+        {/* Mobile Header */}
+        <div className="lg:hidden bg-white border-b border-gray-200 px-4 py-3 flex items-center justify-between">
+          <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
+            <SheetTrigger asChild>
+              <Button variant="ghost" size="sm" className="text-[#096284]">
+                <Menu className="h-5 w-5" />
+              </Button>
+            </SheetTrigger>
+          </Sheet>
+          
+          <div className="flex items-center space-x-2">
+            <div className="w-6 h-6 bg-[#fccc19] rounded flex items-center justify-center">
+              <Package className="h-3 w-3 text-[#096284]" />
+            </div>
+            <h1 className="text-lg font-bold text-[#096284]">GTAsset</h1>
+          </div>
+
+          <Button
+            onClick={handleLogout}
+            variant="ghost"
+            size="sm"
+            className="text-[#096284] hover:bg-[#096284]/10"
+          >
+            <LogOut className="h-4 w-4" />
+          </Button>
+        </div>
+
+        {/* Page Content */}
+        <main className="flex-1 overflow-auto">
+          <div className="p-4 lg:p-6 xl:p-8">
+            {children}
+          </div>
+        </main>
+      </div>
+    </div>
+  );
 };
+
 export default Layout;

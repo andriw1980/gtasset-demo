@@ -82,74 +82,78 @@ const AssetRequest = () => {
 
   return (
     <Layout>
-      <div className="space-y-6">
-        <h1 className="text-3xl font-bold text-primary">Asset Request</h1>
+      <div className="space-y-4 lg:space-y-6">
+        <h1 className="text-2xl lg:text-3xl font-bold text-primary">Asset Request</h1>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 xl:grid-cols-2 gap-4 lg:gap-6">
           <Card className="border-primary/20 shadow-lg">
             <CardHeader className="bg-primary/10 rounded-t-lg">
-              <CardTitle className="text-primary">New Asset Request</CardTitle>
+              <CardTitle className="text-primary text-lg lg:text-xl">New Asset Request</CardTitle>
             </CardHeader>
-            <CardContent className="pt-6">
+            <CardContent className="pt-4 lg:pt-6">
               <form onSubmit={handleSubmit} className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="assetType" className="text-primary font-medium">Asset Type *</Label>
-                  <Input
-                    id="assetType"
-                    value={formData.assetType}
-                    onChange={(e) => handleInputChange('assetType', e.target.value)}
-                    placeholder="Enter asset type"
-                    className="border-primary/20 focus:border-primary"
-                    required
-                  />
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="assetType" className="text-primary font-medium text-sm">Asset Type *</Label>
+                    <Input
+                      id="assetType"
+                      value={formData.assetType}
+                      onChange={(e) => handleInputChange('assetType', e.target.value)}
+                      placeholder="Enter asset type"
+                      className="border-primary/20 focus:border-primary text-sm"
+                      required
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="category" className="text-primary font-medium text-sm">Category *</Label>
+                    <Select value={formData.category} onValueChange={(value) => handleInputChange('category', value)}>
+                      <SelectTrigger className="border-primary/20 focus:border-primary text-sm">
+                        <SelectValue placeholder="Select category" />
+                      </SelectTrigger>
+                      <SelectContent className="bg-white">
+                        <SelectItem value="it-equipment">IT Equipment</SelectItem>
+                        <SelectItem value="furniture">Furniture</SelectItem>
+                        <SelectItem value="vehicle">Vehicle</SelectItem>
+                        <SelectItem value="machinery">Machinery</SelectItem>
+                        <SelectItem value="office-supplies">Office Supplies</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="urgency" className="text-primary font-medium text-sm">Urgency Level *</Label>
+                    <Select value={formData.urgency} onValueChange={(value) => handleInputChange('urgency', value)}>
+                      <SelectTrigger className="border-primary/20 focus:border-primary text-sm">
+                        <SelectValue placeholder="Select urgency" />
+                      </SelectTrigger>
+                      <SelectContent className="bg-white">
+                        <SelectItem value="high">High</SelectItem>
+                        <SelectItem value="medium">Medium</SelectItem>
+                        <SelectItem value="low">Low</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="estimatedCost" className="text-primary font-medium text-sm">Estimated Cost</Label>
+                    <Input
+                      id="estimatedCost"
+                      type="number"
+                      value={formData.estimatedCost}
+                      onChange={(e) => handleInputChange('estimatedCost', e.target.value)}
+                      placeholder="Enter estimated cost"
+                      className="border-primary/20 focus:border-primary text-sm"
+                    />
+                  </div>
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="category" className="text-primary font-medium">Category *</Label>
-                  <Select value={formData.category} onValueChange={(value) => handleInputChange('category', value)}>
-                    <SelectTrigger className="border-primary/20 focus:border-primary">
-                      <SelectValue placeholder="Select category" />
-                    </SelectTrigger>
-                    <SelectContent className="bg-white">
-                      <SelectItem value="it-equipment">IT Equipment</SelectItem>
-                      <SelectItem value="furniture">Furniture</SelectItem>
-                      <SelectItem value="vehicle">Vehicle</SelectItem>
-                      <SelectItem value="machinery">Machinery</SelectItem>
-                      <SelectItem value="office-supplies">Office Supplies</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="urgency" className="text-primary font-medium">Urgency Level *</Label>
-                  <Select value={formData.urgency} onValueChange={(value) => handleInputChange('urgency', value)}>
-                    <SelectTrigger className="border-primary/20 focus:border-primary">
-                      <SelectValue placeholder="Select urgency" />
-                    </SelectTrigger>
-                    <SelectContent className="bg-white">
-                      <SelectItem value="high">High</SelectItem>
-                      <SelectItem value="medium">Medium</SelectItem>
-                      <SelectItem value="low">Low</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="estimatedCost" className="text-primary font-medium">Estimated Cost</Label>
-                  <Input
-                    id="estimatedCost"
-                    type="number"
-                    value={formData.estimatedCost}
-                    onChange={(e) => handleInputChange('estimatedCost', e.target.value)}
-                    placeholder="Enter estimated cost"
-                    className="border-primary/20 focus:border-primary"
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="preferredVendor" className="text-primary font-medium">Preferred Vendor</Label>
+                  <Label htmlFor="preferredVendor" className="text-primary font-medium text-sm">Preferred Vendor</Label>
                   <Select value={formData.preferredVendor} onValueChange={(value) => handleInputChange('preferredVendor', value)}>
-                    <SelectTrigger className="border-primary/20 focus:border-primary">
+                    <SelectTrigger className="border-primary/20 focus:border-primary text-sm">
                       <SelectValue placeholder="Select vendor (optional)" />
                     </SelectTrigger>
                     <SelectContent className="bg-white">
@@ -162,14 +166,14 @@ const AssetRequest = () => {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="justification" className="text-primary font-medium">Business Justification *</Label>
+                  <Label htmlFor="justification" className="text-primary font-medium text-sm">Business Justification *</Label>
                   <Textarea
                     id="justification"
                     value={formData.justification}
                     onChange={(e) => handleInputChange('justification', e.target.value)}
                     placeholder="Explain why this asset is needed"
                     rows={4}
-                    className="border-primary/20 focus:border-primary"
+                    className="border-primary/20 focus:border-primary text-sm resize-none"
                     required
                   />
                 </div>
@@ -187,35 +191,70 @@ const AssetRequest = () => {
 
           <Card className="border-primary/20 shadow-lg">
             <CardHeader className="bg-accent/10 rounded-t-lg">
-              <CardTitle className="text-primary">Request History</CardTitle>
+              <CardTitle className="text-primary text-lg lg:text-xl">Request History</CardTitle>
             </CardHeader>
-            <CardContent className="pt-6">
-              <Table>
-                <TableHeader>
-                  <TableRow className="border-primary/20">
-                    <TableHead className="text-primary font-semibold">Request ID</TableHead>
-                    <TableHead className="text-primary font-semibold">Asset Type</TableHead>
-                    <TableHead className="text-primary font-semibold">Status</TableHead>
-                    <TableHead className="text-primary font-semibold">Urgency</TableHead>
-                    <TableHead className="text-primary font-semibold">Actions</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {requestHistory.map((request) => (
-                    <TableRow key={request.id} className="border-primary/10 hover:bg-primary/5">
-                      <TableCell className="font-medium text-primary">{request.id}</TableCell>
-                      <TableCell>{request.assetType}</TableCell>
-                      <TableCell>{getStatusBadge(request.status)}</TableCell>
-                      <TableCell>{getUrgencyBadge(request.urgency)}</TableCell>
-                      <TableCell>
-                        <Button size="sm" variant="outline" className="border-primary/20 text-primary hover:bg-primary/10">
-                          <Eye className="h-4 w-4" />
-                        </Button>
-                      </TableCell>
+            <CardContent className="pt-4 lg:pt-6">
+              {/* Mobile Card View */}
+              <div className="lg:hidden space-y-4">
+                {requestHistory.map((request) => (
+                  <Card key={request.id} className="border border-gray-200">
+                    <CardContent className="p-4">
+                      <div className="space-y-3">
+                        <div className="flex justify-between items-start">
+                          <div>
+                            <h3 className="font-medium text-sm text-primary">{request.id}</h3>
+                            <p className="text-xs text-gray-600">{request.assetType}</p>
+                          </div>
+                          <Button size="sm" variant="outline" className="border-primary/20 text-primary hover:bg-primary/10 p-1 h-8 w-8">
+                            <Eye className="h-3 w-3" />
+                          </Button>
+                        </div>
+                        <div className="text-xs text-gray-600">
+                          <p>{request.category}</p>
+                          <p className="mt-1">{request.requestDate}</p>
+                          <p>{request.estimatedCost}</p>
+                        </div>
+                        <div className="flex justify-between items-center">
+                          <div className="flex space-x-2">
+                            {getStatusBadge(request.status)}
+                            {getUrgencyBadge(request.urgency)}
+                          </div>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+
+              {/* Desktop Table View */}
+              <div className="hidden lg:block overflow-x-auto">
+                <Table>
+                  <TableHeader>
+                    <TableRow className="border-primary/20">
+                      <TableHead className="text-primary font-semibold min-w-[100px]">Request ID</TableHead>
+                      <TableHead className="text-primary font-semibold min-w-[150px]">Asset Type</TableHead>
+                      <TableHead className="text-primary font-semibold min-w-[100px]">Status</TableHead>
+                      <TableHead className="text-primary font-semibold min-w-[100px]">Urgency</TableHead>
+                      <TableHead className="text-primary font-semibold min-w-[100px]">Actions</TableHead>
                     </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
+                  </TableHeader>
+                  <TableBody>
+                    {requestHistory.map((request) => (
+                      <TableRow key={request.id} className="border-primary/10 hover:bg-primary/5">
+                        <TableCell className="font-medium text-primary">{request.id}</TableCell>
+                        <TableCell>{request.assetType}</TableCell>
+                        <TableCell>{getStatusBadge(request.status)}</TableCell>
+                        <TableCell>{getUrgencyBadge(request.urgency)}</TableCell>
+                        <TableCell>
+                          <Button size="sm" variant="outline" className="border-primary/20 text-primary hover:bg-primary/10">
+                            <Eye className="h-4 w-4" />
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
             </CardContent>
           </Card>
         </div>

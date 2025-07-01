@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import Layout from '../components/Layout';
 import { Button } from '@/components/ui/button';
@@ -7,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from '@/components/ui/pagination';
-import { Search, Plus, Edit, Trash2 } from 'lucide-react';
+import { Search, Plus, Edit, Trash2, Building } from 'lucide-react';
 
 const Vendors = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -69,13 +68,13 @@ const Vendors = () => {
   ];
 
   const getStatusBadge = (status: string) => {
-    return <Badge variant={status === 'Aktif' ? 'default' : 'secondary'}>{status}</Badge>;
+    return <Badge variant={status === 'Active' ? 'default' : 'secondary'}>{status}</Badge>;
   };
 
   const filteredVendors = vendors.filter(vendor =>
     vendor.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    vendor.category.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    vendor.contactPerson.toLowerCase().includes(searchTerm.toLowerCase())
+    vendor.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    vendor.category.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   // Pagination logic
@@ -90,18 +89,18 @@ const Vendors = () => {
 
   return (
     <Layout>
-      <div className="space-y-6">
-        <div className="flex justify-between items-center">
-          <h1 className="text-3xl font-bold">Vendor Management</h1>
-          <Button>
-            <Plus className="h-4 w-4 mr-2" />
+      <div className="space-y-4 lg:space-y-6">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+          <h1 className="text-2xl lg:text-3xl font-bold">Vendor Management</h1>
+          <Button className="w-full sm:w-auto">
+            <Building className="h-4 w-4 mr-2" />
             Add New Vendor
           </Button>
         </div>
 
         <Card>
           <CardHeader>
-            <CardTitle>Registered Vendors</CardTitle>
+            <CardTitle className="text-lg lg:text-xl">Registered Vendors</CardTitle>
             <div className="flex space-x-2">
               <div className="relative flex-1">
                 <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
@@ -114,71 +113,116 @@ const Vendors = () => {
               </div>
             </div>
           </CardHeader>
-          <CardContent>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Vendor ID</TableHead>
-                  <TableHead>Company Name</TableHead>
-                  <TableHead>Contact Person</TableHead>
-                  <TableHead>Email</TableHead>
-                  <TableHead>Phone</TableHead>
-                  <TableHead>Category</TableHead>
-                  <TableHead>Contract Value</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {currentVendors.map((vendor) => (
-                  <TableRow key={vendor.id}>
-                    <TableCell className="font-medium">{vendor.id}</TableCell>
-                    <TableCell>{vendor.name}</TableCell>
-                    <TableCell>{vendor.contactPerson}</TableCell>
-                    <TableCell>{vendor.email}</TableCell>
-                    <TableCell>{vendor.phone}</TableCell>
-                    <TableCell>{vendor.category}</TableCell>
-                    <TableCell>{vendor.contractValue}</TableCell>
-                    <TableCell>{getStatusBadge(vendor.status)}</TableCell>
-                    <TableCell>
-                      <div className="flex space-x-2">
-                        <Button size="sm" variant="outline">
-                          <Edit className="h-4 w-4" />
-                        </Button>
-                        <Button size="sm" variant="outline">
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
+          <CardContent className="p-0 lg:p-6">
+            {/* Mobile Card View */}
+            <div className="lg:hidden space-y-4 p-4">
+              {currentVendors.map((vendor) => (
+                <Card key={vendor.id} className="border border-gray-200">
+                  <CardContent className="p-4">
+                    <div className="space-y-3">
+                      <div className="flex justify-between items-start">
+                        <div>
+                          <h3 className="font-medium text-sm">{vendor.name}</h3>
+                          <p className="text-xs text-gray-600">{vendor.category}</p>
+                        </div>
+                        <div className="flex space-x-1">
+                          <Button size="sm" variant="outline" className="p-1 h-8 w-8">
+                            <Edit className="h-3 w-3" />
+                          </Button>
+                          <Button size="sm" variant="outline" className="p-1 h-8 w-8">
+                            <Trash2 className="h-3 w-3" />
+                          </Button>
+                        </div>
                       </div>
-                    </TableCell>
+                      <div className="text-xs text-gray-600">
+                        <p>{vendor.email}</p>
+                        <p className="mt-1">{vendor.phone}</p>
+                        <p>{vendor.address}</p>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <div className="flex space-x-2">
+                          {getStatusBadge(vendor.status)}
+                        </div>
+                        <p className="text-xs text-gray-500">Rating: {vendor.rating}/5</p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+
+            {/* Desktop Table View */}
+            <div className="hidden lg:block overflow-x-auto">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="min-w-[200px]">Vendor Name</TableHead>
+                    <TableHead className="min-w-[150px]">Category</TableHead>
+                    <TableHead className="min-w-[200px]">Email</TableHead>
+                    <TableHead className="min-w-[120px]">Phone</TableHead>
+                    <TableHead className="min-w-[200px]">Address</TableHead>
+                    <TableHead className="min-w-[100px]">Status</TableHead>
+                    <TableHead className="min-w-[80px]">Rating</TableHead>
+                    <TableHead className="min-w-[120px]">Actions</TableHead>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-            
-            {/* Pagination */}
-            <div className="mt-4">
+                </TableHeader>
+                <TableBody>
+                  {currentVendors.map((vendor) => (
+                    <TableRow key={vendor.id}>
+                      <TableCell className="font-medium">{vendor.name}</TableCell>
+                      <TableCell>{vendor.category}</TableCell>
+                      <TableCell>{vendor.email}</TableCell>
+                      <TableCell>{vendor.phone}</TableCell>
+                      <TableCell className="max-w-[200px] truncate">{vendor.address}</TableCell>
+                      <TableCell>{getStatusBadge(vendor.status)}</TableCell>
+                      <TableCell>{vendor.rating}/5</TableCell>
+                      <TableCell>
+                        <div className="flex space-x-2">
+                          <Button size="sm" variant="outline">
+                            <Edit className="h-4 w-4" />
+                          </Button>
+                          <Button size="sm" variant="outline">
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+
+            {/* Responsive Pagination */}
+            <div className="mt-4 px-4 lg:px-0">
               <Pagination>
-                <PaginationContent>
+                <PaginationContent className="flex-wrap justify-center gap-1">
                   <PaginationItem>
                     <PaginationPrevious 
                       onClick={() => handlePageChange(Math.max(1, currentPage - 1))}
-                      disabled={currentPage === 1}
+                      className={`${currentPage === 1 ? 'pointer-events-none opacity-50' : 'cursor-pointer'} text-xs lg:text-sm`}
                     />
                   </PaginationItem>
-                  {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-                    <PaginationItem key={page}>
-                      <PaginationLink
-                        onClick={() => handlePageChange(page)}
-                        isActive={currentPage === page}
-                      >
-                        {page}
-                      </PaginationLink>
-                    </PaginationItem>
-                  ))}
+                  
+                  {Array.from({ length: Math.min(totalPages, 5) }, (_, i) => {
+                    const page = i + Math.max(1, currentPage - 2);
+                    if (page > totalPages) return null;
+                    return (
+                      <PaginationItem key={page}>
+                        <PaginationLink
+                          onClick={() => handlePageChange(page)}
+                          isActive={currentPage === page}
+                          className="cursor-pointer text-xs lg:text-sm min-w-8 lg:min-w-10"
+                        >
+                          {page}
+                        </PaginationLink>
+                      </PaginationItem>
+                    );
+                  })}
+                  
                   <PaginationItem>
                     <PaginationNext 
                       onClick={() => handlePageChange(Math.min(totalPages, currentPage + 1))}
-                      disabled={currentPage === totalPages}
+                      className={`${currentPage === totalPages ? 'pointer-events-none opacity-50' : 'cursor-pointer'} text-xs lg:text-sm`}
                     />
                   </PaginationItem>
                 </PaginationContent>
