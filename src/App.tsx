@@ -11,6 +11,7 @@ import Dashboard from "./pages/Dashboard";
 import Assets from "./pages/Assets";
 import AssetDetail from "./pages/AssetDetail";
 import Users from "./pages/Users";
+import Roles from "./pages/Roles";
 import Vendors from "./pages/Vendors";
 import Buildings from "./pages/Buildings";
 import Reports from "./pages/Reports";
@@ -119,6 +120,11 @@ const App = () => (
             <Route path="/users" element={
               <ProtectedRoute requiredRole="admin">
                 <Users />
+              </ProtectedRoute>
+            } />
+            <Route path="/roles" element={
+              <ProtectedRoute requiredRole="admin">
+                <Roles />
               </ProtectedRoute>
             } />
             <Route path="/vendors" element={

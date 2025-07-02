@@ -15,7 +15,8 @@ import {
   TrendingDown,
   UserPlus,
   Menu,
-  X
+  X,
+  Shield
 } from 'lucide-react';
 
 const Layout = ({ children }: { children: React.ReactNode }) => {
@@ -71,6 +72,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
       title: 'System',
       items: [
         { name: 'Users', icon: Users, path: '/users' },
+        { name: 'Roles', icon: Shield, path: '/roles' },
       ]
     }
   ];
