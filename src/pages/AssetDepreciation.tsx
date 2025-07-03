@@ -1,6 +1,7 @@
 
 import React, { useState } from 'react';
 import Layout from '../components/Layout';
+import ExportButton from '../components/ExportButton';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -9,8 +10,10 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from '@/components/ui/pagination';
 import { Search, Filter, TrendingDown } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { useToast } from '@/hooks/use-toast';
 
 const AssetDepreciation = () => {
+  const { toast } = useToast();
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
@@ -121,6 +124,16 @@ const AssetDepreciation = () => {
                 <Filter className="h-4 w-4 mr-2" />
                 Filter
               </Button>
+              <ExportButton 
+                data={filteredAssets}
+                filename="asset-depreciation"
+                onExport={(format) => {
+                  toast({
+                    title: "Export Berhasil",
+                    description: `Data depresiasi aset berhasil diexport dalam format ${format.toUpperCase()}`
+                  });
+                }}
+              />
             </div>
           </CardHeader>
           <CardContent>

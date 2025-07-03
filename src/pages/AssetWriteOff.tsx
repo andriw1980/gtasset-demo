@@ -1,5 +1,7 @@
+
 import React, { useState } from 'react';
 import Layout from '../components/Layout';
+import ExportButton from '../components/ExportButton';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -292,6 +294,16 @@ const AssetWriteOff = () => {
                   className="pl-8"
                 />
               </div>
+              <ExportButton 
+                data={filteredWriteOffs}
+                filename="asset-writeoffs"
+                onExport={(format) => {
+                  toast({
+                    title: "Export Berhasil",
+                    description: `Data penghapusan aset berhasil diexport dalam format ${format.toUpperCase()}`
+                  });
+                }}
+              />
             </div>
           </CardHeader>
           <CardContent>

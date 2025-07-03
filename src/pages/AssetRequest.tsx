@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import Layout from '../components/Layout';
+import ExportButton from '../components/ExportButton';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -9,9 +10,12 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Send, Plus, Eye } from 'lucide-react';
+import { Send, Plus, Eye, Search } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
 
 const AssetRequest = () => {
+  const { toast } = useToast();
+  const [searchTerm, setSearchTerm] = useState('');
   const [formData, setFormData] = useState({
     assetType: '',
     category: '',
@@ -90,6 +94,11 @@ const AssetRequest = () => {
     };
     return <Badge variant={variants[urgency] || 'default'}>{urgency}</Badge>;
   };
+
+  const filteredRequests = requestHistory.filter(request =>
+    request.assetType.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    request.id.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   return (
     <Layout>
@@ -209,6 +218,27 @@ const AssetRequest = () => {
         <Card className="border-primary/20 shadow-lg">
           <CardHeader className="bg-accent/10 rounded-t-lg">
             <CardTitle className="text-primary text-lg lg:text-xl">Request History</CardTitle>
+            <div className="flex space-x-2">
+              <div className="relative flex-1">
+                <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+                <Input
+                  placeholder="Search requests..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="pl-8"
+                />
+              </div>
+              <ExportButton 
+                data={filteredRequests}
+                filename="asset-requests"
+                onExport={(format) => {
+                  toast({
+                    title: "Export Berhasil",
+                    description: `Data request aset berhasil diexport dalam format ${format.toUpperCase()}`
+                  });
+                }}
+              />
+            </div>
           </CardHeader>
           <CardContent className="pt-4 lg:pt-6">
             {/* Mobile Card View */}

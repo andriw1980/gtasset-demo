@@ -1,5 +1,7 @@
+
 import React, { useState } from 'react';
 import Layout from '../components/Layout';
+import ExportButton from '../components/ExportButton';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -309,6 +311,16 @@ const AssetAuction = () => {
                   className="pl-8"
                 />
               </div>
+              <ExportButton 
+                data={filteredAuctions}
+                filename="asset-auctions"
+                onExport={(format) => {
+                  toast({
+                    title: "Export Berhasil",
+                    description: `Data lelang aset berhasil diexport dalam format ${format.toUpperCase()}`
+                  });
+                }}
+              />
             </div>
           </CardHeader>
           <CardContent>
