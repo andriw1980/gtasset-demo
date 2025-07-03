@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import Layout from '../components/Layout';
 import { Button } from '@/components/ui/button';
@@ -9,6 +8,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Search, Plus, ArrowRight, Calendar, User } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
@@ -121,19 +121,17 @@ const AssetTransfer = () => {
       <div className="space-y-6">
         <div className="flex justify-between items-center">
           <h1 className="text-3xl font-bold">Transfer/Mutasi Aset</h1>
-          <Button onClick={() => setShowTransferForm(!showTransferForm)}>
-            <Plus className="h-4 w-4 mr-2" />
-            {showTransferForm ? 'Batal' : 'Transfer Aset'}
-          </Button>
-        </div>
-
-        {/* Transfer Form */}
-        {showTransferForm && (
-          <Card>
-            <CardHeader>
-              <CardTitle>Form Transfer Aset</CardTitle>
-            </CardHeader>
-            <CardContent>
+          <Dialog open={showTransferForm} onOpenChange={setShowTransferForm}>
+            <DialogTrigger asChild>
+              <Button>
+                <Plus className="h-4 w-4 mr-2" />
+                Transfer Aset
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+              <DialogHeader>
+                <DialogTitle>Form Transfer Aset</DialogTitle>
+              </DialogHeader>
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
@@ -268,9 +266,9 @@ const AssetTransfer = () => {
                   </Button>
                 </div>
               </form>
-            </CardContent>
-          </Card>
-        )}
+            </DialogContent>
+          </Dialog>
+        </div>
 
         <Card>
           <CardHeader>
