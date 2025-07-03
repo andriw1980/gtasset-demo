@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import Layout from '../components/Layout';
 import { Button } from '@/components/ui/button';
@@ -9,6 +8,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Send, Plus, Eye } from 'lucide-react';
 
 const AssetRequest = () => {
@@ -20,6 +20,7 @@ const AssetRequest = () => {
     estimatedCost: '',
     preferredVendor: ''
   });
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   // Mock request history
   const requestHistory = [
@@ -56,6 +57,16 @@ const AssetRequest = () => {
     e.preventDefault();
     console.log('Asset request submitted:', formData);
     // Handle form submission
+    setIsDialogOpen(false);
+    // Reset form
+    setFormData({
+      assetType: '',
+      category: '',
+      justification: '',
+      urgency: '',
+      estimatedCost: '',
+      preferredVendor: ''
+    });
   };
 
   const handleInputChange = (field: string, value: string) => {
@@ -83,15 +94,20 @@ const AssetRequest = () => {
   return (
     <Layout>
       <div className="space-y-4 lg:space-y-6">
-        <h1 className="text-2xl lg:text-3xl font-bold text-primary">Asset Request</h1>
-
-        <div className="grid grid-cols-1 xl:grid-cols-2 gap-4 lg:gap-6">
-          <Card className="border-primary/20 shadow-lg">
-            <CardHeader className="bg-primary/10 rounded-t-lg">
-              <CardTitle className="text-primary text-lg lg:text-xl">New Asset Request</CardTitle>
-            </CardHeader>
-            <CardContent className="pt-4 lg:pt-6">
-              <form onSubmit={handleSubmit} className="space-y-4">
+        <div className="flex justify-between items-center">
+          <h1 className="text-2xl lg:text-3xl font-bold text-primary">Asset Request</h1>
+          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+            <DialogTrigger asChild>
+              <Button className="bg-primary hover:bg-primary/90 text-white">
+                <Plus className="h-4 w-4 mr-2" />
+                Create New Asset Request
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+              <DialogHeader>
+                <DialogTitle className="text-primary text-xl">New Asset Request</DialogTitle>
+              </DialogHeader>
+              <form onSubmit={handleSubmit} className="space-y-4 mt-4">
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label htmlFor="assetType" className="text-primary font-medium text-sm">Asset Type *</Label>
@@ -186,78 +202,78 @@ const AssetRequest = () => {
                   Submit Request
                 </Button>
               </form>
-            </CardContent>
-          </Card>
+            </DialogContent>
+          </Dialog>
+        </div>
 
-          <Card className="border-primary/20 shadow-lg">
-            <CardHeader className="bg-accent/10 rounded-t-lg">
-              <CardTitle className="text-primary text-lg lg:text-xl">Request History</CardTitle>
-            </CardHeader>
-            <CardContent className="pt-4 lg:pt-6">
-              {/* Mobile Card View */}
-              <div className="lg:hidden space-y-4">
-                {requestHistory.map((request) => (
-                  <Card key={request.id} className="border border-gray-200">
-                    <CardContent className="p-4">
-                      <div className="space-y-3">
-                        <div className="flex justify-between items-start">
-                          <div>
-                            <h3 className="font-medium text-sm text-primary">{request.id}</h3>
-                            <p className="text-xs text-gray-600">{request.assetType}</p>
-                          </div>
-                          <Button size="sm" variant="outline" className="border-primary/20 text-primary hover:bg-primary/10 p-1 h-8 w-8">
-                            <Eye className="h-3 w-3" />
-                          </Button>
+        <Card className="border-primary/20 shadow-lg">
+          <CardHeader className="bg-accent/10 rounded-t-lg">
+            <CardTitle className="text-primary text-lg lg:text-xl">Request History</CardTitle>
+          </CardHeader>
+          <CardContent className="pt-4 lg:pt-6">
+            {/* Mobile Card View */}
+            <div className="lg:hidden space-y-4">
+              {requestHistory.map((request) => (
+                <Card key={request.id} className="border border-gray-200">
+                  <CardContent className="p-4">
+                    <div className="space-y-3">
+                      <div className="flex justify-between items-start">
+                        <div>
+                          <h3 className="font-medium text-sm text-primary">{request.id}</h3>
+                          <p className="text-xs text-gray-600">{request.assetType}</p>
                         </div>
-                        <div className="text-xs text-gray-600">
-                          <p>{request.category}</p>
-                          <p className="mt-1">{request.requestDate}</p>
-                          <p>{request.estimatedCost}</p>
-                        </div>
-                        <div className="flex justify-between items-center">
-                          <div className="flex space-x-2">
-                            {getStatusBadge(request.status)}
-                            {getUrgencyBadge(request.urgency)}
-                          </div>
+                        <Button size="sm" variant="outline" className="border-primary/20 text-primary hover:bg-primary/10 p-1 h-8 w-8">
+                          <Eye className="h-3 w-3" />
+                        </Button>
+                      </div>
+                      <div className="text-xs text-gray-600">
+                        <p>{request.category}</p>
+                        <p className="mt-1">{request.requestDate}</p>
+                        <p>{request.estimatedCost}</p>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <div className="flex space-x-2">
+                          {getStatusBadge(request.status)}
+                          {getUrgencyBadge(request.urgency)}
                         </div>
                       </div>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
 
-              {/* Desktop Table View */}
-              <div className="hidden lg:block overflow-x-auto">
-                <Table>
-                  <TableHeader>
-                    <TableRow className="border-primary/20">
-                      <TableHead className="text-primary font-semibold min-w-[100px]">Request ID</TableHead>
-                      <TableHead className="text-primary font-semibold min-w-[150px]">Asset Type</TableHead>
-                      <TableHead className="text-primary font-semibold min-w-[100px]">Status</TableHead>
-                      <TableHead className="text-primary font-semibold min-w-[100px]">Urgency</TableHead>
-                      <TableHead className="text-primary font-semibold min-w-[100px]">Actions</TableHead>
+            {/* Desktop Table View */}
+            <div className="hidden lg:block overflow-x-auto">
+              <Table>
+                <TableHeader>
+                  <TableRow className="border-primary/20">
+                    <TableHead className="text-primary font-semibold min-w-[100px]">Request ID</TableHead>
+                    <TableHead className="text-primary font-semibold min-w-[150px]">Asset Type</TableHead>
+                    <TableHead className="text-primary font-semibold min-w-[100px]">Status</TableHead>
+                    <TableHead className="text-primary font-semibold min-w-[100px]">Urgency</TableHead>
+                    <TableHead className="text-primary font-semibold min-w-[100px]">Actions</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {requestHistory.map((request) => (
+                    <TableRow key={request.id} className="border-primary/10 hover:bg-primary/5">
+                      <TableCell className="font-medium text-primary">{request.id}</TableCell>
+                      <TableCell>{request.assetType}</TableCell>
+                      <TableCell>{getStatusBadge(request.status)}</TableCell>
+                      <TableCell>{getUrgencyBadge(request.urgency)}</TableCell>
+                      <TableCell>
+                        <Button size="sm" variant="outline" className="border-primary/20 text-primary hover:bg-primary/10">
+                          <Eye className="h-4 w-4" />
+                        </Button>
+                      </TableCell>
                     </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {requestHistory.map((request) => (
-                      <TableRow key={request.id} className="border-primary/10 hover:bg-primary/5">
-                        <TableCell className="font-medium text-primary">{request.id}</TableCell>
-                        <TableCell>{request.assetType}</TableCell>
-                        <TableCell>{getStatusBadge(request.status)}</TableCell>
-                        <TableCell>{getUrgencyBadge(request.urgency)}</TableCell>
-                        <TableCell>
-                          <Button size="sm" variant="outline" className="border-primary/20 text-primary hover:bg-primary/10">
-                            <Eye className="h-4 w-4" />
-                          </Button>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+          </CardContent>
+        </Card>
       </div>
     </Layout>
   );
