@@ -16,7 +16,8 @@ import {
   UserPlus,
   Menu,
   X,
-  Shield
+  Shield,
+  BarChart3
 } from 'lucide-react';
 
 const Layout = ({ children }: { children: React.ReactNode }) => {
@@ -65,6 +66,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
     {
       title: 'Reports',
       items: [
+        { name: 'Reports & Analytics', icon: BarChart3, path: '/reports' },
         { name: 'Asset Depreciation', icon: TrendingDown, path: '/asset-depreciation' },
       ]
     },
