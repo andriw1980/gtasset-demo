@@ -1,8 +1,4 @@
-# Welcome to your Lovable project
-
-## Project info
-
-**URL**: https://lovable.dev/projects/5491691a-c4ed-4642-a315-7182ac4c8d26
+# Demo Asset Management
 
 ## How can I edit this code?
 
