@@ -1,6 +1,6 @@
-
 import React from 'react';
 import Layout from '../components/Layout';
+import AssetMap from '../components/AssetMap';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -228,6 +228,19 @@ const Dashboard = () => {
             </CardContent>
           </Card>
         </div>
+
+        {/* Asset Distribution Map */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <MapPin className="h-5 w-5" />
+              Distribusi Aset per Lokasi
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <AssetMap height="450px" />
+          </CardContent>
+        </Card>
 
         {/* Charts Section */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
