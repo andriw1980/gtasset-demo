@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -16,6 +15,7 @@ import Vendors from "./pages/Vendors";
 import Buildings from "./pages/Buildings";
 import Reports from "./pages/Reports";
 import Profile from "./pages/Profile";
+import Settings from "./pages/Settings";
 import AssetRequest from "./pages/AssetRequest";
 import Insurance from "./pages/Insurance";
 import AssetDepreciation from "./pages/AssetDepreciation";
@@ -145,6 +145,11 @@ const App = () => (
             <Route path="/profile" element={
               <ProtectedRoute>
                 <Profile />
+              </ProtectedRoute>
+            } />
+            <Route path="/settings" element={
+              <ProtectedRoute>
+                <Settings />
               </ProtectedRoute>
             } />
             <Route path="/asset-request" element={

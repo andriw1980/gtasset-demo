@@ -75,6 +75,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
       items: [
         { name: 'Users', icon: Users, path: '/users' },
         { name: 'Roles', icon: Shield, path: '/roles' },
+        { name: 'Settings', icon: Settings, path: '/settings' },
       ]
     }
   ];
