@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import Layout from '../components/Layout';
 import { useAuth } from '../contexts/AuthContext';
@@ -7,23 +8,55 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Save, Camera } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
 
 const Profile = () => {
   const { user } = useAuth();
   const [isEditing, setIsEditing] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [message, setMessage] = useState('');
   const [formData, setFormData] = useState({
     fullName: user?.fullName || '',
-    email: user?.email || '',
     position: user?.position || '',
     unit: user?.unit || '',
     workArea: user?.workArea || ''
   });
 
-  const handleSave = () => {
-    console.log('Saving profile:', formData);
-    setIsEditing(false);
-    // Handle profile update
+  const handleSave = async () => {
+    if (!user) return;
+    
+    setIsLoading(true);
+    setMessage('');
+    
+    try {
+      const { error } = await supabase
+        .from('profiles')
+        .update({
+          full_name: formData.fullName,
+          position: formData.position,
+          unit: formData.unit,
+          work_area: formData.workArea,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', user.id);
+
+      if (error) {
+        setMessage('Error updating profile: ' + error.message);
+      } else {
+        setMessage('Profile updated successfully!');
+        setIsEditing(false);
+        // Refresh the page to get updated data
+        setTimeout(() => {
+          window.location.reload();
+        }, 1000);
+      }
+    } catch (error) {
+      setMessage('An unexpected error occurred');
+    }
+    
+    setIsLoading(false);
   };
 
   const handleInputChange = (field: string, value: string) => {
@@ -49,12 +82,24 @@ const Profile = () => {
           <div className="flex space-x-2">
             {isEditing ? (
               <>
-                <Button variant="outline" onClick={() => setIsEditing(false)}>
+                <Button 
+                  variant="outline" 
+                  onClick={() => {
+                    setIsEditing(false);
+                    setFormData({
+                      fullName: user.fullName,
+                      position: user.position,
+                      unit: user.unit,
+                      workArea: user.workArea
+                    });
+                  }}
+                  disabled={isLoading}
+                >
                   Cancel
                 </Button>
-                <Button onClick={handleSave}>
+                <Button onClick={handleSave} disabled={isLoading}>
                   <Save className="h-4 w-4 mr-2" />
-                  Save Changes
+                  {isLoading ? 'Saving...' : 'Save Changes'}
                 </Button>
               </>
             ) : (
@@ -64,6 +109,12 @@ const Profile = () => {
             )}
           </div>
         </div>
+
+        {message && (
+          <Alert variant={message.includes('Error') ? 'destructive' : 'default'}>
+            <AlertDescription>{message}</AlertDescription>
+          </Alert>
+        )}
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <Card>
@@ -77,10 +128,13 @@ const Profile = () => {
                   {user.fullName.split(' ').map(n => n[0]).join('')}
                 </AvatarFallback>
               </Avatar>
-              <Button variant="outline" size="sm">
+              <Button variant="outline" size="sm" disabled>
                 <Camera className="h-4 w-4 mr-2" />
                 Change Photo
               </Button>
+              <p className="text-xs text-muted-foreground text-center">
+                Photo upload coming soon
+              </p>
             </CardContent>
           </Card>
 
@@ -112,10 +166,12 @@ const Profile = () => {
                   <Input
                     id="email"
                     type="email"
-                    value={isEditing ? formData.email : user.email}
-                    onChange={(e) => handleInputChange('email', e.target.value)}
-                    disabled={!isEditing}
+                    value={user.email}
+                    disabled
                   />
+                  <p className="text-xs text-muted-foreground">
+                    Email cannot be changed here
+                  </p>
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="role">Role</Label>
@@ -160,11 +216,11 @@ const Profile = () => {
             <CardTitle>Security Settings</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            <Button variant="outline">
+            <Button variant="outline" disabled>
               Change Password
             </Button>
             <p className="text-sm text-muted-foreground">
-              Last password change: Never
+              Password management coming soon
             </p>
           </CardContent>
         </Card>
