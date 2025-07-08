@@ -1,275 +1,339 @@
-
 import React, { useState, useEffect } from 'react';
-import { useAuth } from '../contexts/AuthContext';
 import Layout from '../components/Layout';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Badge } from '@/components/ui/badge';
-import { Trash2, Edit, Plus, Save, X } from 'lucide-react';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
+import { Plus, Edit, Trash2 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useForm } from 'react-hook-form';
+import { useToast } from '@/hooks/use-toast';
 
-interface SettingsItem {
+type SettingItem = {
   id: string;
   name: string;
-  description?: string;
-  created_at: string;
-  updated_at: string;
-}
+  description: string | null;
+};
 
-interface FormData {
-  name: string;
-  description: string;
-}
+type TableName = 'asset_categories' | 'units' | 'work_areas';
 
 const Settings = () => {
-  const { user } = useAuth();
-  const [assetCategories, setAssetCategories] = useState<SettingsItem[]>([]);
-  const [units, setUnits] = useState<SettingsItem[]>([]);
-  const [workAreas, setWorkAreas] = useState<SettingsItem[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [message, setMessage] = useState('');
-  const [editingItem, setEditingItem] = useState<SettingsItem | null>(null);
-  const [activeTab, setActiveTab] = useState('categories');
+  const [assetCategories, setAssetCategories] = useState<SettingItem[]>([]);
+  const [units, setUnits] = useState<SettingItem[]>([]);
+  const [workAreas, setWorkAreas] = useState<SettingItem[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const { toast } = useToast();
 
-  const { register, handleSubmit, reset, setValue } = useForm<FormData>();
-
-  const isAdmin = user?.role === 'admin';
-
-  useEffect(() => {
-    fetchAllData();
-  }, []);
-
-  const fetchAllData = async () => {
-    setIsLoading(true);
+  const fetchData = async () => {
     try {
-      const [categoriesRes, unitsRes, workAreasRes] = await Promise.all([
-        supabase.from('asset_categories').select('*').order('name'),
-        supabase.from('units').select('*').order('name'),
-        supabase.from('work_areas').select('*').order('name')
+      const [categoriesResult, unitsResult, workAreasResult] = await Promise.all([
+        supabase.from('asset_categories').select('*'),
+        supabase.from('units').select('*'),
+        supabase.from('work_areas').select('*')
       ]);
 
-      if (categoriesRes.data) setAssetCategories(categoriesRes.data);
-      if (unitsRes.data) setUnits(unitsRes.data);
-      if (workAreasRes.data) setWorkAreas(workAreasRes.data);
+      if (categoriesResult.error) throw categoriesResult.error;
+      if (unitsResult.error) throw unitsResult.error;
+      if (workAreasResult.error) throw workAreasResult.error;
+
+      setAssetCategories(categoriesResult.data || []);
+      setUnits(unitsResult.data || []);
+      setWorkAreas(workAreasResult.data || []);
     } catch (error) {
-      setMessage('Error fetching data');
+      toast({
+        title: "Error",
+        description: "Failed to fetch settings data",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
     }
-    setIsLoading(false);
   };
 
-  const handleSave = async (data: FormData, table: string) => {
-    if (!isAdmin) {
-      setMessage('Only admins can modify settings');
-      return;
-    }
+  useEffect(() => {
+    fetchData();
+  }, []);
 
-    setIsLoading(true);
-    try {
-      if (editingItem) {
-        const { error } = await supabase
-          .from(table)
-          .update({
-            name: data.name,
-            description: data.description,
-            updated_at: new Date().toISOString()
-          })
-          .eq('id', editingItem.id);
-
-        if (error) throw error;
-        setMessage('Item updated successfully');
-      } else {
-        const { error } = await supabase
-          .from(table)
-          .insert({
-            name: data.name,
-            description: data.description
-          });
-
-        if (error) throw error;
-        setMessage('Item created successfully');
-      }
-
-      reset();
-      setEditingItem(null);
-      fetchAllData();
-    } catch (error: any) {
-      setMessage(`Error: ${error.message}`);
-    }
-    setIsLoading(false);
-  };
-
-  const handleDelete = async (id: string, table: string) => {
-    if (!isAdmin) {
-      setMessage('Only admins can delete settings');
-      return;
-    }
-
-    if (!confirm('Are you sure you want to delete this item?')) return;
-
-    setIsLoading(true);
+  const handleAdd = async (tableName: TableName, data: { name: string; description: string }) => {
     try {
       const { error } = await supabase
-        .from(table)
+        .from(tableName)
+        .insert([data]);
+
+      if (error) throw error;
+
+      toast({
+        title: "Success",
+        description: "Item added successfully",
+      });
+      
+      fetchData();
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to add item",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleUpdate = async (tableName: TableName, id: string, data: { name: string; description: string }) => {
+    try {
+      const { error } = await supabase
+        .from(tableName)
+        .update(data)
+        .eq('id', id);
+
+      if (error) throw error;
+
+      toast({
+        title: "Success",
+        description: "Item updated successfully",
+      });
+      
+      fetchData();
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to update item",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleDelete = async (tableName: TableName, id: string) => {
+    try {
+      const { error } = await supabase
+        .from(tableName)
         .delete()
         .eq('id', id);
 
       if (error) throw error;
-      setMessage('Item deleted successfully');
-      fetchAllData();
-    } catch (error: any) {
-      setMessage(`Error: ${error.message}`);
+
+      toast({
+        title: "Success",
+        description: "Item deleted successfully",
+      });
+      
+      fetchData();
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to delete item",
+        variant: "destructive",
+      });
     }
-    setIsLoading(false);
   };
 
-  const startEdit = (item: SettingsItem) => {
-    setEditingItem(item);
-    setValue('name', item.name);
-    setValue('description', item.description || '');
-  };
-
-  const cancelEdit = () => {
-    setEditingItem(null);
-    reset();
-  };
-
-  const SettingsTable = ({ items, table }: { items: SettingsItem[]; table: string }) => (
-    <div className="space-y-4">
-      {isAdmin && (
-        <Card>
-          <CardHeader>
-            <CardTitle>
-              {editingItem ? 'Edit' : 'Add New'} {table.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <form onSubmit={handleSubmit((data) => handleSave(data, table))} className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="name">Name</Label>
-                  <Input
-                    id="name"
-                    {...register('name', { required: true })}
-                    placeholder="Enter name"
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="description">Description</Label>
-                  <Input
-                    id="description"
-                    {...register('description')}
-                    placeholder="Enter description (optional)"
-                  />
-                </div>
-              </div>
-              <div className="flex space-x-2">
-                <Button type="submit" disabled={isLoading}>
-                  <Save className="h-4 w-4 mr-2" />
-                  {editingItem ? 'Update' : 'Add'}
-                </Button>
-                {editingItem && (
-                  <Button type="button" variant="outline" onClick={cancelEdit}>
-                    <X className="h-4 w-4 mr-2" />
-                    Cancel
-                  </Button>
-                )}
-              </div>
-            </form>
-          </CardContent>
-        </Card>
-      )}
-
+  const SettingsSection = ({ 
+    title, 
+    items, 
+    tableName 
+  }: { 
+    title: string; 
+    items: SettingItem[]; 
+    tableName: TableName;
+  }) => {
+    return (
       <Card>
         <CardHeader>
-          <CardTitle>Current {table.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}</CardTitle>
+          <div className="flex justify-between items-center">
+            <CardTitle>{title}</CardTitle>
+            <ItemDialog tableName={tableName} onSave={handleAdd} />
+          </div>
         </CardHeader>
         <CardContent>
-          <div className="space-y-2">
-            {items.map((item) => (
-              <div key={item.id} className="flex items-center justify-between p-3 border rounded-lg">
-                <div className="flex-1">
-                  <div className="flex items-center space-x-3">
-                    <span className="font-medium">{item.name}</span>
-                    {item.description && (
-                      <Badge variant="outline">{item.description}</Badge>
-                    )}
-                  </div>
-                  <div className="text-sm text-muted-foreground mt-1">
-                    Created: {new Date(item.created_at).toLocaleDateString()}
-                  </div>
-                </div>
-                {isAdmin && (
-                  <div className="flex space-x-2">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => startEdit(item)}
-                    >
-                      <Edit className="h-4 w-4" />
-                    </Button>
-                    <Button
-                      variant="destructive"
-                      size="sm"
-                      onClick={() => handleDelete(item.id, table)}
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  </div>
-                )}
-              </div>
-            ))}
-            {items.length === 0 && (
-              <div className="text-center py-8 text-muted-foreground">
-                No items found. {isAdmin && 'Add some items to get started.'}
-              </div>
-            )}
-          </div>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Name</TableHead>
+                <TableHead>Description</TableHead>
+                <TableHead className="w-[100px]">Actions</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {items.map((item) => (
+                <TableRow key={item.id}>
+                  <TableCell className="font-medium">{item.name}</TableCell>
+                  <TableCell>{item.description || '-'}</TableCell>
+                  <TableCell>
+                    <div className="flex space-x-2">
+                      <ItemDialog 
+                        tableName={tableName} 
+                        item={item}
+                        onSave={handleUpdate}
+                        trigger={
+                          <Button size="sm" variant="outline">
+                            <Edit className="h-4 w-4" />
+                          </Button>
+                        }
+                      />
+                      <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                          <Button size="sm" variant="outline">
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                            <AlertDialogDescription>
+                              This action cannot be undone. This will permanently delete the item.
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>Cancel</AlertDialogCancel>
+                            <AlertDialogAction onClick={() => handleDelete(tableName, item.id)}>
+                              Delete
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
         </CardContent>
       </Card>
-    </div>
-  );
+    );
+  };
 
-  if (!user) return null;
+  const ItemDialog = ({ 
+    tableName, 
+    item, 
+    onSave, 
+    trigger 
+  }: { 
+    tableName: TableName; 
+    item?: SettingItem; 
+    onSave: (tableName: TableName, id: string, data: { name: string; description: string }) => void | ((tableName: TableName, data: { name: string; description: string }) => void);
+    trigger?: React.ReactNode;
+  }) => {
+    const [open, setOpen] = useState(false);
+    const form = useForm({
+      defaultValues: {
+        name: item?.name || '',
+        description: item?.description || ''
+      }
+    });
+
+    const onSubmit = (data: { name: string; description: string }) => {
+      if (item) {
+        (onSave as (tableName: TableName, id: string, data: { name: string; description: string }) => void)(tableName, item.id, data);
+      } else {
+        (onSave as (tableName: TableName, data: { name: string; description: string }) => void)(tableName, data);
+      }
+      setOpen(false);
+      form.reset();
+    };
+
+    return (
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogTrigger asChild>
+          {trigger || (
+            <Button>
+              <Plus className="h-4 w-4 mr-2" />
+              Add New
+            </Button>
+          )}
+        </DialogTrigger>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>{item ? 'Edit' : 'Add New'} Item</DialogTitle>
+          </DialogHeader>
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+              <FormField
+                control={form.control}
+                name="name"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Name</FormLabel>
+                    <FormControl>
+                      <Input {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="description"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Description</FormLabel>
+                    <FormControl>
+                      <Input {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <div className="flex justify-end space-x-2">
+                <Button type="button" variant="outline" onClick={() => setOpen(false)}>
+                  Cancel
+                </Button>
+                <Button type="submit">
+                  {item ? 'Update' : 'Add'}
+                </Button>
+              </div>
+            </form>
+          </Form>
+        </DialogContent>
+      </Dialog>
+    );
+  };
+
+  if (isLoading) {
+    return (
+      <Layout>
+        <div className="flex justify-center items-center h-64">
+          <div className="text-lg">Loading...</div>
+        </div>
+      </Layout>
+    );
+  }
 
   return (
     <Layout>
       <div className="space-y-6">
-        <div className="flex justify-between items-center">
-          <h1 className="text-3xl font-bold">Settings</h1>
-          {!isAdmin && (
-            <Badge variant="secondary">View Only - Admin Access Required</Badge>
-          )}
-        </div>
-
-        {message && (
-          <Alert variant={message.includes('Error') ? 'destructive' : 'default'}>
-            <AlertDescription>{message}</AlertDescription>
-          </Alert>
-        )}
-
-        <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList className="grid w-full grid-cols-3">
-            <TabsTrigger value="categories">Asset Categories</TabsTrigger>
+        <h1 className="text-3xl font-bold">Settings</h1>
+        
+        <Tabs defaultValue="asset-categories" className="space-y-4">
+          <TabsList>
+            <TabsTrigger value="asset-categories">Asset Categories</TabsTrigger>
             <TabsTrigger value="units">Units</TabsTrigger>
             <TabsTrigger value="work-areas">Work Areas</TabsTrigger>
           </TabsList>
-
-          <TabsContent value="categories" className="space-y-4">
-            <SettingsTable items={assetCategories} table="asset_categories" />
+          
+          <TabsContent value="asset-categories">
+            <SettingsSection 
+              title="Asset Categories" 
+              items={assetCategories} 
+              tableName="asset_categories"
+            />
           </TabsContent>
-
-          <TabsContent value="units" className="space-y-4">
-            <SettingsTable items={units} table="units" />
+          
+          <TabsContent value="units">
+            <SettingsSection 
+              title="Units" 
+              items={units} 
+              tableName="units"
+            />
           </TabsContent>
-
-          <TabsContent value="work-areas" className="space-y-4">
-            <SettingsTable items={workAreas} table="work_areas" />
+          
+          <TabsContent value="work-areas">
+            <SettingsSection 
+              title="Work Areas" 
+              items={workAreas} 
+              tableName="work_areas"
+            />
           </TabsContent>
         </Tabs>
       </div>
