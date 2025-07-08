@@ -44,9 +44,12 @@ export type Database = {
           created_at: string | null
           full_name: string
           id: string
+          position: string | null
+          unit: string | null
           unit_id: string | null
           updated_at: string | null
           username: string
+          work_area: string | null
           work_area_id: string | null
         }
         Insert: {
@@ -54,9 +57,12 @@ export type Database = {
           created_at?: string | null
           full_name: string
           id: string
+          position?: string | null
+          unit?: string | null
           unit_id?: string | null
           updated_at?: string | null
           username: string
+          work_area?: string | null
           work_area_id?: string | null
         }
         Update: {
@@ -64,9 +70,12 @@ export type Database = {
           created_at?: string | null
           full_name?: string
           id?: string
+          position?: string | null
+          unit?: string | null
           unit_id?: string | null
           updated_at?: string | null
           username?: string
+          work_area?: string | null
           work_area_id?: string | null
         }
         Relationships: [

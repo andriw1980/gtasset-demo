@@ -1,19 +1,16 @@
 import React, { useState } from 'react';
 import Layout from '../components/Layout';
-import AddUserModal from '../components/AddUserModal';
-import UserCard from '../components/UserCard';
-import UserTable from '../components/UserTable';
-import UserSearch from '../components/UserSearch';
-import UserPagination from '../components/UserPagination';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { UserPlus } from 'lucide-react';
-import { getRoleBadge, getStatusBadge } from '@/utils/userUtils';
+import { Badge } from '@/components/ui/badge';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from '@/components/ui/pagination';
+import { Search, Plus, Edit, Trash2, UserPlus } from 'lucide-react';
 
 const Users = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
-  const [showAddModal, setShowAddModal] = useState(false);
   const itemsPerPage = 10;
 
   // Mock user data - 50 items
@@ -70,6 +67,20 @@ const Users = () => {
     { id: '50', username: 'dodi.h', fullName: 'Dodi Hermawan', email: 'dodi.h@gamatechno.co.id', role: 'auditor', position: 'QC Auditor', unit: 'QC', workArea: 'Audit Room', status: 'Aktif' }
   ];
 
+  const getRoleBadge = (role: string) => {
+    const variants: Record<string, "default" | "secondary" | "destructive"> = {
+      'admin': 'destructive',
+      'staff': 'default',
+      'auditor': 'secondary',
+      'supervisor': 'secondary'
+    };
+    return <Badge variant={variants[role] || 'default'}>{role.toUpperCase()}</Badge>;
+  };
+
+  const getStatusBadge = (status: string) => {
+    return <Badge variant={status === 'Aktif' ? 'default' : 'secondary'}>{status}</Badge>;
+  };
+
   const filteredUsers = users.filter(user =>
     user.fullName.toLowerCase().includes(searchTerm.toLowerCase()) ||
     user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -86,19 +97,12 @@ const Users = () => {
     setCurrentPage(page);
   };
 
-  const handleUserAdded = () => {
-    console.log('User added, refreshing list...');
-  };
-
   return (
     <Layout>
       <div className="space-y-4 lg:space-y-6">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <h1 className="text-2xl lg:text-3xl font-bold">User Management</h1>
-          <Button 
-            className="w-full sm:w-auto"
-            onClick={() => setShowAddModal(true)}
-          >
+          <Button className="w-full sm:w-auto">
             <UserPlus className="h-4 w-4 mr-2" />
             Add New User
           </Button>
@@ -108,47 +112,137 @@ const Users = () => {
           <CardHeader>
             <CardTitle className="text-lg lg:text-xl">System Users</CardTitle>
             <div className="flex space-x-2">
-              <UserSearch 
-                searchTerm={searchTerm}
-                onSearchChange={setSearchTerm}
-              />
+              <div className="relative flex-1">
+                <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+                <Input
+                  placeholder="Search users..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="pl-8"
+                />
+              </div>
             </div>
           </CardHeader>
           <CardContent className="p-0 lg:p-6">
             {/* Mobile Card View */}
             <div className="lg:hidden space-y-4 p-4">
               {currentUsers.map((user) => (
-                <UserCard
-                  key={user.id}
-                  user={user}
-                  getRoleBadge={getRoleBadge}
-                  getStatusBadge={getStatusBadge}
-                />
+                <Card key={user.id} className="border border-gray-200">
+                  <CardContent className="p-4">
+                    <div className="space-y-3">
+                      <div className="flex justify-between items-start">
+                        <div>
+                          <h3 className="font-medium text-sm">{user.fullName}</h3>
+                          <p className="text-xs text-gray-600">@{user.username}</p>
+                        </div>
+                        <div className="flex space-x-1">
+                          <Button size="sm" variant="outline" className="p-1 h-8 w-8">
+                            <Edit className="h-3 w-3" />
+                          </Button>
+                          <Button size="sm" variant="outline" className="p-1 h-8 w-8">
+                            <Trash2 className="h-3 w-3" />
+                          </Button>
+                        </div>
+                      </div>
+                      <div className="text-xs text-gray-600">
+                        <p>{user.email}</p>
+                        <p className="mt-1">{user.position} • {user.unit}</p>
+                        <p>{user.workArea}</p>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <div className="flex space-x-2">
+                          {getRoleBadge(user.role)}
+                          {getStatusBadge(user.status)}
+                        </div>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
               ))}
             </div>
 
             {/* Desktop Table View */}
-            <div className="hidden lg:block">
-              <UserTable
-                users={currentUsers}
-                getRoleBadge={getRoleBadge}
-                getStatusBadge={getStatusBadge}
-              />
+            <div className="hidden lg:block overflow-x-auto">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="min-w-[150px]">Full Name</TableHead>
+                    <TableHead className="min-w-[120px]">Username</TableHead>
+                    <TableHead className="min-w-[200px]">Email</TableHead>
+                    <TableHead className="min-w-[100px]">Role</TableHead>
+                    <TableHead className="min-w-[150px]">Position</TableHead>
+                    <TableHead className="min-w-[120px]">Unit</TableHead>
+                    <TableHead className="min-w-[150px]">Work Area</TableHead>
+                    <TableHead className="min-w-[100px]">Status</TableHead>
+                    <TableHead className="min-w-[120px]">Actions</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {currentUsers.map((user) => (
+                    <TableRow key={user.id}>
+                      <TableCell className="font-medium">{user.fullName}</TableCell>
+                      <TableCell>{user.username}</TableCell>
+                      <TableCell>{user.email}</TableCell>
+                      <TableCell>{getRoleBadge(user.role)}</TableCell>
+                      <TableCell>{user.position}</TableCell>
+                      <TableCell>{user.unit}</TableCell>
+                      <TableCell>{user.workArea}</TableCell>
+                      <TableCell>{getStatusBadge(user.status)}</TableCell>
+                      <TableCell>
+                        <div className="flex space-x-2">
+                          <Button size="sm" variant="outline">
+                            <Edit className="h-4 w-4" />
+                          </Button>
+                          <Button size="sm" variant="outline">
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
             </div>
             
-            <UserPagination
-              currentPage={currentPage}
-              totalPages={totalPages}
-              onPageChange={handlePageChange}
-            />
+            {/* Responsive Pagination */}
+            <div className="mt-4 px-4 lg:px-0">
+              <Pagination>
+                <PaginationContent className="flex-wrap justify-center gap-1">
+                  <PaginationItem>
+                    <PaginationPrevious 
+                      onClick={() => handlePageChange(Math.max(1, currentPage - 1))}
+                      className={`${currentPage === 1 ? 'pointer-events-none opacity-50' : 'cursor-pointer'} text-xs lg:text-sm`}
+                    />
+                  </PaginationItem>
+                  
+                  {/* Show fewer page numbers on mobile */}
+                  {Array.from({ length: Math.min(totalPages, 5) }, (_, i) => {
+                    const page = i + Math.max(1, currentPage - 2);
+                    if (page > totalPages) return null;
+                    return (
+                      <PaginationItem key={page}>
+                        <PaginationLink
+                          onClick={() => handlePageChange(page)}
+                          isActive={currentPage === page}
+                          className="cursor-pointer text-xs lg:text-sm min-w-8 lg:min-w-10"
+                        >
+                          {page}
+                        </PaginationLink>
+                      </PaginationItem>
+                    );
+                  })}
+                  
+                  <PaginationItem>
+                    <PaginationNext 
+                      onClick={() => handlePageChange(Math.min(totalPages, currentPage + 1))}
+                      className={`${currentPage === totalPages ? 'pointer-events-none opacity-50' : 'cursor-pointer'} text-xs lg:text-sm`}
+                    />
+                  </PaginationItem>
+                </PaginationContent>
+              </Pagination>
+            </div>
           </CardContent>
         </Card>
-
-        <AddUserModal
-          open={showAddModal}
-          onOpenChange={setShowAddModal}
-          onUserAdded={handleUserAdded}
-        />
       </div>
     </Layout>
   );
