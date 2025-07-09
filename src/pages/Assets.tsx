@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Layout from '../components/Layout';
 import ExportButton from '../components/ExportButton';
 import { Button } from '@/components/ui/button';
@@ -13,88 +13,222 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Search, Plus, Filter, Eye, Edit, Trash2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
+import { supabase } from '@/integrations/supabase/client';
+
+interface Asset {
+  id: string;
+  asset_code: string;
+  name: string;
+  category_id: string;
+  category?: { name: string };
+  serial_number?: string;
+  purchase_date: string;
+  purchase_price: number;
+  vendor?: string;
+  location_id: string;
+  location?: { name: string };
+  assigned_to?: string;
+  description?: string;
+  status: string;
+  created_at: string;
+  updated_at: string;
+}
+
+interface Category {
+  id: string;
+  name: string;
+}
+
+interface WorkArea {
+  id: string;
+  name: string;
+}
 
 const Assets = () => {
   const { toast } = useToast();
   const [searchTerm, setSearchTerm] = useState('');
   const [showAddForm, setShowAddForm] = useState(false);
+  const [editingAsset, setEditingAsset] = useState<Asset | null>(null);
+  const [assets, setAssets] = useState<Asset[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [workAreas, setWorkAreas] = useState<WorkArea[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
-    category: '',
-    serialNumber: '',
-    purchaseDate: '',
-    purchasePrice: '',
+    category_id: '',
+    serial_number: '',
+    purchase_date: '',
+    purchase_price: '',
     vendor: '',
-    location: '',
-    assignedTo: '',
-    description: ''
+    location_id: '',
+    assigned_to: '',
+    description: '',
+    status: 'Aktif'
   });
 
-  // Mock asset data
-  const assets = [
-    {
-      id: 'AST001',
-      name: 'Laptop Dell OptiPlex 3090',
-      category: 'Peralatan IT',
-      location: 'Gedung A - Lantai 2',
-      status: 'Aktif',
-      assignedTo: 'Budi Santoso',
-      purchaseDate: '2023-01-15',
-      value: 'Rp 18.000.000'
-    },
-    {
-      id: 'AST002',
-      name: 'Kursi Kantor Ergonomis',
-      category: 'Furniture',
-      location: 'Gedung B - Lantai 1',
-      status: 'Aktif',
-      assignedTo: 'Sri Wahyuni',
-      purchaseDate: '2023-02-20',
-      value: 'Rp 5.250.000'
-    },
-    {
-      id: 'AST003',
-      name: 'Printer HP LaserJet Pro',
-      category: 'Peralatan IT',
-      location: 'Gedung A - Lantai 1',
-      status: 'Maintenance',
-      assignedTo: 'Departemen IT',
-      purchaseDate: '2022-11-10',
-      value: 'Rp 12.000.000'
-    },
-    {
-      id: 'AST004',
-      name: 'Meja Rapat',
-      category: 'Furniture',
-      location: 'Ruang Rapat Lt. 3',
-      status: 'Aktif',
-      assignedTo: 'Fasilitas Umum',
-      purchaseDate: '2022-08-15',
-      value: 'Rp 22.500.000'
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  const fetchData = async () => {
+    setIsLoading(true);
+    try {
+      // Fetch assets with related data
+      const { data: assetsData, error: assetsError } = await supabase
+        .from('assets')
+        .select(`
+          *,
+          category:asset_categories(name),
+          location:work_areas(name)
+        `)
+        .order('created_at', { ascending: false });
+
+      if (assetsError) throw assetsError;
+
+      // Fetch categories
+      const { data: categoriesData, error: categoriesError } = await supabase
+        .from('asset_categories')
+        .select('id, name')
+        .order('name');
+
+      if (categoriesError) throw categoriesError;
+
+      // Fetch work areas
+      const { data: workAreasData, error: workAreasError } = await supabase
+        .from('work_areas')
+        .select('id, name')
+        .order('name');
+
+      if (workAreasError) throw workAreasError;
+
+      setAssets(assetsData || []);
+      setCategories(categoriesData || []);
+      setWorkAreas(workAreasData || []);
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive"
+      });
     }
-  ];
+    setIsLoading(false);
+  };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    // Here you would typically save to backend
-    toast({
-      title: "Berhasil",
-      description: "Aset berhasil ditambahkan"
-    });
+    setIsLoading(true);
 
-    // Reset form
+    try {
+      const assetData = {
+        name: formData.name,
+        category_id: formData.category_id,
+        serial_number: formData.serial_number || null,
+        purchase_date: formData.purchase_date,
+        purchase_price: parseFloat(formData.purchase_price),
+        vendor: formData.vendor || null,
+        location_id: formData.location_id,
+        assigned_to: formData.assigned_to || null,
+        description: formData.description || null,
+        status: formData.status
+      };
+
+      if (editingAsset) {
+        const { error } = await supabase
+          .from('assets')
+          .update(assetData)
+          .eq('id', editingAsset.id);
+
+        if (error) throw error;
+
+        toast({
+          title: "Berhasil",
+          description: "Aset berhasil diperbarui"
+        });
+      } else {
+        const { error } = await supabase
+          .from('assets')
+          .insert(assetData);
+
+        if (error) throw error;
+
+        toast({
+          title: "Berhasil",
+          description: "Aset berhasil ditambahkan"
+        });
+      }
+
+      // Reset form and refresh data
+      resetForm();
+      fetchData();
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive"
+      });
+    }
+    setIsLoading(false);
+  };
+
+  const handleEdit = (asset: Asset) => {
+    setEditingAsset(asset);
+    setFormData({
+      name: asset.name,
+      category_id: asset.category_id,
+      serial_number: asset.serial_number || '',
+      purchase_date: asset.purchase_date,
+      purchase_price: asset.purchase_price.toString(),
+      vendor: asset.vendor || '',
+      location_id: asset.location_id,
+      assigned_to: asset.assigned_to || '',
+      description: asset.description || '',
+      status: asset.status
+    });
+    setShowAddForm(true);
+  };
+
+  const handleDelete = async (id: string) => {
+    if (!confirm('Apakah Anda yakin ingin menghapus aset ini?')) return;
+
+    setIsLoading(true);
+    try {
+      const { error } = await supabase
+        .from('assets')
+        .delete()
+        .eq('id', id);
+
+      if (error) throw error;
+
+      toast({
+        title: "Berhasil",
+        description: "Aset berhasil dihapus"
+      });
+
+      fetchData();
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive"
+      });
+    }
+    setIsLoading(false);
+  };
+
+  const resetForm = () => {
     setFormData({
       name: '',
-      category: '',
-      serialNumber: '',
-      purchaseDate: '',
-      purchasePrice: '',
+      category_id: '',
+      serial_number: '',
+      purchase_date: '',
+      purchase_price: '',
       vendor: '',
-      location: '',
-      assignedTo: '',
-      description: ''
+      location_id: '',
+      assigned_to: '',
+      description: '',
+      status: 'Aktif'
     });
+    setEditingAsset(null);
     setShowAddForm(false);
   };
 
@@ -107,9 +241,16 @@ const Assets = () => {
     return <Badge variant={variants[status] || 'default'}>{status}</Badge>;
   };
 
+  const formatCurrency = (amount: number) => {
+    return new Intl.NumberFormat('id-ID', {
+      style: 'currency',
+      currency: 'IDR'
+    }).format(amount);
+  };
+
   const filteredAssets = assets.filter(asset =>
     asset.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    asset.id.toLowerCase().includes(searchTerm.toLowerCase())
+    asset.asset_code.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   return (
@@ -117,17 +258,17 @@ const Assets = () => {
       <div className="space-y-6">
         <div className="flex justify-between items-center">
           <h1 className="text-3xl font-bold">Manajemen Aset</h1>
-          <Button onClick={() => setShowAddForm(!showAddForm)}>
+          <Button onClick={() => setShowAddForm(!showAddForm)} disabled={isLoading}>
             <Plus className="h-4 w-4 mr-2" />
             {showAddForm ? 'Batal' : 'Tambah Aset Baru'}
           </Button>
         </div>
 
-        {/* Add New Asset Form */}
+        {/* Add/Edit Asset Form */}
         {showAddForm && (
           <Card>
             <CardHeader>
-              <CardTitle>Tambah Aset Baru</CardTitle>
+              <CardTitle>{editingAsset ? 'Edit Aset' : 'Tambah Aset Baru'}</CardTitle>
             </CardHeader>
             <CardContent>
               <form onSubmit={handleSubmit} className="space-y-4">
@@ -143,49 +284,48 @@ const Assets = () => {
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="category">Kategori *</Label>
-                    <Select value={formData.category} onValueChange={(value) => setFormData({...formData, category: value})}>
+                    <Label htmlFor="category_id">Kategori *</Label>
+                    <Select value={formData.category_id} onValueChange={(value) => setFormData({...formData, category_id: value})}>
                       <SelectTrigger>
                         <SelectValue placeholder="Pilih kategori" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="Peralatan IT">Peralatan IT</SelectItem>
-                        <SelectItem value="Furniture">Furniture</SelectItem>
-                        <SelectItem value="Mesin">Mesin</SelectItem>
-                        <SelectItem value="Kendaraan">Kendaraan</SelectItem>
-                        <SelectItem value="Bangunan">Bangunan</SelectItem>
-                        <SelectItem value="Lainnya">Lainnya</SelectItem>
+                        {categories.map((category) => (
+                          <SelectItem key={category.id} value={category.id}>
+                            {category.name}
+                          </SelectItem>
+                        ))}
                       </SelectContent>
                     </Select>
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="serialNumber">Nomor Seri</Label>
+                    <Label htmlFor="serial_number">Nomor Seri</Label>
                     <Input
-                      id="serialNumber"
-                      value={formData.serialNumber}
-                      onChange={(e) => setFormData({...formData, serialNumber: e.target.value})}
+                      id="serial_number"
+                      value={formData.serial_number}
+                      onChange={(e) => setFormData({...formData, serial_number: e.target.value})}
                     />
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="purchaseDate">Tanggal Pembelian *</Label>
+                    <Label htmlFor="purchase_date">Tanggal Pembelian *</Label>
                     <Input
-                      id="purchaseDate"
+                      id="purchase_date"
                       type="date"
-                      value={formData.purchaseDate}
-                      onChange={(e) => setFormData({...formData, purchaseDate: e.target.value})}
+                      value={formData.purchase_date}
+                      onChange={(e) => setFormData({...formData, purchase_date: e.target.value})}
                       required
                     />
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="purchasePrice">Harga Pembelian *</Label>
+                    <Label htmlFor="purchase_price">Harga Pembelian *</Label>
                     <Input
-                      id="purchasePrice"
+                      id="purchase_price"
                       type="number"
-                      value={formData.purchasePrice}
-                      onChange={(e) => setFormData({...formData, purchasePrice: e.target.value})}
+                      value={formData.purchase_price}
+                      onChange={(e) => setFormData({...formData, purchase_price: e.target.value})}
                       required
                     />
                   </div>
@@ -200,22 +340,42 @@ const Assets = () => {
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="location">Lokasi *</Label>
+                    <Label htmlFor="location_id">Lokasi *</Label>
+                    <Select value={formData.location_id} onValueChange={(value) => setFormData({...formData, location_id: value})}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Pilih lokasi" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {workAreas.map((workArea) => (
+                          <SelectItem key={workArea.id} value={workArea.id}>
+                            {workArea.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="assigned_to">Penanggung Jawab</Label>
                     <Input
-                      id="location"
-                      value={formData.location}
-                      onChange={(e) => setFormData({...formData, location: e.target.value})}
-                      required
+                      id="assigned_to"
+                      value={formData.assigned_to}
+                      onChange={(e) => setFormData({...formData, assigned_to: e.target.value})}
                     />
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="assignedTo">Penanggung Jawab</Label>
-                    <Input
-                      id="assignedTo"
-                      value={formData.assignedTo}
-                      onChange={(e) => setFormData({...formData, assignedTo: e.target.value})}
-                    />
+                    <Label htmlFor="status">Status</Label>
+                    <Select value={formData.status} onValueChange={(value) => setFormData({...formData, status: value})}>
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Aktif">Aktif</SelectItem>
+                        <SelectItem value="Maintenance">Maintenance</SelectItem>
+                        <SelectItem value="Pensiun">Pensiun</SelectItem>
+                      </SelectContent>
+                    </Select>
                   </div>
                 </div>
 
@@ -230,8 +390,10 @@ const Assets = () => {
                 </div>
 
                 <div className="flex gap-2">
-                  <Button type="submit">Tambah Aset</Button>
-                  <Button type="button" variant="outline" onClick={() => setShowAddForm(false)}>
+                  <Button type="submit" disabled={isLoading}>
+                    {editingAsset ? 'Update Aset' : 'Tambah Aset'}
+                  </Button>
+                  <Button type="button" variant="outline" onClick={resetForm}>
                     Batal
                   </Button>
                 </div>
@@ -270,48 +432,64 @@ const Assets = () => {
             </div>
           </CardHeader>
           <CardContent>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>ID Aset</TableHead>
-                  <TableHead>Nama</TableHead>
-                  <TableHead>Kategori</TableHead>
-                  <TableHead>Lokasi</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>Penanggung Jawab</TableHead>
-                  <TableHead>Nilai</TableHead>
-                  <TableHead>Aksi</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {filteredAssets.map((asset) => (
-                  <TableRow key={asset.id}>
-                    <TableCell className="font-medium">{asset.id}</TableCell>
-                    <TableCell>{asset.name}</TableCell>
-                    <TableCell>{asset.category}</TableCell>
-                    <TableCell>{asset.location}</TableCell>
-                    <TableCell>{getStatusBadge(asset.status)}</TableCell>
-                    <TableCell>{asset.assignedTo}</TableCell>
-                    <TableCell>{asset.value}</TableCell>
-                    <TableCell>
-                      <div className="flex space-x-2">
-                        <Link to={`/assets/${asset.id}`}>
-                          <Button size="sm" variant="outline">
-                            <Eye className="h-4 w-4" />
-                          </Button>
-                        </Link>
-                        <Button size="sm" variant="outline">
-                          <Edit className="h-4 w-4" />
-                        </Button>
-                        <Button size="sm" variant="outline">
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    </TableCell>
+            {isLoading ? (
+              <div className="text-center py-8">Loading...</div>
+            ) : (
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Kode Aset</TableHead>
+                    <TableHead>Nama</TableHead>
+                    <TableHead>Kategori</TableHead>
+                    <TableHead>Lokasi</TableHead>
+                    <TableHead>Status</TableHead>
+                    <TableHead>Penanggung Jawab</TableHead>
+                    <TableHead>Nilai</TableHead>
+                    <TableHead>Aksi</TableHead>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+                </TableHeader>
+                <TableBody>
+                  {filteredAssets.map((asset) => (
+                    <TableRow key={asset.id}>
+                      <TableCell className="font-medium">{asset.asset_code}</TableCell>
+                      <TableCell>{asset.name}</TableCell>
+                      <TableCell>{asset.category?.name}</TableCell>
+                      <TableCell>{asset.location?.name}</TableCell>
+                      <TableCell>{getStatusBadge(asset.status)}</TableCell>
+                      <TableCell>{asset.assigned_to || '-'}</TableCell>
+                      <TableCell>{formatCurrency(asset.purchase_price)}</TableCell>
+                      <TableCell>
+                        <div className="flex space-x-2">
+                          <Link to={`/assets/${asset.id}`}>
+                            <Button size="sm" variant="outline">
+                              <Eye className="h-4 w-4" />
+                            </Button>
+                          </Link>
+                          <Button size="sm" variant="outline" onClick={() => handleEdit(asset)}>
+                            <Edit className="h-4 w-4" />
+                          </Button>
+                          <Button 
+                            size="sm" 
+                            variant="outline" 
+                            onClick={() => handleDelete(asset.id)}
+                            disabled={isLoading}
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                  {filteredAssets.length === 0 && (
+                    <TableRow>
+                      <TableCell colSpan={8} className="text-center py-8">
+                        {searchTerm ? 'Tidak ada aset yang ditemukan' : 'Belum ada data aset'}
+                      </TableCell>
+                    </TableRow>
+                  )}
+                </TableBody>
+              </Table>
+            )}
           </CardContent>
         </Card>
       </div>

@@ -7,10 +7,9 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
-import { Trash2, Edit, Plus, Save, X } from 'lucide-react';
+import { Trash2, Edit, Save, X } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useForm } from 'react-hook-form';
 
@@ -26,6 +25,8 @@ interface FormData {
   name: string;
   description: string;
 }
+
+type TableName = 'asset_categories' | 'units' | 'work_areas';
 
 const Settings = () => {
   const { user } = useAuth();
@@ -63,7 +64,7 @@ const Settings = () => {
     setIsLoading(false);
   };
 
-  const handleSave = async (data: FormData, table: string) => {
+  const handleSave = async (data: FormData, table: TableName) => {
     if (!isAdmin) {
       setMessage('Only admins can modify settings');
       return;
@@ -104,7 +105,7 @@ const Settings = () => {
     setIsLoading(false);
   };
 
-  const handleDelete = async (id: string, table: string) => {
+  const handleDelete = async (id: string, table: TableName) => {
     if (!isAdmin) {
       setMessage('Only admins can delete settings');
       return;
@@ -139,7 +140,7 @@ const Settings = () => {
     reset();
   };
 
-  const SettingsTable = ({ items, table }: { items: SettingsItem[]; table: string }) => (
+  const SettingsTable = ({ items, table }: { items: SettingsItem[]; table: TableName }) => (
     <div className="space-y-4">
       {isAdmin && (
         <Card>

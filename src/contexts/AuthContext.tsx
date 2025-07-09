@@ -51,7 +51,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       const { data: profile, error: profileError } = await supabase
         .from('profiles')
-        .select('*')
+        .select(`
+          *,
+          unit:units(name),
+          work_area:work_areas(name)
+        `)
         .eq('id', userId)
         .single();
 
@@ -77,9 +81,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         email: session?.user?.email || '',
         role: userRole.role as UserRole,
         fullName: profile.full_name,
-        position: profile.position || '',
-        unit: profile.unit || '',
-        workArea: profile.work_area || '',
+        position: '',
+        unit: profile.unit?.name || '',
+        workArea: profile.work_area?.name || '',
         avatar: profile.avatar_url
       };
     } catch (error) {
