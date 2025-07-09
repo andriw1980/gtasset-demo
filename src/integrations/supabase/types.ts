@@ -38,6 +38,72 @@ export type Database = {
         }
         Relationships: []
       }
+      assets: {
+        Row: {
+          asset_code: string
+          assigned_to: string | null
+          category_id: string | null
+          created_at: string
+          description: string | null
+          id: string
+          location_id: string | null
+          name: string
+          purchase_date: string
+          purchase_price: number
+          serial_number: string | null
+          status: string | null
+          updated_at: string
+          vendor: string | null
+        }
+        Insert: {
+          asset_code: string
+          assigned_to?: string | null
+          category_id?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          location_id?: string | null
+          name: string
+          purchase_date: string
+          purchase_price: number
+          serial_number?: string | null
+          status?: string | null
+          updated_at?: string
+          vendor?: string | null
+        }
+        Update: {
+          asset_code?: string
+          assigned_to?: string | null
+          category_id?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          location_id?: string | null
+          name?: string
+          purchase_date?: string
+          purchase_price?: number
+          serial_number?: string | null
+          status?: string | null
+          updated_at?: string
+          vendor?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "assets_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "asset_categories"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "assets_location_id_fkey"
+            columns: ["location_id"]
+            isOneToOne: false
+            referencedRelation: "work_areas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -160,6 +226,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      generate_asset_code: {
+        Args: Record<PropertyKey, never>
+        Returns: string
+      }
       has_role: {
         Args: {
           user_id: string
