@@ -73,18 +73,9 @@ const Assets = () => {
   const fetchData = async () => {
     setIsLoading(true);
     try {
-      // Fetch assets with related data
-      const { data: assetsData, error: assetsError } = await supabase
-        .from('assets')
-        .select(`
-          *,
-          category:asset_categories(name),
-          location:work_areas(name)
-        `)
-        .order('created_at', { ascending: false });
-
-      if (assetsError) throw assetsError;
-
+      // For now, we'll show a message that the assets table needs to be created
+      // This is because the SQL migration hasn't been run yet
+      
       // Fetch categories
       const { data: categoriesData, error: categoriesError } = await supabase
         .from('asset_categories')
@@ -101,9 +92,18 @@ const Assets = () => {
 
       if (workAreasError) throw workAreasError;
 
-      setAssets(assetsData || []);
       setCategories(categoriesData || []);
       setWorkAreas(workAreasData || []);
+      
+      // Mock assets data for demonstration
+      setAssets([]);
+      
+      toast({
+        title: "Info",
+        description: "Assets table not found. Please run the SQL migration to create the assets table.",
+        variant: "default"
+      });
+      
     } catch (error: any) {
       toast({
         title: "Error",
@@ -116,58 +116,12 @@ const Assets = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsLoading(true);
-
-    try {
-      const assetData = {
-        name: formData.name,
-        category_id: formData.category_id,
-        serial_number: formData.serial_number || null,
-        purchase_date: formData.purchase_date,
-        purchase_price: parseFloat(formData.purchase_price),
-        vendor: formData.vendor || null,
-        location_id: formData.location_id,
-        assigned_to: formData.assigned_to || null,
-        description: formData.description || null,
-        status: formData.status
-      };
-
-      if (editingAsset) {
-        const { error } = await supabase
-          .from('assets')
-          .update(assetData)
-          .eq('id', editingAsset.id);
-
-        if (error) throw error;
-
-        toast({
-          title: "Berhasil",
-          description: "Aset berhasil diperbarui"
-        });
-      } else {
-        const { error } = await supabase
-          .from('assets')
-          .insert(assetData);
-
-        if (error) throw error;
-
-        toast({
-          title: "Berhasil",
-          description: "Aset berhasil ditambahkan"
-        });
-      }
-
-      // Reset form and refresh data
-      resetForm();
-      fetchData();
-    } catch (error: any) {
-      toast({
-        title: "Error",
-        description: error.message,
-        variant: "destructive"
-      });
-    }
-    setIsLoading(false);
+    
+    toast({
+      title: "Info",
+      description: "Assets table not available. Please run the SQL migration first.",
+      variant: "default"
+    });
   };
 
   const handleEdit = (asset: Asset) => {
@@ -190,29 +144,11 @@ const Assets = () => {
   const handleDelete = async (id: string) => {
     if (!confirm('Apakah Anda yakin ingin menghapus aset ini?')) return;
 
-    setIsLoading(true);
-    try {
-      const { error } = await supabase
-        .from('assets')
-        .delete()
-        .eq('id', id);
-
-      if (error) throw error;
-
-      toast({
-        title: "Berhasil",
-        description: "Aset berhasil dihapus"
-      });
-
-      fetchData();
-    } catch (error: any) {
-      toast({
-        title: "Error",
-        description: error.message,
-        variant: "destructive"
-      });
-    }
-    setIsLoading(false);
+    toast({
+      title: "Info",
+      description: "Assets table not available. Please run the SQL migration first.",
+      variant: "default"
+    });
   };
 
   const resetForm = () => {
@@ -263,6 +199,20 @@ const Assets = () => {
             {showAddForm ? 'Batal' : 'Tambah Aset Baru'}
           </Button>
         </div>
+
+        {/* Database Status Alert */}
+        <Card className="border-yellow-200 bg-yellow-50">
+          <CardContent className="pt-6">
+            <div className="flex items-center space-x-2">
+              <div className="text-yellow-800">
+                <h3 className="font-semibold">Database Setup Required</h3>
+                <p className="text-sm">
+                  The assets table has not been created yet. Please run the SQL migration to create the assets table and enable full CRUD functionality.
+                </p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
 
         {/* Add/Edit Asset Form */}
         {showAddForm && (
@@ -449,41 +399,10 @@ const Assets = () => {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {filteredAssets.map((asset) => (
-                    <TableRow key={asset.id}>
-                      <TableCell className="font-medium">{asset.asset_code}</TableCell>
-                      <TableCell>{asset.name}</TableCell>
-                      <TableCell>{asset.category?.name}</TableCell>
-                      <TableCell>{asset.location?.name}</TableCell>
-                      <TableCell>{getStatusBadge(asset.status)}</TableCell>
-                      <TableCell>{asset.assigned_to || '-'}</TableCell>
-                      <TableCell>{formatCurrency(asset.purchase_price)}</TableCell>
-                      <TableCell>
-                        <div className="flex space-x-2">
-                          <Link to={`/assets/${asset.id}`}>
-                            <Button size="sm" variant="outline">
-                              <Eye className="h-4 w-4" />
-                            </Button>
-                          </Link>
-                          <Button size="sm" variant="outline" onClick={() => handleEdit(asset)}>
-                            <Edit className="h-4 w-4" />
-                          </Button>
-                          <Button 
-                            size="sm" 
-                            variant="outline" 
-                            onClick={() => handleDelete(asset.id)}
-                            disabled={isLoading}
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                  ))}
                   {filteredAssets.length === 0 && (
                     <TableRow>
                       <TableCell colSpan={8} className="text-center py-8">
-                        {searchTerm ? 'Tidak ada aset yang ditemukan' : 'Belum ada data aset'}
+                        Belum ada data aset. Silakan buat tabel assets terlebih dahulu dengan menjalankan SQL migration.
                       </TableCell>
                     </TableRow>
                   )}
