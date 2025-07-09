@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
@@ -17,7 +18,8 @@ import {
   Menu,
   X,
   Shield,
-  BarChart3
+  BarChart3,
+  Sliders
 } from 'lucide-react';
 
 const Layout = ({ children }: { children: React.ReactNode }) => {
@@ -75,6 +77,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
       items: [
         { name: 'Users', icon: Users, path: '/users' },
         { name: 'Roles', icon: Shield, path: '/roles' },
+        { name: 'Parameters', icon: Sliders, path: '/parameters' },
         { name: 'Settings', icon: Settings, path: '/settings' },
       ]
     }

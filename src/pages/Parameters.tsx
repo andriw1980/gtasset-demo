@@ -13,7 +13,7 @@ import { Trash2, Edit, Save, X } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useForm } from 'react-hook-form';
 
-interface SettingsItem {
+interface ParameterItem {
   id: string;
   name: string;
   description?: string;
@@ -26,15 +26,15 @@ interface FormData {
   description: string;
 }
 
-const Settings = () => {
+const Parameters = () => {
   const { user } = useAuth();
-  const [assetCategories, setAssetCategories] = useState<SettingsItem[]>([]);
-  const [units, setUnits] = useState<SettingsItem[]>([]);
-  const [workAreas, setWorkAreas] = useState<SettingsItem[]>([]);
+  const [assetCategories, setAssetCategories] = useState<ParameterItem[]>([]);
+  const [units, setUnits] = useState<ParameterItem[]>([]);
+  const [workAreas, setWorkAreas] = useState<ParameterItem[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [message, setMessage] = useState('');
-  const [editingItem, setEditingItem] = useState<SettingsItem | null>(null);
-  const [activeTab, setActiveTab] = useState('categories');
+  const [editingItem, setEditingItem] = useState<ParameterItem | null>(null);
+  const [activeTab, setActiveTab] = useState('asset-categories');
 
   const { register, handleSubmit, reset, setValue } = useForm<FormData>();
 
@@ -64,7 +64,7 @@ const Settings = () => {
 
   const handleSave = async (data: FormData, tableName: 'asset_categories' | 'units' | 'work_areas') => {
     if (!isAdmin) {
-      setMessage('Only admins can modify settings');
+      setMessage('Only admins can modify parameters');
       return;
     }
 
@@ -105,7 +105,7 @@ const Settings = () => {
 
   const handleDelete = async (id: string, tableName: 'asset_categories' | 'units' | 'work_areas') => {
     if (!isAdmin) {
-      setMessage('Only admins can delete settings');
+      setMessage('Only admins can delete parameters');
       return;
     }
 
@@ -127,7 +127,7 @@ const Settings = () => {
     setIsLoading(false);
   };
 
-  const startEdit = (item: SettingsItem) => {
+  const startEdit = (item: ParameterItem) => {
     setEditingItem(item);
     setValue('name', item.name);
     setValue('description', item.description || '');
@@ -138,13 +138,21 @@ const Settings = () => {
     reset();
   };
 
-  const SettingsTable = ({ items, tableName }: { items: SettingsItem[]; tableName: 'asset_categories' | 'units' | 'work_areas' }) => (
+  const ParameterTable = ({ 
+    items, 
+    tableName, 
+    title 
+  }: { 
+    items: ParameterItem[]; 
+    tableName: 'asset_categories' | 'units' | 'work_areas';
+    title: string;
+  }) => (
     <div className="space-y-4">
       {isAdmin && (
         <Card>
           <CardHeader>
             <CardTitle>
-              {editingItem ? 'Edit' : 'Add New'} {tableName.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}
+              {editingItem ? 'Edit' : 'Add New'} {title}
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -186,7 +194,7 @@ const Settings = () => {
 
       <Card>
         <CardHeader>
-          <CardTitle>Current {tableName.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}</CardTitle>
+          <CardTitle>Current {title}</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="space-y-2">
@@ -240,7 +248,7 @@ const Settings = () => {
     <Layout>
       <div className="space-y-6">
         <div className="flex justify-between items-center">
-          <h1 className="text-3xl font-bold">Settings</h1>
+          <h1 className="text-3xl font-bold">Parameters</h1>
           {!isAdmin && (
             <Badge variant="secondary">View Only - Admin Access Required</Badge>
           )}
@@ -254,21 +262,33 @@ const Settings = () => {
 
         <Tabs value={activeTab} onValueChange={setActiveTab}>
           <TabsList className="grid w-full grid-cols-3">
-            <TabsTrigger value="categories">Asset Categories</TabsTrigger>
+            <TabsTrigger value="asset-categories">Asset Categories</TabsTrigger>
             <TabsTrigger value="units">Units</TabsTrigger>
             <TabsTrigger value="work-areas">Work Areas</TabsTrigger>
           </TabsList>
 
-          <TabsContent value="categories" className="space-y-4">
-            <SettingsTable items={assetCategories} tableName="asset_categories" />
+          <TabsContent value="asset-categories" className="space-y-4">
+            <ParameterTable 
+              items={assetCategories} 
+              tableName="asset_categories" 
+              title="Asset Categories"
+            />
           </TabsContent>
 
           <TabsContent value="units" className="space-y-4">
-            <SettingsTable items={units} tableName="units" />
+            <ParameterTable 
+              items={units} 
+              tableName="units" 
+              title="Units"
+            />
           </TabsContent>
 
           <TabsContent value="work-areas" className="space-y-4">
-            <SettingsTable items={workAreas} tableName="work_areas" />
+            <ParameterTable 
+              items={workAreas} 
+              tableName="work_areas" 
+              title="Work Areas"
+            />
           </TabsContent>
         </Tabs>
       </div>
@@ -276,4 +296,4 @@ const Settings = () => {
   );
 };
 
-export default Settings;
+export default Parameters;
