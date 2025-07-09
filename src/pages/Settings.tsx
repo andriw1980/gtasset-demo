@@ -7,9 +7,10 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
-import { Trash2, Edit, Save, X } from 'lucide-react';
+import { Trash2, Edit, Plus, Save, X } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useForm } from 'react-hook-form';
 
@@ -62,7 +63,7 @@ const Settings = () => {
     setIsLoading(false);
   };
 
-  const handleSave = async (data: FormData, tableName: 'asset_categories' | 'units' | 'work_areas') => {
+  const handleSave = async (data: FormData, table: string) => {
     if (!isAdmin) {
       setMessage('Only admins can modify settings');
       return;
@@ -72,7 +73,7 @@ const Settings = () => {
     try {
       if (editingItem) {
         const { error } = await supabase
-          .from(tableName)
+          .from(table)
           .update({
             name: data.name,
             description: data.description,
@@ -84,7 +85,7 @@ const Settings = () => {
         setMessage('Item updated successfully');
       } else {
         const { error } = await supabase
-          .from(tableName)
+          .from(table)
           .insert({
             name: data.name,
             description: data.description
@@ -103,7 +104,7 @@ const Settings = () => {
     setIsLoading(false);
   };
 
-  const handleDelete = async (id: string, tableName: 'asset_categories' | 'units' | 'work_areas') => {
+  const handleDelete = async (id: string, table: string) => {
     if (!isAdmin) {
       setMessage('Only admins can delete settings');
       return;
@@ -114,7 +115,7 @@ const Settings = () => {
     setIsLoading(true);
     try {
       const { error } = await supabase
-        .from(tableName)
+        .from(table)
         .delete()
         .eq('id', id);
 
@@ -138,17 +139,17 @@ const Settings = () => {
     reset();
   };
 
-  const SettingsTable = ({ items, tableName }: { items: SettingsItem[]; tableName: 'asset_categories' | 'units' | 'work_areas' }) => (
+  const SettingsTable = ({ items, table }: { items: SettingsItem[]; table: string }) => (
     <div className="space-y-4">
       {isAdmin && (
         <Card>
           <CardHeader>
             <CardTitle>
-              {editingItem ? 'Edit' : 'Add New'} {tableName.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}
+              {editingItem ? 'Edit' : 'Add New'} {table.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <form onSubmit={handleSubmit((data) => handleSave(data, tableName))} className="space-y-4">
+            <form onSubmit={handleSubmit((data) => handleSave(data, table))} className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <Label htmlFor="name">Name</Label>
@@ -186,7 +187,7 @@ const Settings = () => {
 
       <Card>
         <CardHeader>
-          <CardTitle>Current {tableName.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}</CardTitle>
+          <CardTitle>Current {table.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="space-y-2">
@@ -215,7 +216,7 @@ const Settings = () => {
                     <Button
                       variant="destructive"
                       size="sm"
-                      onClick={() => handleDelete(item.id, tableName)}
+                      onClick={() => handleDelete(item.id, table)}
                     >
                       <Trash2 className="h-4 w-4" />
                     </Button>
@@ -260,15 +261,15 @@ const Settings = () => {
           </TabsList>
 
           <TabsContent value="categories" className="space-y-4">
-            <SettingsTable items={assetCategories} tableName="asset_categories" />
+            <SettingsTable items={assetCategories} table="asset_categories" />
           </TabsContent>
 
           <TabsContent value="units" className="space-y-4">
-            <SettingsTable items={units} tableName="units" />
+            <SettingsTable items={units} table="units" />
           </TabsContent>
 
           <TabsContent value="work-areas" className="space-y-4">
-            <SettingsTable items={workAreas} tableName="work_areas" />
+            <SettingsTable items={workAreas} table="work_areas" />
           </TabsContent>
         </Tabs>
       </div>

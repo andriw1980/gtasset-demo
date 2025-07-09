@@ -1,3 +1,4 @@
+
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { User as SupabaseUser, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
@@ -76,9 +77,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         email: session?.user?.email || '',
         role: userRole.role as UserRole,
         fullName: profile.full_name,
-        position: '', // Default empty since not in database
-        unit: '', // Default empty since not in database
-        workArea: '', // Default empty since not in database
+        position: profile.position || '',
+        unit: profile.unit || '',
+        workArea: profile.work_area || '',
         avatar: profile.avatar_url
       };
     } catch (error) {
