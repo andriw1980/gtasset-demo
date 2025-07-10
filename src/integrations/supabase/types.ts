@@ -104,6 +104,39 @@ export type Database = {
           },
         ]
       }
+      buildings: {
+        Row: {
+          area: number | null
+          building_address: string | null
+          building_name: string | null
+          created_at: string
+          floors: number | null
+          id: string
+          pic: string | null
+          status: string | null
+        }
+        Insert: {
+          area?: number | null
+          building_address?: string | null
+          building_name?: string | null
+          created_at?: string
+          floors?: number | null
+          id?: string
+          pic?: string | null
+          status?: string | null
+        }
+        Update: {
+          area?: number | null
+          building_address?: string | null
+          building_name?: string | null
+          created_at?: string
+          floors?: number | null
+          id?: string
+          pic?: string | null
+          status?: string | null
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -194,6 +227,42 @@ export type Database = {
           id?: string
           role?: Database["public"]["Enums"]["user_role"]
           user_id?: string
+        }
+        Relationships: []
+      }
+      vendor: {
+        Row: {
+          created_at: string
+          vendor_address: string | null
+          vendor_email: string | null
+          vendor_id: string
+          vendor_industry: string | null
+          vendor_name: string | null
+          vendor_phone: string | null
+          vendor_pic: string | null
+          vendor_rating: number | null
+        }
+        Insert: {
+          created_at?: string
+          vendor_address?: string | null
+          vendor_email?: string | null
+          vendor_id?: string
+          vendor_industry?: string | null
+          vendor_name?: string | null
+          vendor_phone?: string | null
+          vendor_pic?: string | null
+          vendor_rating?: number | null
+        }
+        Update: {
+          created_at?: string
+          vendor_address?: string | null
+          vendor_email?: string | null
+          vendor_id?: string
+          vendor_industry?: string | null
+          vendor_name?: string | null
+          vendor_phone?: string | null
+          vendor_pic?: string | null
+          vendor_rating?: number | null
         }
         Relationships: []
       }

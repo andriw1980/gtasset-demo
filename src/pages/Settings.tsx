@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import Layout from '../components/Layout';
@@ -12,6 +11,7 @@ import { Badge } from '@/components/ui/badge';
 import { Trash2, Edit, Save, X } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useForm } from 'react-hook-form';
+import MigrationTool from '../components/MigrationTool';
 
 interface SettingsItem {
   id: string;
@@ -255,10 +255,11 @@ const Settings = () => {
         )}
 
         <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList className="grid w-full grid-cols-3">
+          <TabsList className="grid w-full grid-cols-4">
             <TabsTrigger value="categories">Asset Categories</TabsTrigger>
             <TabsTrigger value="units">Units</TabsTrigger>
             <TabsTrigger value="work-areas">Work Areas</TabsTrigger>
+            <TabsTrigger value="migration">Migration Tool</TabsTrigger>
           </TabsList>
 
           <TabsContent value="categories" className="space-y-4">
@@ -271,6 +272,10 @@ const Settings = () => {
 
           <TabsContent value="work-areas" className="space-y-4">
             <SettingsTable items={workAreas} table="work_areas" />
+          </TabsContent>
+
+          <TabsContent value="migration" className="space-y-4">
+            <MigrationTool />
           </TabsContent>
         </Tabs>
       </div>

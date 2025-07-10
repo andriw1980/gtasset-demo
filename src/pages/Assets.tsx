@@ -1,37 +1,36 @@
 
 import React, { useState, useEffect } from 'react';
+import { useAuth } from '../contexts/AuthContext';
 import Layout from '../components/Layout';
-import ExportButton from '../components/ExportButton';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Badge } from '@/components/ui/badge';
+import { Trash2, Edit, Save, X, Plus } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
+import { useForm } from 'react-hook-form';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Search, Plus, Filter, Eye, Edit, Trash2 } from 'lucide-react';
-import { Link } from 'react-router-dom';
-import { useToast } from '@/hooks/use-toast';
-import { supabase } from '@/integrations/supabase/client';
 
 interface Asset {
   id: string;
   asset_code: string;
   name: string;
-  category_id: string;
-  category?: { name: string };
-  serial_number?: string;
+  category_id: string | null;
+  serial_number: string | null;
   purchase_date: string;
   purchase_price: number;
-  vendor?: string;
-  location_id: string;
-  location?: { name: string };
-  assigned_to?: string;
-  description?: string;
-  status: string;
+  vendor: string | null;
+  location_id: string | null;
+  assigned_to: string | null;
+  description: string | null;
+  status: string | null;
   created_at: string;
   updated_at: string;
+  category: { name: string } | null;
+  location: { name: string } | null;
 }
 
 interface Category {
@@ -44,37 +43,43 @@ interface WorkArea {
   name: string;
 }
 
+interface AssetFormData {
+  name: string;
+  category_id: string;
+  serial_number: string;
+  purchase_date: string;
+  purchase_price: number;
+  vendor: string;
+  location_id: string;
+  assigned_to: string;
+  description: string;
+  status: string;
+}
+
 const Assets = () => {
-  const { toast } = useToast();
-  const [searchTerm, setSearchTerm] = useState('');
-  const [showAddForm, setShowAddForm] = useState(false);
-  const [editingAsset, setEditingAsset] = useState<Asset | null>(null);
+  const { user } = useAuth();
   const [assets, setAssets] = useState<Asset[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [workAreas, setWorkAreas] = useState<WorkArea[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [formData, setFormData] = useState({
-    name: '',
-    category_id: '',
-    serial_number: '',
-    purchase_date: '',
-    purchase_price: '',
-    vendor: '',
-    location_id: '',
-    assigned_to: '',
-    description: '',
-    status: 'Aktif'
-  });
+  const [message, setMessage] = useState('');
+  const [editingAsset, setEditingAsset] = useState<Asset | null>(null);
+  const [showForm, setShowForm] = useState(false);
+
+  const { register, handleSubmit, reset, setValue, watch } = useForm<AssetFormData>();
+
+  const isAdmin = user?.role === 'admin' || user?.role === 'staff';
 
   useEffect(() => {
-    fetchData();
+    fetchAssets();
+    fetchCategories();
+    fetchWorkAreas();
   }, []);
 
-  const fetchData = async () => {
+  const fetchAssets = async () => {
     setIsLoading(true);
     try {
-      // Fetch assets with category and location names
-      const { data: assetsData, error: assetsError } = await supabase
+      const { data, error } = await supabase
         .from('assets')
         .select(`
           *,
@@ -83,107 +88,100 @@ const Assets = () => {
         `)
         .order('created_at', { ascending: false });
 
-      if (assetsError) throw assetsError;
-
-      // Fetch categories
-      const { data: categoriesData, error: categoriesError } = await supabase
-        .from('asset_categories')
-        .select('id, name')
-        .order('name');
-
-      if (categoriesError) throw categoriesError;
-
-      // Fetch work areas
-      const { data: workAreasData, error: workAreasError } = await supabase
-        .from('work_areas')
-        .select('id, name')
-        .order('name');
-
-      if (workAreasError) throw workAreasError;
-
-      setAssets(assetsData || []);
-      setCategories(categoriesData || []);
-      setWorkAreas(workAreasData || []);
-      
+      if (error) throw error;
+      setAssets(data || []);
     } catch (error: any) {
-      toast({
-        title: "Error",
-        description: error.message,
-        variant: "destructive"
-      });
+      setMessage(`Error fetching assets: ${error.message}`);
     }
     setIsLoading(false);
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsLoading(true);
+  const fetchCategories = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('asset_categories')
+        .select('*')
+        .order('name');
 
+      if (error) throw error;
+      setCategories(data || []);
+    } catch (error: any) {
+      console.error('Error fetching categories:', error);
+    }
+  };
+
+  const fetchWorkAreas = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('work_areas')
+        .select('*')
+        .order('name');
+
+      if (error) throw error;
+      setWorkAreas(data || []);
+    } catch (error: any) {
+      console.error('Error fetching work areas:', error);
+    }
+  };
+
+  const handleSave = async (data: AssetFormData) => {
+    if (!isAdmin) {
+      setMessage('Only admins and staff can modify assets');
+      return;
+    }
+
+    setIsLoading(true);
     try {
       const assetData = {
-        ...formData,
-        purchase_price: parseFloat(formData.purchase_price),
-        purchase_date: formData.purchase_date,
+        name: data.name,
+        category_id: data.category_id || null,
+        serial_number: data.serial_number || null,
+        purchase_date: data.purchase_date,
+        purchase_price: Number(data.purchase_price),
+        vendor: data.vendor || null,
+        location_id: data.location_id || null,
+        assigned_to: data.assigned_to || null,
+        description: data.description || null,
+        status: data.status || 'Aktif'
       };
 
       if (editingAsset) {
-        // Update existing asset
         const { error } = await supabase
           .from('assets')
-          .update(assetData)
+          .update({
+            ...assetData,
+            updated_at: new Date().toISOString()
+          })
           .eq('id', editingAsset.id);
 
         if (error) throw error;
-
-        toast({
-          title: "Sukses",
-          description: "Aset berhasil diperbarui"
-        });
+        setMessage('Asset updated successfully');
       } else {
-        // Create new asset
         const { error } = await supabase
           .from('assets')
-          .insert([assetData]);
+          .insert(assetData);
 
         if (error) throw error;
-
-        toast({
-          title: "Sukses",
-          description: "Aset baru berhasil ditambahkan"
-        });
+        setMessage('Asset created successfully');
       }
 
-      resetForm();
-      fetchData();
+      reset();
+      setEditingAsset(null);
+      setShowForm(false);
+      fetchAssets();
     } catch (error: any) {
-      toast({
-        title: "Error",
-        description: error.message,
-        variant: "destructive"
-      });
+      setMessage(`Error: ${error.message}`);
     }
     setIsLoading(false);
   };
 
-  const handleEdit = (asset: Asset) => {
-    setEditingAsset(asset);
-    setFormData({
-      name: asset.name,
-      category_id: asset.category_id,
-      serial_number: asset.serial_number || '',
-      purchase_date: asset.purchase_date,
-      purchase_price: asset.purchase_price.toString(),
-      vendor: asset.vendor || '',
-      location_id: asset.location_id,
-      assigned_to: asset.assigned_to || '',
-      description: asset.description || '',
-      status: asset.status
-    });
-    setShowAddForm(true);
-  };
-
   const handleDelete = async (id: string) => {
-    if (!confirm('Apakah Anda yakin ingin menghapus aset ini?')) return;
+    if (!isAdmin) {
+      setMessage('Only admins can delete assets');
+      return;
+    }
+
+    if (!confirm('Are you sure you want to delete this asset?')) return;
 
     setIsLoading(true);
     try {
@@ -193,96 +191,88 @@ const Assets = () => {
         .eq('id', id);
 
       if (error) throw error;
-
-      toast({
-        title: "Sukses",
-        description: "Aset berhasil dihapus"
-      });
-      
-      fetchData();
+      setMessage('Asset deleted successfully');
+      fetchAssets();
     } catch (error: any) {
-      toast({
-        title: "Error",
-        description: error.message,
-        variant: "destructive"
-      });
+      setMessage(`Error: ${error.message}`);
     }
     setIsLoading(false);
   };
 
-  const resetForm = () => {
-    setFormData({
-      name: '',
-      category_id: '',
-      serial_number: '',
-      purchase_date: '',
-      purchase_price: '',
-      vendor: '',
-      location_id: '',
-      assigned_to: '',
-      description: '',
-      status: 'Aktif'
-    });
+  const startEdit = (asset: Asset) => {
+    setEditingAsset(asset);
+    setValue('name', asset.name);
+    setValue('category_id', asset.category_id || '');
+    setValue('serial_number', asset.serial_number || '');
+    setValue('purchase_date', asset.purchase_date);
+    setValue('purchase_price', asset.purchase_price);
+    setValue('vendor', asset.vendor || '');
+    setValue('location_id', asset.location_id || '');
+    setValue('assigned_to', asset.assigned_to || '');
+    setValue('description', asset.description || '');
+    setValue('status', asset.status || 'Aktif');
+    setShowForm(true);
+  };
+
+  const cancelEdit = () => {
     setEditingAsset(null);
-    setShowAddForm(false);
+    setShowForm(false);
+    reset();
   };
 
-  const getStatusBadge = (status: string) => {
-    const variants: Record<string, "default" | "secondary" | "destructive"> = {
-      'Aktif': 'default',
-      'Maintenance': 'secondary',
-      'Pensiun': 'destructive'
-    };
-    return <Badge variant={variants[status] || 'default'}>{status}</Badge>;
-  };
-
-  const formatCurrency = (amount: number) => {
+  const formatPrice = (price: number) => {
     return new Intl.NumberFormat('id-ID', {
       style: 'currency',
       currency: 'IDR'
-    }).format(amount);
+    }).format(price);
   };
 
-  const filteredAssets = assets.filter(asset =>
-    asset.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    asset.asset_code.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  if (!user) return null;
 
   return (
     <Layout>
       <div className="space-y-6">
         <div className="flex justify-between items-center">
-          <h1 className="text-3xl font-bold">Manajemen Aset</h1>
-          <Button onClick={() => setShowAddForm(!showAddForm)} disabled={isLoading}>
-            <Plus className="h-4 w-4 mr-2" />
-            {showAddForm ? 'Batal' : 'Tambah Aset Baru'}
-          </Button>
+          <h1 className="text-3xl font-bold">Assets</h1>
+          {isAdmin && (
+            <Button onClick={() => setShowForm(true)} className="flex items-center space-x-2">
+              <Plus className="h-4 w-4" />
+              <span>Add Asset</span>
+            </Button>
+          )}
         </div>
 
-        {/* Add/Edit Asset Form */}
-        {showAddForm && (
+        {message && (
+          <Alert variant={message.includes('Error') ? 'destructive' : 'default'}>
+            <AlertDescription>{message}</AlertDescription>
+          </Alert>
+        )}
+
+        {/* Asset Form */}
+        {showForm && (
           <Card>
             <CardHeader>
-              <CardTitle>{editingAsset ? 'Edit Aset' : 'Tambah Aset Baru'}</CardTitle>
+              <CardTitle>
+                {editingAsset ? 'Edit Asset' : 'Add New Asset'}
+              </CardTitle>
             </CardHeader>
             <CardContent>
-              <form onSubmit={handleSubmit} className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="name">Nama Aset *</Label>
+              <form onSubmit={handleSubmit(handleSave)} className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  <div>
+                    <Label htmlFor="name">Asset Name *</Label>
                     <Input
                       id="name"
-                      value={formData.name}
-                      onChange={(e) => setFormData({...formData, name: e.target.value})}
-                      required
+                      {...register('name', { required: true })}
+                      placeholder="Enter asset name"
                     />
                   </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="category_id">Kategori *</Label>
-                    <Select value={formData.category_id} onValueChange={(value) => setFormData({...formData, category_id: value})}>
+                  
+                  <div>
+                    <Label htmlFor="category">Category</Label>
+                    <Select onValueChange={(value) => setValue('category_id', value)} value={watch('category_id')}>
                       <SelectTrigger>
-                        <SelectValue placeholder="Pilih kategori" />
+                        <SelectValue placeholder="Select category" />
                       </SelectTrigger>
                       <SelectContent>
                         {categories.map((category) => (
@@ -294,77 +284,73 @@ const Assets = () => {
                     </Select>
                   </div>
 
-                  <div className="space-y-2">
-                    <Label htmlFor="serial_number">Nomor Seri</Label>
+                  <div>
+                    <Label htmlFor="serial_number">Serial Number</Label>
                     <Input
                       id="serial_number"
-                      value={formData.serial_number}
-                      onChange={(e) => setFormData({...formData, serial_number: e.target.value})}
+                      {...register('serial_number')}
+                      placeholder="Enter serial number"
                     />
                   </div>
 
-                  <div className="space-y-2">
-                    <Label htmlFor="purchase_date">Tanggal Pembelian *</Label>
+                  <div>
+                    <Label htmlFor="purchase_date">Purchase Date *</Label>
                     <Input
                       id="purchase_date"
                       type="date"
-                      value={formData.purchase_date}
-                      onChange={(e) => setFormData({...formData, purchase_date: e.target.value})}
-                      required
+                      {...register('purchase_date', { required: true })}
                     />
                   </div>
 
-                  <div className="space-y-2">
-                    <Label htmlFor="purchase_price">Harga Pembelian *</Label>
+                  <div>
+                    <Label htmlFor="purchase_price">Purchase Price *</Label>
                     <Input
                       id="purchase_price"
                       type="number"
-                      step="0.01"
-                      value={formData.purchase_price}
-                      onChange={(e) => setFormData({...formData, purchase_price: e.target.value})}
-                      required
+                      {...register('purchase_price', { required: true, valueAsNumber: true })}
+                      placeholder="Enter purchase price"
                     />
                   </div>
 
-                  <div className="space-y-2">
+                  <div>
                     <Label htmlFor="vendor">Vendor</Label>
                     <Input
                       id="vendor"
-                      value={formData.vendor}
-                      onChange={(e) => setFormData({...formData, vendor: e.target.value})}
+                      {...register('vendor')}
+                      placeholder="Enter vendor name"
                     />
                   </div>
 
-                  <div className="space-y-2">
-                    <Label htmlFor="location_id">Lokasi *</Label>
-                    <Select value={formData.location_id} onValueChange={(value) => setFormData({...formData, location_id: value})}>
+                  <div>
+                    <Label htmlFor="location">Location</Label>
+                    <Select onValueChange={(value) => setValue('location_id', value)} value={watch('location_id')}>
                       <SelectTrigger>
-                        <SelectValue placeholder="Pilih lokasi" />
+                        <SelectValue placeholder="Select location" />
                       </SelectTrigger>
                       <SelectContent>
-                        {workAreas.map((workArea) => (
-                          <SelectItem key={workArea.id} value={workArea.id}>
-                            {workArea.name}
+                        {workAreas.map((area) => (
+                          <SelectItem key={area.id} value={area.id}>
+                            {area.name}
                           </SelectItem>
                         ))}
                       </SelectContent>
                     </Select>
                   </div>
 
-                  <div className="space-y-2">
-                    <Label htmlFor="assigned_to">Penanggung Jawab</Label>
+                  <div>
+                    <Label htmlFor="assigned_to">Assigned To</Label>
                     <Input
                       id="assigned_to"
-                      value={formData.assigned_to}
-                      onChange={(e) => setFormData({...formData, assigned_to: e.target.value})}
+                      {...register('assigned_to')}
+                      placeholder="Enter assignee name"
                     />
                   </div>
 
-                  <div className="space-y-2">
+                  <div>
                     <Label htmlFor="status">Status</Label>
-                    <Select value={formData.status} onValueChange={(value) => setFormData({...formData, status: value})}>
+                    <Select onValueChange={(value) => setValue('status', value)} value={watch('status')} defaultValue="Aktif">
                       <SelectTrigger>
-                        <SelectValue />
+                        <SelectValue placeholder="Select status" />
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="Aktif">Aktif</SelectItem>
@@ -375,22 +361,24 @@ const Assets = () => {
                   </div>
                 </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="description">Deskripsi</Label>
+                <div>
+                  <Label htmlFor="description">Description</Label>
                   <Textarea
                     id="description"
-                    placeholder="Masukkan deskripsi aset..."
-                    value={formData.description}
-                    onChange={(e) => setFormData({...formData, description: e.target.value})}
+                    {...register('description')}
+                    placeholder="Enter asset description"
+                    rows={3}
                   />
                 </div>
 
-                <div className="flex gap-2">
+                <div className="flex space-x-2">
                   <Button type="submit" disabled={isLoading}>
-                    {editingAsset ? 'Update Aset' : 'Tambah Aset'}
+                    <Save className="h-4 w-4 mr-2" />
+                    {editingAsset ? 'Update' : 'Create'}
                   </Button>
-                  <Button type="button" variant="outline" onClick={resetForm}>
-                    Batal
+                  <Button type="button" variant="outline" onClick={cancelEdit}>
+                    <X className="h-4 w-4 mr-2" />
+                    Cancel
                   </Button>
                 </div>
               </form>
@@ -398,100 +386,94 @@ const Assets = () => {
           </Card>
         )}
 
+        {/* Assets List */}
         <Card>
           <CardHeader>
-            <CardTitle>Inventarisasi Aset</CardTitle>
-            <div className="flex space-x-2">
-              <div className="relative flex-1">
-                <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-                <Input
-                  placeholder="Cari aset..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-8"
-                />
-              </div>
-              <Button variant="outline">
-                <Filter className="h-4 w-4 mr-2" />
-                Filter
-              </Button>
-              <ExportButton 
-                data={filteredAssets}
-                filename="assets"
-                onExport={(format) => {
-                  toast({
-                    title: "Export Berhasil",
-                    description: `Data aset berhasil diexport dalam format ${format.toUpperCase()}`
-                  });
-                }}
-              />
-            </div>
+            <CardTitle>Assets List</CardTitle>
           </CardHeader>
           <CardContent>
-            {isLoading ? (
-              <div className="text-center py-8">Loading...</div>
-            ) : (
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Kode Aset</TableHead>
-                    <TableHead>Nama</TableHead>
-                    <TableHead>Kategori</TableHead>
-                    <TableHead>Lokasi</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead>Penanggung Jawab</TableHead>
-                    <TableHead>Nilai</TableHead>
-                    <TableHead>Aksi</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {filteredAssets.length === 0 ? (
-                    <TableRow>
-                      <TableCell colSpan={8} className="text-center py-8">
-                        {searchTerm ? 'Tidak ada data yang sesuai dengan pencarian.' : 'Belum ada data aset. Silakan tambah aset baru.'}
-                      </TableCell>
-                    </TableRow>
-                  ) : (
-                    filteredAssets.map((asset) => (
-                      <TableRow key={asset.id}>
-                        <TableCell className="font-medium">{asset.asset_code}</TableCell>
-                        <TableCell>{asset.name}</TableCell>
-                        <TableCell>{asset.category?.name || '-'}</TableCell>
-                        <TableCell>{asset.location?.name || '-'}</TableCell>
-                        <TableCell>{getStatusBadge(asset.status)}</TableCell>
-                        <TableCell>{asset.assigned_to || '-'}</TableCell>
-                        <TableCell>{formatCurrency(asset.purchase_price)}</TableCell>
-                        <TableCell>
-                          <div className="flex space-x-2">
-                            <Link to={`/assets/${asset.id}`}>
-                              <Button variant="ghost" size="sm">
-                                <Eye className="h-4 w-4" />
-                              </Button>
-                            </Link>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => handleEdit(asset)}
-                            >
-                              <Edit className="h-4 w-4" />
-                            </Button>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => handleDelete(asset.id)}
-                            >
-                              <Trash2 className="h-4 w-4" />
-                            </Button>
+            <div className="space-y-4">
+              {assets.map((asset) => (
+                <div key={asset.id} className="border rounded-lg p-4">
+                  <div className="flex items-start justify-between">
+                    <div className="flex-1 space-y-2">
+                      <div className="flex items-center space-x-3">
+                        <h3 className="font-semibold text-lg">{asset.name}</h3>
+                        <Badge variant="outline">{asset.asset_code}</Badge>
+                        <Badge variant={asset.status === 'Aktif' ? 'default' : asset.status === 'Maintenance' ? 'destructive' : 'secondary'}>
+                          {asset.status}
+                        </Badge>
+                      </div>
+                      
+                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 text-sm">
+                        <div>
+                          <span className="font-medium">Category:</span> {asset.category?.name || 'N/A'}
+                        </div>
+                        <div>
+                          <span className="font-medium">Serial:</span> {asset.serial_number || 'N/A'}
+                        </div>
+                        <div>
+                          <span className="font-medium">Purchase Date:</span> {new Date(asset.purchase_date).toLocaleDateString()}
+                        </div>
+                        <div>
+                          <span className="font-medium">Price:</span> {formatPrice(asset.purchase_price)}
+                        </div>
+                        <div>
+                          <span className="font-medium">Vendor:</span> {asset.vendor || 'N/A'}
+                        </div>
+                        <div>
+                          <span className="font-medium">Location:</span> {asset.location?.name || 'N/A'}
+                        </div>
+                        {asset.assigned_to && (
+                          <div>
+                            <span className="font-medium">Assigned To:</span> {asset.assigned_to}
                           </div>
-                        </TableCell>
-                      </TableRow>
-                    ))
-                  )}
-                </TableBody>
-              </Table>
-            )}
+                        )}
+                      </div>
+                      
+                      {asset.description && (
+                        <div className="text-sm text-muted-foreground">
+                          <span className="font-medium">Description:</span> {asset.description}
+                        </div>
+                      )}
+                    </div>
+                    
+                    {isAdmin && (
+                      <div className="flex space-x-2 ml-4">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => startEdit(asset)}
+                        >
+                          <Edit className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          variant="destructive"
+                          size="sm"
+                          onClick={() => handleDelete(asset.id)}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              ))}
+              
+              {assets.length === 0 && !isLoading && (
+                <div className="text-center py-8 text-muted-foreground">
+                  No assets found. {isAdmin && 'Click "Add Asset" to create your first asset.'}
+                </div>
+              )}
+            </div>
           </CardContent>
         </Card>
+
+        {isLoading && (
+          <div className="text-center py-4">
+            <p>Loading...</p>
+          </div>
+        )}
       </div>
     </Layout>
   );
