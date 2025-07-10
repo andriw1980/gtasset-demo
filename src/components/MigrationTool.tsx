@@ -29,7 +29,7 @@ const MigrationTool = () => {
         category_id: 'use-category-id-from-asset_categories-table',
         serial_number: 'DL123456789',
         purchase_date: '2024-01-15',
-        purchase_price: 15000000,
+        purchase_price: '15000000',
         vendor: 'PT Teknologi Indonesia',
         location_id: 'use-location-id-from-work_areas-table',
         assigned_to: 'John Doe',
@@ -41,7 +41,7 @@ const MigrationTool = () => {
         category_id: 'use-category-id-from-asset_categories-table',
         serial_number: 'CN987654321',
         purchase_date: '2024-02-10',
-        purchase_price: 2500000,
+        purchase_price: '2500000',
         vendor: 'PT Office Solutions',
         location_id: 'use-location-id-from-work_areas-table',
         assigned_to: 'Jane Smith',
@@ -57,7 +57,7 @@ const MigrationTool = () => {
         vendor_phone: '+62-21-12345678',
         vendor_address: 'Jl. Sudirman No. 123, Jakarta',
         vendor_pic: 'Ahmad Santoso',
-        vendor_rating: 4.5
+        vendor_rating: '4.5'
       },
       {
         vendor_name: 'PT Office Solutions',
@@ -66,23 +66,23 @@ const MigrationTool = () => {
         vendor_phone: '+62-21-87654321',
         vendor_address: 'Jl. Thamrin No. 456, Jakarta',
         vendor_pic: 'Siti Nurhaliza',
-        vendor_rating: 4.2
+        vendor_rating: '4.2'
       }
     ],
     buildings: [
       {
         building_name: 'Head Office',
         building_address: 'Jl. Gatot Subroto No. 789, Jakarta',
-        floors: 10,
-        area: 2500.5,
+        floors: '10',
+        area: '2500.5',
         pic: 'Building Manager',
         status: 'Active'
       },
       {
         building_name: 'Branch Office Surabaya',
         building_address: 'Jl. Pemuda No. 321, Surabaya',
-        floors: 5,
-        area: 1200.0,
+        floors: '5',
+        area: '1200.0',
         pic: 'Regional Manager',
         status: 'Active'
       }
@@ -136,7 +136,7 @@ const MigrationTool = () => {
       const row: any = {};
       
       headers.forEach((header, index) => {
-        let value = values[index] || '';
+        let value: any = values[index] || '';
         
         // Convert numeric values
         if (header.includes('price') || header.includes('rating') || header.includes('floors') || header.includes('area')) {
@@ -153,7 +153,7 @@ const MigrationTool = () => {
     return rows;
   };
 
-  const handleFileUpload = async (file: File, tableName: string) => {
+  const handleFileUpload = async (file: File, tableName: 'assets' | 'vendor' | 'buildings') => {
     if (!isAdmin) {
       setMessage('Only admins can upload data');
       return;
@@ -207,7 +207,7 @@ const MigrationTool = () => {
 
   const FileUploadSection = ({ title, tableName, templateType }: { 
     title: string; 
-    tableName: string; 
+    tableName: 'assets' | 'vendor' | 'buildings';
     templateType: 'assets' | 'vendor' | 'buildings';
   }) => (
     <Card>
