@@ -40,7 +40,7 @@ export type Database = {
       }
       assets: {
         Row: {
-          asset_code: string
+          asset_code: string | null
           assigned_to: string | null
           category_id: string | null
           created_at: string
@@ -56,7 +56,7 @@ export type Database = {
           vendor: string | null
         }
         Insert: {
-          asset_code: string
+          asset_code?: string | null
           assigned_to?: string | null
           category_id?: string | null
           created_at?: string
@@ -72,7 +72,7 @@ export type Database = {
           vendor?: string | null
         }
         Update: {
-          asset_code?: string
+          asset_code?: string | null
           assigned_to?: string | null
           category_id?: string | null
           created_at?: string
