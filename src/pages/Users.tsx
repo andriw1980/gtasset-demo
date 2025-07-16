@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import Layout from '../components/Layout';
+import { AddUserDialog } from '../components/AddUserDialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -11,6 +12,7 @@ import { Search, Plus, Edit, Trash2, UserPlus } from 'lucide-react';
 const Users = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
+  const [isAddUserDialogOpen, setIsAddUserDialogOpen] = useState(false);
   const itemsPerPage = 10;
 
   // Mock user data - 50 items
@@ -97,12 +99,20 @@ const Users = () => {
     setCurrentPage(page);
   };
 
+  const handleUserAdded = () => {
+    // Refresh the users list - in a real app, this would refetch from the database
+    console.log('User added successfully');
+  };
+
   return (
     <Layout>
       <div className="space-y-4 lg:space-y-6">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <h1 className="text-2xl lg:text-3xl font-bold">User Management</h1>
-          <Button className="w-full sm:w-auto">
+          <Button 
+            className="w-full sm:w-auto"
+            onClick={() => setIsAddUserDialogOpen(true)}
+          >
             <UserPlus className="h-4 w-4 mr-2" />
             Add New User
           </Button>
@@ -243,6 +253,12 @@ const Users = () => {
             </div>
           </CardContent>
         </Card>
+
+        <AddUserDialog
+          open={isAddUserDialogOpen}
+          onOpenChange={setIsAddUserDialogOpen}
+          onUserAdded={handleUserAdded}
+        />
       </div>
     </Layout>
   );
