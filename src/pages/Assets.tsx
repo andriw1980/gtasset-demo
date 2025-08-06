@@ -81,7 +81,20 @@ const Assets = () => {
       const { data, error } = await supabase
         .from('assets')
         .select(`
-          *,
+          id,
+          asset_code,
+          name,
+          category_id,
+          serial_number,
+          purchase_date,
+          purchase_price,
+          vendor,
+          location_id,
+          assigned_to,
+          description,
+          status,
+          created_at,
+          updated_at,
           category:asset_categories(name),
           location:work_areas(name)
         `)
